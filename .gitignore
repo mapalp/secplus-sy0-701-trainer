@@ -1,0 +1,14 @@
+# Personal data stays local
+results/
+*progress*.json
+sy0-701-*-exam-*.md
+*.pdf
+
+# Raw artifact snapshot used for the one-time import (engine.html is the source of truth)
+src/live_artifact_*.html
+
+# Local tooling
+__pycache__/
+.venv/
+.DS_Store
+.vscode/

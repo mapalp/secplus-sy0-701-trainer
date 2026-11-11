@@ -1,0 +1,594 @@
+[
+ {
+  "id": 1,
+  "t": "Social engineering",
+  "q": "During a real, publicly reported payroll-system outage, a caller says they're from the vendor's incident team, quotes the correct outage ticket number, and asks a clerk to read back the MFA code \"to resync the account.\" What MOST made the caller believable?",
+  "o": [
+   "Pretexting",
+   "Vishing",
+   "Smishing",
+   "Watering hole attack"
+  ],
+  "w": "The credibility came from the made-up but plausible story built on a real event; the phone call is only the channel.",
+  "h": "Vishing is the phone. Pretexting is the script the actor reads into the phone."
+ },
+ {
+  "id": 2,
+  "t": "Social engineering",
+  "q": "An email to accounts payable pretends to be the CEO, references a real acquisition from yesterday's press release, and requests an urgent wire to a \"closing escrow account.\" Which technique is the question really asking about if it says \"what made the request seem legitimate\"?",
+  "o": [
+   "Pretexting",
+   "Phishing",
+   "Typosquatting",
+   "Brand impersonation"
+  ],
+  "w": "Phishing is the delivery channel; the believable backstory tied to real news is the pretext.",
+  "h": "Ask \"why did they believe it?\" not \"how did it arrive?\""
+ },
+ {
+  "id": 3,
+  "t": "Wireless",
+  "q": "Users are repeatedly disconnected, then reconnect to a network with the SAME SSID and a stronger signal that shows a login page. The wireless IDS logs a flood of deauthentication frames. What is this?",
+  "o": [
+   "Evil twin",
+   "Rogue access point",
+   "Bluesnarfing",
+   "RF jamming"
+  ],
+  "w": "Same SSID plus stronger signal plus forced deauth is the detail that only fits an evil twin.",
+  "h": "A rogue AP is a stranger in the building. An evil twin is a stranger wearing your coworker's face."
+ },
+ {
+  "id": 4,
+  "t": "Wireless",
+  "q": "Which control BEST stops attackers from forging the deauthentication frames used to push clients onto a look-alike AP?",
+  "o": [
+   "802.11w Protected Management Frames",
+   "Hiding the SSID",
+   "MAC address filtering",
+   "Disabling WPS"
+  ],
+  "w": "PMF (mandatory in WPA3) authenticates management frames, so deauth frames can't be spoofed.",
+  "h": "PMF puts a signature on the bouncer's \"you're kicked out\" notes."
+ },
+ {
+  "id": 5,
+  "t": "Network appliances",
+  "q": "A 15-person accounting office with no IT staff wants firewall, gateway antivirus, URL filtering, and site-to-site VPN in one box, managed from one console at a low fixed cost. Which is BEST?",
+  "o": [
+   "UTM appliance",
+   "Next-generation firewall",
+   "Web application firewall",
+   "Forward proxy server"
+  ],
+  "w": "Small office + all-in-one + single console + low cost is the UTM tell.",
+  "h": "UTM is the Swiss Army knife for a small shop. NGFW is the specialist's scalpel."
+ },
+ {
+  "id": 6,
+  "t": "Governance docs",
+  "q": "A policy says \"data in transit must be protected.\" A second document says \"all external web services must use TLS 1.2 or higher with AES-GCM cipher suites; no exceptions without CISO approval.\" What is the second document?",
+  "o": [
+   "Standard",
+   "Policy",
+   "Procedure",
+   "Guideline"
+  ],
+  "w": "It names specific protocol versions and ciphers — that makes it a standard.",
+  "h": "Policy = Purpose. Standard = Specifics. Procedure = Process steps. Guideline = Good idea (optional)."
+ },
+ {
+  "id": 7,
+  "t": "Governance docs",
+  "q": "A document states \"Staff should consider using a password manager for personal accounts.\" Which document type is it?",
+  "o": [
+   "Guideline",
+   "Standard",
+   "Policy",
+   "Procedure"
+  ],
+  "w": "\"Should consider\" is a recommendation, not a requirement — guidelines are the only optional type.",
+  "h": "Guideline = Good idea. Nobody gets written up for ignoring a good idea."
+ },
+ {
+  "id": 8,
+  "t": "Indicators",
+  "q": "User jlee lives in Phoenix. VPN logs show jlee connected from Phoenix 09:00–12:00 and from Tempe 10:30–11:15. Which indicator is this?",
+  "o": [
+   "Concurrent session usage",
+   "Impossible travel",
+   "Resource inaccessibility",
+   "Out-of-cycle logging"
+  ],
+  "w": "The cities are next to each other, but the time windows overlap — two people are using one account.",
+  "h": "Impossible travel is about distance. Concurrent sessions are about overlap. Check the clocks before the map."
+ },
+ {
+  "id": 9,
+  "t": "Web attacks",
+  "q": "A logged-in banking customer reads a forum in another tab. A post contains a 1×1 image whose src is https://bank.example.com/transfer?to=88213409&amount=4900, and the money moves. What attack is this?",
+  "c": "<img src=\"https://bank.example.com/transfer?to=88213409&amount=4900\" width=\"1\" height=\"1\">",
+  "o": [
+   "CSRF",
+   "Stored XSS",
+   "SSRF",
+   "Clickjacking"
+  ],
+  "w": "No script runs — the victim's browser is tricked into sending a request and attaches the bank's cookie automatically.",
+  "h": "CSRF is a forged signature: the attacker writes the check, your browser signs it with your cookie."
+ },
+ {
+  "id": 10,
+  "t": "Web attacks",
+  "q": "Which fix BEST prevents the forged transfer request in a CSRF attack like the forum-image one?",
+  "o": [
+   "Anti-CSRF tokens and SameSite cookies on the bank's site",
+   "A content security policy on the forum",
+   "Setting HttpOnly on the bank's session cookie",
+   "Input validation on the forum's post field"
+  ],
+  "w": "The target site has to protect itself; the attacker controls (or doesn't care about) the forum.",
+  "h": "You don't fix forged checks by asking the forger's printer shop to behave."
+ },
+ {
+  "id": 11,
+  "t": "Web attacks",
+  "q": "Stored XSS on a portal lets a script read the session cookie and send it out. The code fix will take weeks. The cookie is currently: Set-Cookie: SID=7f3c; Secure; SameSite=Lax. Which change BEST reduces impact now?",
+  "c": "Set-Cookie: SID=7f3c9a1e44b2; Path=/; Secure; SameSite=Lax",
+  "o": [
+   "Add HttpOnly",
+   "Change to SameSite=Strict",
+   "Reduce Max-Age to 5 minutes",
+   "Scope Domain to the portal host only"
+  ],
+  "w": "The attack is script reading document.cookie — only HttpOnly hides the cookie from JavaScript.",
+  "h": "HttpOnly Hides it from script (anti-XSS). SameSite = Stay on this Site (anti-CSRF)."
+ },
+ {
+  "id": 12,
+  "t": "Web attacks",
+  "q": "A \"fetch profile picture from URL\" feature receives url=http://169.254.169.254/latest/meta-data/iam/security-credentials/app-role and returns JSON instead of an image. What attack is this?",
+  "o": [
+   "SSRF",
+   "Directory traversal",
+   "Command injection",
+   "Reflected XSS"
+  ],
+  "w": "The server was tricked into fetching an internal-only network address — the cloud metadata service.",
+  "h": "See 169.254.169.254? Think \"SSRF stealing cloud keys\" instantly."
+ },
+ {
+  "id": 13,
+  "t": "Web attacks",
+  "q": "Which pair of controls BEST mitigates SSRF against the AWS instance metadata service?",
+  "o": [
+   "Require IMDSv2 and allow-list fetch destinations",
+   "Add HttpOnly and Secure to session cookies",
+   "Enable full-disk encryption on the instance",
+   "Deploy anti-CSRF tokens on every form"
+  ],
+  "w": "IMDSv2 needs a PUT-issued session token simple SSRF can't get, and an allow-list stops arbitrary internal fetches.",
+  "h": "Don't let the server accept delivery addresses inside your own building."
+ },
+ {
+  "id": 14,
+  "t": "Firewall rules",
+  "q": "What happens to traffic from 10.5.5.5 to 172.16.40.20 on TCP 443?",
+  "c": "#  Action  Proto  Source  Destination      Port\n1  PERMIT  TCP    any     172.16.40.0/24   443\n2  DENY    TCP    any     172.16.40.20     443\n3  DENY    IP     any     any              any (log)",
+  "o": [
+   "Allowed by rule 1",
+   "Denied by rule 2",
+   "Denied and logged by rule 3",
+   "Denied by implicit deny"
+  ],
+  "w": "172.16.40.20 is inside 172.16.40.0/24, so rule 1 matches first and processing stops; rule 2 is shadowed.",
+  "h": "The bouncer stops reading at the first line that mentions you."
+ },
+ {
+  "id": 15,
+  "t": "Firewall rules",
+  "q": "Using the same rules, what is the BEST fix so 172.16.40.20 is blocked on 443 while the rest of 172.16.40.0/24 still accepts HTTPS from anywhere?",
+  "c": "1  PERMIT  TCP  any  172.16.40.0/24  443\n2  DENY    TCP  any  172.16.40.20    443\n3  DENY    IP   any  any             any (log)",
+  "o": [
+   "Move rule 2 above rule 1",
+   "Change rule 1's source to the internal subnet only",
+   "Delete rule 1",
+   "Change rule 3 to PERMIT"
+  ],
+  "w": "Specific before broad; the other options break the \"other servers from anywhere\" requirement or open everything.",
+  "h": "A fix that solves one requirement by breaking another is always wrong."
+ },
+ {
+  "id": 16,
+  "t": "Firewall rules",
+  "q": "An admin deletes the final \"DENY IP any any (log)\" rule. Traffic matching no other rule arrives. What happens?",
+  "o": [
+   "It's denied by implicit deny, but no log entry is written",
+   "It's allowed because nothing denies it",
+   "It's denied and logged as before",
+   "The firewall fails open until a rule is added"
+  ],
+  "w": "Implicit deny still blocks unmatched traffic; the explicit rule existed mainly to log it.",
+  "h": "Not on the list? You're not getting in — but nobody writes down that you tried."
+ },
+ {
+  "id": 17,
+  "t": "Control placement",
+  "q": "A hospital needs full visibility of core traffic with no added latency and no new point of failure. Which device and placement?",
+  "o": [
+   "IDS on a SPAN port or tap",
+   "IPS inline at the core",
+   "WAF in front of the core switch",
+   "NAC on the core uplinks"
+  ],
+  "w": "A copy of traffic (SPAN/tap) adds no latency and can't take the network down — but it can only alert.",
+  "h": "IDS = In the Doorway with a Spyglass. It watches a copy and yells."
+ },
+ {
+  "id": 18,
+  "t": "Control placement",
+  "q": "Exploit traffic between the internal firewall and the core must be blocked automatically. Which device and placement?",
+  "o": [
+   "IPS inline",
+   "IDS on a SPAN port",
+   "IDS on a network tap",
+   "SIEM correlation rule"
+  ],
+  "w": "Only a device physically in the traffic path can block it.",
+  "h": "IPS = In the Path, Stops."
+ },
+ {
+  "id": 19,
+  "t": "Control placement",
+  "q": "Where should a WAF protecting public web servers be placed?",
+  "o": [
+   "In the DMZ right after the perimeter firewall, in front of the web servers",
+   "Outside the perimeter firewall, facing the internet",
+   "Between the web servers and the database tier only",
+   "On each user workstation"
+  ],
+  "w": "It should inspect web traffic after the firewall drops the junk and before any server sees it.",
+  "h": "Firewall sweeps the street; WAF checks the guests at the door."
+ },
+ {
+  "id": 20,
+  "t": "Control placement",
+  "q": "Three web servers sit behind a load balancer. Each user's session data lives only in the memory of the server that first handled them, and requests must be spread across all three. Which configuration?",
+  "o": [
+   "Session persistence (sticky sessions)",
+   "Round-robin",
+   "Active/passive",
+   "Least connections with no affinity"
+  ],
+  "w": "Without affinity, users land on a server that doesn't have their session and get logged out.",
+  "h": "Sticky sessions = you keep the same bank teller, because only that teller has your paperwork."
+ },
+ {
+  "id": 21,
+  "t": "Control placement",
+  "q": "A laptop passes 802.1X authentication but fails NAC posture (missing patches). What should NAC do?",
+  "o": [
+   "Place it in a quarantine/remediation VLAN",
+   "Disable the switch port",
+   "Grant full access and alert the SOC",
+   "Revoke the user's AD account"
+  ],
+  "w": "Quarantine lets it reach the patch server but not production, so it can fix itself and get in.",
+  "h": "NAC quarantine is the urgent-care waiting room — not sent home, not let into surgery."
+ },
+ {
+  "id": 22,
+  "t": "Control placement",
+  "q": "A hospital's inline IPS protects clinical systems. Leadership says patient care must never stop if the IPS fails. Which failure mode?",
+  "o": [
+   "Fail-open",
+   "Fail-closed",
+   "Fail-secure",
+   "Fail-safe to deny"
+  ],
+  "w": "Fail-open keeps traffic flowing uninspected — availability wins.",
+  "h": "Open door = traffic keeps flowing; closed door = everything stops."
+ },
+ {
+  "id": 23,
+  "t": "Ransomware IR",
+  "q": "At 02:31, right after 4.8 GB leaves the network, EDR shows: vssadmin delete shadows /all /quiet. What is the attacker MOST likely doing?",
+  "c": "02:05  Event ID 4672  svc_backup  special privileges assigned\n02:18  rclone.exe  outbound 4.8 GB -> 185.220.101.47\n02:31  vssadmin delete shadows /all /quiet",
+  "o": [
+   "Destroying recovery options before encrypting",
+   "Escalating privileges",
+   "Moving laterally",
+   "Clearing the Security log"
+  ],
+  "w": "Deleting shadow copies removes easy restores; privileges were already gained at 4672.",
+  "h": "Cutting the phone line before kicking in the door — encryption is minutes away."
+ },
+ {
+  "id": 24,
+  "t": "Ransomware IR",
+  "q": "Same incident: the attacker has a foothold on WS-HR-112, the svc_backup credentials, and access to FS-02. What is the BEST containment step?",
+  "o": [
+   "Isolate both hosts with EDR and disable svc_backup",
+   "Block 185.220.101.47 at the firewall and keep monitoring",
+   "Power off every server in the data center",
+   "Reimage WS-HR-112 immediately"
+  ],
+  "w": "Containment must cover every foothold — hosts and credentials — while keeping RAM evidence intact.",
+  "h": "Lock every room the burglar is in and take back the key they stole."
+ },
+ {
+  "id": 25,
+  "t": "Ransomware IR",
+  "q": "Which is the BEST hardening for the svc_backup service account after the incident?",
+  "o": [
+   "Restrict logon to the backup server and use a long, auto-rotated password (gMSA)",
+   "Lock the account after 5 failed attempts",
+   "Require SMS MFA for the account",
+   "Rename it to something less obvious"
+  ],
+  "w": "Lockout invites a DoS on backups, SMS can't work non-interactively, and renaming is obscurity.",
+  "h": "A service account should only open one door, with a key that changes itself."
+ },
+ {
+  "id": 26,
+  "t": "Authentication",
+  "q": "Attackers use a reverse-proxy kit (AiTM) that relays logins to the real portal in real time and steals the session cookie. Which MFA BEST stops this even if the admin is fooled?",
+  "o": [
+   "FIDO2/WebAuthn security key",
+   "TOTP authenticator app",
+   "Push notification with number matching",
+   "SMS one-time code"
+  ],
+  "w": "FIDO2 signs a challenge bound to the real domain, so the fake site gets nothing usable.",
+  "h": "Codes are passwords you say out loud. A FIDO2 key only fits your bank's actual lock."
+ },
+ {
+  "id": 27,
+  "t": "Authentication",
+  "q": "Push notifications with number matching are MOST effective against which attack?",
+  "o": [
+   "MFA fatigue (push bombing)",
+   "Adversary-in-the-middle phishing",
+   "SIM swapping",
+   "Pass-the-hash"
+  ],
+  "w": "Number matching stops blind approval spam, but a user actively logging in to an AiTM site still sees and enters the real number.",
+  "h": "Number matching stops \"approve, approve, approve\" — not a user who's being fooled."
+ },
+ {
+  "id": 28,
+  "t": "Authentication",
+  "q": "Clinical Wi-Fi must use device certificates on both sides, no passwords, and allow revoking any single device. Which EAP method?",
+  "o": [
+   "EAP-TLS",
+   "PEAP",
+   "EAP-TTLS",
+   "EAP-FAST"
+  ],
+  "w": "EAP-TLS is mutual certificate auth — the certs are the authentication.",
+  "h": "EAP-TLS = Two Locks, Server and client."
+ },
+ {
+  "id": 29,
+  "t": "Authentication",
+  "q": "Users join Wi-Fi with their existing AD usernames and passwords, and only the RADIUS server presents a certificate. Which EAP method is MOST likely?",
+  "o": [
+   "PEAP",
+   "EAP-TLS",
+   "EAP-FAST",
+   "EAP-MD5"
+  ],
+  "w": "PEAP builds a tunnel with a server cert and passes MSCHAPv2 (the password) inside it.",
+  "h": "PEAP and TTLS build a tunnel, then pass a password through it."
+ },
+ {
+  "id": 30,
+  "t": "PKI",
+  "q": "A VPN portal certificate is valid, publicly trusted, has a matching wildcard SAN and RSA 3072 — but every client rejects it. What's wrong?",
+  "c": "Extended Key Usage: Code Signing (1.3.6.1.5.5.7.3.3)",
+  "o": [
+   "It isn't authorized for Server Authentication",
+   "The wildcard can't cover a VPN hostname",
+   "RSA 3072 is too weak for TLS",
+   "It needs the Client Authentication EKU instead"
+  ],
+  "w": "A TLS server certificate needs the Server Authentication EKU (…3.1); code signing can't do that job.",
+  "h": "EKU is the job title on the badge. A valid \"Code Signing\" badge can't open the server room."
+ },
+ {
+  "id": 31,
+  "t": "PKI",
+  "q": "A certificate's SAN is *.corp.example.com. Which hostname will FAIL name validation?",
+  "o": [
+   "a.vpn.corp.example.com",
+   "vpn.corp.example.com",
+   "mail.corp.example.com",
+   "portal.corp.example.com"
+  ],
+  "w": "A wildcard covers exactly one label, so two labels deep doesn't match.",
+  "h": "The asterisk is one seat at the table, not the whole row."
+ },
+ {
+  "id": 32,
+  "t": "Resilience",
+  "q": "A medication database must be recoverable to any specific minute in the last 24 hours. Last year a bad script's corruption copied to the standby replica instantly. Nightly full backups exist. What should be added?",
+  "o": [
+   "Transaction journaling with point-in-time restore",
+   "Synchronous replication to a second site",
+   "Hourly storage snapshots",
+   "Differential backups every 6 hours"
+  ],
+  "w": "Restore the nightly full, then replay the journal to one minute before the bad change; replication copies the damage.",
+  "h": "Replication is a mirror — it shows the coffee stain too. Journaling is a video you can rewind."
+ },
+ {
+  "id": 33,
+  "t": "Resilience",
+  "q": "The BIA sets an RTO of 4 hours for the core system. Measured MTTR is 12 hours and MTBF is 18 months. What is the conclusion?",
+  "o": [
+   "The RTO can't be met; a standby system or faster SLA is needed",
+   "The RTO is met because failures are rare",
+   "The RPO is exceeded",
+   "MTBF offsets the MTTR, so no change is needed"
+  ],
+  "w": "Compare the measured average (MTTR) to the target (RTO); how rarely it fails never makes repairs faster.",
+  "h": "RTO is the deadline. MTTR is how long your homework actually takes."
+ },
+ {
+  "id": 34,
+  "t": "Cloud & virtualization",
+  "q": "A coding-challenge site runs untrusted submissions. Last month a kernel flaw let processes break out of containers. Modest overhead is acceptable. Which is BEST?",
+  "o": [
+   "Run each submission in its own VM",
+   "Containers with a read-only root filesystem",
+   "Microservices behind an API gateway",
+   "Containers with stricter cgroup limits"
+  ],
+  "w": "Containers share one kernel; VMs each have their own and are isolated by the hypervisor.",
+  "h": "Containers are apartments on one foundation. VMs are separate houses."
+ },
+ {
+  "id": 35,
+  "t": "Cloud & virtualization",
+  "q": "A newly provisioned \"empty\" block storage volume contains another company's database fragments. The provider confirms no hypervisor compromise. What vulnerability is this?",
+  "o": [
+   "Resource reuse",
+   "VM escape",
+   "VM sprawl",
+   "Side-channel attack"
+  ],
+  "w": "Storage was reallocated without being wiped; nothing ran, and the stem ruled out hypervisor compromise.",
+  "h": "A hotel room that wasn't cleaned — nobody broke in."
+ },
+ {
+  "id": 36,
+  "t": "Cloud & virtualization",
+  "q": "Forty Kubernetes microservices talk over plain HTTP. Each service must prove its identity to the other, and traffic must be encrypted. Which is BEST?",
+  "o": [
+   "Mutual TLS (mTLS) between services",
+   "Full-disk encryption on the nodes",
+   "A WAF at the cluster ingress",
+   "Tokenizing sensitive payload fields"
+  ],
+  "w": "mTLS encrypts east-west traffic and has both sides present certificates; FDE is at rest and a WAF only sees north-south.",
+  "h": "TLS is the bank showing you its ID. mTLS is both of you showing IDs."
+ },
+ {
+  "id": 37,
+  "t": "Malware",
+  "q": "EDR shows no files written to disk. What technique does this sequence show?",
+  "c": "parent=WINWORD.EXE child=powershell.exe -nop -w hidden -enc SQBFAFgA...\npowershell.exe -> OpenProcess(explorer.exe, PROCESS_VM_WRITE|PROCESS_CREATE_THREAD)\npowershell.exe -> VirtualAllocEx(explorer.exe, 0x3000, PAGE_EXECUTE_READWRITE)\npowershell.exe -> CreateRemoteThread(explorer.exe)",
+  "o": [
+   "Memory injection",
+   "Buffer overflow",
+   "Race condition",
+   "Privilege escalation"
+  ],
+  "w": "Code is deliberately written into another process's memory with legitimate APIs and run there — for stealth, not new privileges.",
+  "h": "A hermit crab moving into a shell everyone already trusts."
+ },
+ {
+  "id": 38,
+  "t": "Governance structures",
+  "q": "Each regional office sets its own security policies, chooses its own tools, and controls its own budget; HQ only gets quarterly reports. Auditors find inconsistent controls. Which structure is this?",
+  "o": [
+   "Decentralized",
+   "Centralized",
+   "Federated committee",
+   "Government entity oversight"
+  ],
+  "w": "Inconsistent controls across units is the signature weakness of decentralized governance.",
+  "h": "Every location has its own chef — great local food, but the burgers taste different everywhere."
+ },
+ {
+  "id": 39,
+  "t": "Vendor management",
+  "q": "Before awarding a contract, a utility asks bidders where their circuit boards and firmware come from and checks those sub-suppliers against restricted-entity lists. What activity is this?",
+  "o": [
+   "Supply chain analysis",
+   "Right-to-audit clause",
+   "Independent assessment (SOC 2)",
+   "Penetration testing"
+  ],
+  "w": "Looking at the vendor's own suppliers and component origins is supply chain analysis; right-to-audit is a post-signing contract term.",
+  "h": "Ask where the caterer buys their meat before you hire them."
+ },
+ {
+  "id": 40,
+  "t": "Agreements",
+  "q": "Two hospitals form a joint venture and sign a document covering how revenue and costs are split, each partner's responsibilities, and data protection duties. Which agreement?",
+  "o": [
+   "BPA",
+   "MSA",
+   "MOU",
+   "SLA"
+  ],
+  "w": "Partners splitting revenue in a joint venture is a business partners agreement; an MSA is a customer buying from a vendor.",
+  "h": "MSA = landlord and tenant. BPA = co-owners of the building."
+ },
+ {
+  "id": 41,
+  "t": "Agreements",
+  "q": "A company signs a three-year umbrella contract with a consultancy setting payment terms and liability, then signs a separate document for each project with deliverables and timelines. What is the per-project document?",
+  "o": [
+   "SOW",
+   "MSA",
+   "BPA",
+   "MOA"
+  ],
+  "w": "The umbrella is the MSA; each project's deliverables live in a statement of work.",
+  "h": "MSA is the umbrella; SOWs are the people standing under it."
+ },
+ {
+  "id": 42,
+  "t": "Privacy",
+  "q": "Customer personal data is spread across a CRM, a marketing platform, ticket attachments, and analysts' spreadsheets, and no one can confirm everywhere it's stored. What should be built FIRST?",
+  "o": [
+   "Data inventory (data map)",
+   "Data retention policy",
+   "Data classification scheme",
+   "Legal hold process"
+  ],
+  "w": "\"Where is it stored?\" is answered by the inventory; everything else builds on it.",
+  "h": "You can't clean the house if you don't know which rooms you own."
+ },
+ {
+  "id": 43,
+  "t": "Privacy",
+  "q": "An EU customer submits a valid erasure request. You hold their marketing preferences, support chat transcripts, and invoices that tax law requires keeping for seven years. What is the BEST response?",
+  "o": [
+   "Delete preferences and transcripts; retain invoices with use restricted to the tax obligation",
+   "Deny the request because some data must be kept",
+   "Anonymize the invoices and delete everything else",
+   "Delete all of it, including the invoices"
+  ],
+  "w": "The legal-obligation exception covers only the data the law requires; anonymizing breaks the requirement for original invoices.",
+  "h": "Clean out the closet, except what the IRS says to keep — and lock that box."
+ },
+ {
+  "id": 44,
+  "t": "Physical security",
+  "q": "A small windowless server room has constant cooling airflow and a thin wall next to a busy hallway. Which motion sensor BEST detects a person after hours with few false alarms?",
+  "o": [
+   "Infrared (PIR)",
+   "Microwave",
+   "Ultrasonic",
+   "Pressure mat"
+  ],
+  "w": "Airflow rules out ultrasonic, the thin wall rules out microwave, and a pressure mat covers one spot.",
+  "h": "Read the environment clues as eliminators — what's left is the answer."
+ },
+ {
+  "id": 45,
+  "t": "Exam strategy",
+  "q": "The exam opens with five long PBQs. With 90 minutes for 90 questions, what is the BEST approach?",
+  "o": [
+   "Flag the PBQs, do all multiple choice first, return with ~25 minutes left",
+   "Finish each PBQ fully before moving on",
+   "Skip PBQs entirely since they're worth the same as MCQs",
+   "Spend 2–3 minutes per MCQ to avoid careless errors"
+  ],
+  "w": "Points lost to the clock need no new knowledge; PBQs give partial credit when rushed, blank MCQs give zero.",
+  "h": "Bank the quick points first, then go back for the heavy lifting."
+ }
+]

