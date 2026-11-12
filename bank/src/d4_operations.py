@@ -188,7 +188,7 @@ w="Blocking public DoH providers at the firewall and enforcing the internal reso
 h="Encrypted DNS to someone else's resolver is DNS you can't see."),
 
 dict(id="xg-d4-21", t="DNS & email security",
-q="A company owns 30 parked domains that never send email. Attackers have begun spoofing invoices from them. What DNS configuration BEST protects these domains?",
+q="A manufacturer owns 30 parked domains, kept to block typosquatting, and none of them ever sends email. This month, attackers began sending fake invoices that appear to come from several of them, and customers are paying. What DNS configuration BEST protects these domains?",
 o=['Publish "v=spf1 -all" and a DMARC p=reject record on each',
    "Remove the domains' MX records so they can't receive replies",
    "Enable DNSSEC signing on each parked domain at the registrar",
@@ -277,7 +277,7 @@ w="While the system runs, the decryption key and decrypted data are in memory; a
 h="Encrypted and running? The key is in RAM, so don't turn it off."),
 
 dict(id="xg-d4-31", t="Incident response",
-q="A junior examiner plans to open the seized original drive in a forensic tool to look for deleted files, because 'the tool is read-only.' What is the BEST practice?",
+q="A junior examiner at a regional police lab has a seized laptop drive in an evidence bag. She plans to attach the original drive to her workstation and browse it in a forensic suite to look for deleted files, because 'the tool is read-only anyway.' Her supervisor stops her. What is the BEST practice?",
 o=["Analyze a verified bit-for-bit image, not the original",
    "Analyze the original directly, since read-only tools can't change it",
    "Copy the user's documents folder to a USB drive and analyze that",
@@ -505,7 +505,7 @@ h="No password stolen? Check what apps were given permission."),
 
 # ---------- Authentication ----------
 dict(id="xg-d4-56", t="Authentication",
-q="A credit union is updating its password policy to align with current NIST guidance. Which policy BEST reflects that guidance?",
+q="After an audit, a credit union is rewriting its password policy, which currently requires eight complex characters changed every 60 days. Help desk data shows most resets come from forced changes, and users often write passwords down. Which policy BEST reflects current NIST guidance?",
 o=["Long passphrases checked against breached lists, with no forced periodic change",
    "Eight characters with mandatory symbols and forced changes every 60 days",
    "Twelve characters with a required number and a monthly expiration date",
@@ -553,7 +553,7 @@ w="Context-aware (risk-based) authentication raises requirements only when signa
 h="Ask for more proof only when something looks off."),
 
 dict(id="xg-d4-62", t="Authentication", n=2,
-q="A security awareness quiz asks staff to identify authentication factors. Which TWO are 'something you have'?",
+q="A help desk lead is building a short security awareness quiz for new branch staff, because several of them recently described a PIN as a second factor. Which TWO items are 'something you have'?",
 o=["A hardware OTP token", "A smart card", "A memorized PIN", "A fingerprint scan", "GPS location"],
 w="Physical objects you possess, such as tokens and smart cards, are 'something you have.' A PIN is something you know, a fingerprint is something you are, and location is somewhere you are.",
 h="If you can lose it in a parking lot, it's something you have."),

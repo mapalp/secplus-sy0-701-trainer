@@ -273,7 +273,7 @@ w="A sinkhole returns a controlled address for known-bad domains, so connections
 h="Let them ask for the bad address, then write down who asked."),
 
 dict(id="xg-d2-34", t="Network attacks", n=2,
-q="A network engineer wants to stop rogue DHCP servers and ARP spoofing on a campus's access switches. Which TWO features should be enabled together?",
+q="A university's campus network suffered a rogue DHCP server last month and an ARP spoofing attack this week, both launched from student dorm ports. A network engineer wants features on the access switches that stop both problems. Which TWO features should be enabled together?",
 o=["DHCP snooping", "Dynamic ARP inspection", "Port mirroring", "Spanning Tree root guard", "Jumbo frames"],
 w="DHCP snooping blocks rogue DHCP offers and builds a binding table of IP-to-MAC leases, which dynamic ARP inspection uses to drop forged ARP replies. Mirroring only copies traffic, root guard protects STP, and jumbo frames change packet sizes.",
 h="Snooping writes the guest list; DAI checks it."),
@@ -358,7 +358,7 @@ w="A JNDI lookup string in a logged header that triggers an outbound LDAP call s
 h="If logging a string makes the server phone out, the logger is executing input."),
 
 dict(id="xg-d2-44", t="Web attacks", n=2,
-q="A healthcare portal had a stored XSS flaw in patient comments. Which TWO controls MOST directly prevent or limit stored XSS?",
+q="A healthcare portal's penetration test found a stored XSS flaw in the patient comments feature, and leadership wants layered fixes before the next audit. Which TWO controls MOST directly prevent or limit stored XSS?",
 o=["Context-aware output encoding of user content", "A Content Security Policy restricting script sources", "Parameterized queries for comment storage", "Account lockout after five failed logins", "TLS 1.3 for every portal connection"],
 w="Encoding output for its context stops the browser treating stored content as script, and a CSP blocks scripts that slip through. Parameterized queries stop SQL injection, lockout stops password guessing, and TLS protects data in transit.",
 h="Encode what you show; restrict what can run."),

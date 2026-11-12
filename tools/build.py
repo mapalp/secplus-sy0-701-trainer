@@ -39,12 +39,39 @@ def compile_exam_grade():
     return mc, pbq
 
 
+def apply_legacy_rewrites():
+    """Rewrites of the older banks live in bank/src_legacy/*.py. Each module sets BANK (the JSON file's stem)
+    and MC and/or PBQ lists; every item replaces the existing item with the same id, so answer history carries over."""
+    by_bank = {}
+    for f in sorted((BANK / "src_legacy").glob("*.py")):
+        mod = runpy.run_path(str(f))
+        b = by_bank.setdefault(mod["BANK"], {})
+        for item in mod.get("MC", []) + mod.get("PBQ", []):
+            if item["id"] in b:
+                raise SystemExit(f"{f.name}: id {item['id']} rewritten twice")
+            b[item["id"]] = item
+    for bank, items in by_bank.items():
+        path = BANK / f"{bank}.json"
+        data = json.loads(path.read_text(encoding="utf-8"))
+        index = {str(x["id"]): i for i, x in enumerate(data)}
+        for qid, item in items.items():
+            if str(qid) not in index:
+                raise SystemExit(f"{bank}: rewrite for unknown id {qid}")
+            old = data[index[str(qid)]]
+            if old.get("t") != item.get("t"):
+                raise SystemExit(f"{bank} {qid}: topic changed from {old.get('t')} to {item.get('t')}")
+            data[index[str(qid)]] = {**item, "id": old["id"]}   # keep the original id type (int or str)
+        path.write_text(json.dumps(data, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        print(f"{bank}: {len(items)} rewritten items applied")
+
+
 def js(obj):
     # "</" inside a string would end the <script> element early
     return json.dumps(obj, ensure_ascii=False).replace("</", "<\\/")
 
 
 def main():
+    apply_legacy_rewrites()
     xg_mc, xg_pbq = compile_exam_grade()
     banks = (
         f"const BANK_E2={js(load('exam2_misses.json'))};\n"

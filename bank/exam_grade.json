@@ -193,7 +193,7 @@
   "id": "xg-d1-15",
   "t": "Zero trust",
   "n": 2,
-  "q": "A security architect is labeling the components in a zero trust design review diagram. Which TWO components belong to the control plane?",
+  "q": "A hospital is replacing its flat VPN with a zero trust design. During the architecture review, an auditor asks the security architect to separate the components that make and coordinate access decisions from the ones that carry or enforce traffic. Which TWO components belong to the control plane?",
   "o": [
    "Policy engine",
    "Policy administrator",
@@ -338,7 +338,7 @@
  {
   "id": "xg-d1-26",
   "t": "Physical security",
-  "q": "A colocation provider requires multifactor authentication at its data hall doors. Which door configuration meets that requirement?",
+  "q": "A colocation provider's contract with a payment processor requires multifactor authentication at every data hall door, and the auditor will test each door. The provider is choosing between four configurations already supported by its hardware. Which configuration meets the requirement?",
   "o": [
    "A badge reader combined with a PIN keypad",
    "Two badge readers in an access control vestibule",
@@ -844,7 +844,7 @@
   "id": "xg-d2-34",
   "t": "Network attacks",
   "n": 2,
-  "q": "A network engineer wants to stop rogue DHCP servers and ARP spoofing on a campus's access switches. Which TWO features should be enabled together?",
+  "q": "A university's campus network suffered a rogue DHCP server last month and an ARP spoofing attack this week, both launched from student dorm ports. A network engineer wants features on the access switches that stop both problems. Which TWO features should be enabled together?",
   "o": [
    "DHCP snooping",
    "Dynamic ARP inspection",
@@ -982,7 +982,7 @@
   "id": "xg-d2-44",
   "t": "Web attacks",
   "n": 2,
-  "q": "A healthcare portal had a stored XSS flaw in patient comments. Which TWO controls MOST directly prevent or limit stored XSS?",
+  "q": "A healthcare portal's penetration test found a stored XSS flaw in the patient comments feature, and leadership wants layered fixes before the next audit. Which TWO controls MOST directly prevent or limit stored XSS?",
   "o": [
    "Context-aware output encoding of user content",
    "A Content Security Policy restricting script sources",
@@ -1622,7 +1622,7 @@
  {
   "id": "xg-d3-35",
   "t": "Resilience",
-  "q": "During a ransomware recovery, a hospital discovered its nightly backups had been failing silently for five months because a credential expired, even though the backup console showed 'Job completed with warnings.' Which practice would MOST likely have caught this?",
+  "q": "A hospital spent three days recovering from ransomware. During recovery, it discovered that its nightly backups had been failing silently for five months, because a service credential had expired. The backup console showed only 'Job completed with warnings,' and nobody read the warnings. Which practice would MOST likely have caught this before the incident?",
   "o": [
    "Regular test restores, reviewed by a named owner",
    "Keeping backup logs for seven years for auditing",
@@ -2037,7 +2037,7 @@
  {
   "id": "xg-d4-21",
   "t": "DNS & email security",
-  "q": "A company owns 30 parked domains that never send email. Attackers have begun spoofing invoices from them. What DNS configuration BEST protects these domains?",
+  "q": "A manufacturer owns 30 parked domains, kept to block typosquatting, and none of them ever sends email. This month, attackers began sending fake invoices that appear to come from several of them, and customers are paying. What DNS configuration BEST protects these domains?",
   "o": [
    "Publish \"v=spf1 -all\" and a DMARC p=reject record on each",
    "Remove the domains' MX records so they can't receive replies",
@@ -2167,7 +2167,7 @@
  {
   "id": "xg-d4-31",
   "t": "Incident response",
-  "q": "A junior examiner plans to open the seized original drive in a forensic tool to look for deleted files, because 'the tool is read-only.' What is the BEST practice?",
+  "q": "A junior examiner at a regional police lab has a seized laptop drive in an evidence bag. She plans to attach the original drive to her workstation and browse it in a forensic suite to look for deleted files, because 'the tool is read-only anyway.' Her supervisor stops her. What is the BEST practice?",
   "o": [
    "Analyze a verified bit-for-bit image, not the original",
    "Analyze the original directly, since read-only tools can't change it",
@@ -2505,7 +2505,7 @@
  {
   "id": "xg-d4-56",
   "t": "Authentication",
-  "q": "A credit union is updating its password policy to align with current NIST guidance. Which policy BEST reflects that guidance?",
+  "q": "After an audit, a credit union is rewriting its password policy, which currently requires eight complex characters changed every 60 days. Help desk data shows most resets come from forced changes, and users often write passwords down. Which policy BEST reflects current NIST guidance?",
   "o": [
    "Long passphrases checked against breached lists, with no forced periodic change",
    "Eight characters with mandatory symbols and forced changes every 60 days",
@@ -2585,7 +2585,7 @@
   "id": "xg-d4-62",
   "t": "Authentication",
   "n": 2,
-  "q": "A security awareness quiz asks staff to identify authentication factors. Which TWO are 'something you have'?",
+  "q": "A help desk lead is building a short security awareness quiz for new branch staff, because several of them recently described a PIN as a second factor. Which TWO items are 'something you have'?",
   "o": [
    "A hardware OTP token",
    "A smart card",
@@ -2718,7 +2718,7 @@
  {
   "id": "xg-d5-03",
   "t": "Risk",
-  "q": "A credit union's board approves two statements: 'We accept moderate risk to grow digital banking' and 'No single cyber event may cause more than $500,000 in losses or more than four hours of online banking downtime.' Which term BEST describes the second statement?",
+  "q": "A credit union's board approves two statements for its cyber program. The first says, 'We accept moderate risk to grow digital banking.' The second says, 'No single cyber event may cause more than $500,000 in losses or more than four hours of online banking downtime.' Which term BEST describes the second statement?",
   "o": [
    "Risk tolerance",
    "Risk appetite",
@@ -2956,7 +2956,7 @@
  {
   "id": "xg-d5-21",
   "t": "Governance structures",
-  "q": "A hospital system's executives draft a cyber risk appetite statement. Which body should give final approval so it guides the whole organization?",
+  "q": "A hospital system's CISO and CRO have drafted a cyber risk appetite statement that will guide budget, vendor, and project decisions in every hospital in the system. The CEO asks which body must give final approval for it to carry that authority. Which body should approve it?",
   "o": [
    "The board of directors",
    "The SOC's shift supervisors",
@@ -3021,12 +3021,12 @@
  {
   "id": "xg-d5-26",
   "t": "Vendor management",
-  "q": "A payroll vendor's security questionnaire says all admin access uses MFA, but the summary of an independent penetration test it provided lists a finding of 'admin portal accessible with password only.' What should the third-party risk team do NEXT?",
+  "q": "A hospital's third-party risk team is reviewing a payroll vendor. The vendor's questionnaire says all admin access uses MFA. The independent penetration test summary the vendor supplied lists the finding 'admin portal accessible with password only.' The contract is due to be signed next week. What should the team do NEXT?",
   "o": [
    "Request evidence and remediation for the discrepancy",
    "Accept the questionnaire, since vendors know their own systems best",
    "Accept the pen test and terminate the vendor contract immediately",
-   "Ignore both documents and score the vendor as low risk by default"
+   "Score the vendor using the questionnaire average and revisit at renewal"
   ],
   "w": "When self-reported answers conflict with independent evidence, the team should verify with evidence and track remediation. Trusting either source blindly or ignoring both doesn't resolve the risk.",
   "h": "When the story and the evidence disagree, ask for proof."
@@ -3194,9 +3194,9 @@
   "id": "xg-d5-39",
   "t": "Compliance",
   "n": 2,
-  "q": "An online merchant fails its annual PCI DSS assessment and doesn't remediate within the agreed period. Which TWO consequences are MOST likely?",
+  "q": "An online merchant fails its annual PCI DSS assessment. Its acquiring bank sets a 90-day remediation deadline, which the merchant misses because the fixes were never funded. Which TWO consequences are MOST likely?",
   "o": [
-   "Fines passed on by its acquiring bank",
+   "Fines passed on through its payment processor",
    "Losing the ability to accept card payments",
    "Revocation of its business incorporation by the state",
    "Criminal charges against every employee",
@@ -3221,7 +3221,7 @@
  {
   "id": "xg-d5-41",
   "t": "Privacy",
-  "q": "A European customer asks an online retailer for all the personal data it holds about her. Which response BEST satisfies the access request?",
+  "q": "A European customer emails a retailer asking for all the personal data it holds about her. The retailer keeps her data in its CRM, order system, marketing platform, and support tickets. Which response BEST satisfies the access request?",
   "o": [
    "Copies of her data across all systems, with purposes, recipients, and retention",
    "Only the account profile page she can already see when logged in",

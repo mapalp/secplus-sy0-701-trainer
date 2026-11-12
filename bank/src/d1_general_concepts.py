@@ -136,7 +136,7 @@ h="The key is born where the CSR is born."),
 
 # ---------- Zero trust ----------
 dict(id="xg-d1-15", t="Zero trust", n=2,
-q="A security architect is labeling the components in a zero trust design review diagram. Which TWO components belong to the control plane?",
+q="A hospital is replacing its flat VPN with a zero trust design. During the architecture review, an auditor asks the security architect to separate the components that make and coordinate access decisions from the ones that carry or enforce traffic. Which TWO components belong to the control plane?",
 o=["Policy engine", "Policy administrator", "Policy enforcement point", "Subject and system", "Implicit trust zone"],
 w="The control plane decides and coordinates: the policy engine makes the access decision and the policy administrator sets up or tears down the session. The policy enforcement point, the subjects requesting access, and the implicit trust zones behind enforcement points sit in the data plane where traffic flows.",
 h="Control plane = judge and clerk. Data plane = the door, the visitor, and the room."),
@@ -226,7 +226,7 @@ h="Before you change a part, ask what else is bolted to it."),
 
 # ---------- Physical security ----------
 dict(id="xg-d1-26", t="Physical security",
-q="A colocation provider requires multifactor authentication at its data hall doors. Which door configuration meets that requirement?",
+q="A colocation provider's contract with a payment processor requires multifactor authentication at every data hall door, and the auditor will test each door. The provider is choosing between four configurations already supported by its hardware. Which configuration meets the requirement?",
 o=["A badge reader combined with a PIN keypad", "Two badge readers in an access control vestibule", "A badge reader with a security guard checking badges visually", "A PIN keypad plus a posted sign naming authorized staff"],
 w="A badge (something you have) plus a PIN (something you know) uses two factor categories. Two badge reads are the same factor twice, a guard glancing at the same badge adds a check but not a new factor category, and a sign is a directive control, not a factor.",
 h="Two different kinds of proof, not the same proof twice."),

@@ -28,184 +28,188 @@
  {
   "id": 103,
   "t": "PKI",
-  "q": "Which statement about a stapled OCSP response is TRUE?",
+  "q": "A retailer enables OCSP stapling on its web servers. A junior engineer asks why the servers keep making outbound calls to the CA's OCSP responder every few hours, even though no certificates have changed. Which statement BEST explains this?",
   "o": [
-   "It is short-lived and the server refreshes it periodically",
-   "It stays valid until the certificate expires",
-   "It proves the certificate has not expired",
-   "It is signed by the web server's own private key"
+   "Stapled responses are short-lived, so the server must keep fetching fresh ones",
+   "The stapled response is valid until the certificate itself expires",
+   "The server re-signs the response with its own private key each time",
+   "OCSP stapling requires the full CRL to be re-downloaded every hour"
   ],
-  "w": "OCSP answers revocation status, not expiry, and the CA-signed response is only good for a short window.",
-  "h": "A stapled note is dated today; tomorrow the server needs a new one."
+  "w": "A stapled OCSP response carries a short validity window, so the server refreshes it regularly to keep giving clients current status. It isn't valid until the certificate expires, it's signed by the CA's responder rather than the server, and stapling doesn't involve downloading CRLs.",
+  "h": "A stapled note goes stale, so the server keeps getting a fresh one."
  },
  {
   "id": 104,
   "t": "PKI",
-  "q": "A mobile app pins its API server's key. Why pin the SPKI hash rather than the hash of the whole certificate?",
+  "q": "A bank's mobile app pins its API server's identity. The bank renews the server certificate every year but keeps the same key pair, and it doesn't want to ship an app update at every renewal. What should the app pin?",
   "o": [
-   "The public key can stay the same when the certificate is renewed",
-   "The SPKI hash is secret, so attackers can't read it",
-   "The SPKI contains the CA's private key",
-   "Whole-certificate hashes are not supported by TLS"
+   "The SPKI (public key) hash",
+   "The hash of the whole leaf certificate",
+   "The certificate's serial number",
+   "The issuing CA's CRL URL"
   ],
-  "w": "SPKI is the public key plus its algorithm; renewing the cert with the same key keeps the pin valid.",
-  "h": "Pin the lock, not the paperwork around it — paperwork gets reissued."
+  "w": "Pinning the public key's hash survives renewals that reuse the key, while the certificate's hash and serial change at every renewal. A CRL URL says nothing about the server's identity.",
+  "h": "Pin the key, and renewals don't break the app."
  },
  {
   "id": 105,
   "t": "PKI",
-  "q": "A corporate TLS inspection firewall decrypts traffic, but one banking app breaks while browsers work fine. What is the MOST likely reason?",
+  "q": "A company's TLS inspection firewall decrypts outbound traffic using a corporate root CA that is trusted on every managed phone. Browsers work normally, but one banking app fails to connect whenever inspection is on, and works when the bank's domain is exempted. What is the MOST likely reason?",
   "o": [
-   "The app pins the bank's key, and the firewall can't present that key",
-   "The firewall's root CA wasn't pushed to the phones",
-   "The app uses a self-signed certificate",
-   "OCSP stapling is disabled on the firewall"
+   "The app pins a key the firewall can't present",
+   "The firewall's root CA wasn't deployed to the phones",
+   "The banking app relies on a self-signed certificate",
+   "OCSP stapling is disabled on the inspection firewall"
   ],
-  "w": "The firewall passes chain validation with its trusted root but can't fake the pinned origin key.",
-  "h": "Gate 1: someone I trust vouches. Gate 2: is it the exact key I expected? Inspection only wins gate 1."
+  "w": "An app that pins the bank's key rejects the firewall's substitute certificate even though the device trusts the corporate root. Browsers work, so the root is deployed. A self-signed bank certificate would fail everywhere, and stapling doesn't cause this.",
+  "h": "Pinned apps reject any key but the one they expect, even a trusted one."
  },
  {
   "id": 106,
   "t": "Cryptography",
-  "q": "How is a digital signature verified?",
+  "q": "A paralegal's software verifies a digitally signed contract. She asks the IT team what the software actually does to decide that the signature is valid. Which description is correct?",
   "o": [
-   "Decrypt the signature with the sender's public key, rehash the data, and compare",
-   "Decrypt the data with the sender's private key and compare hashes",
-   "Encrypt the data with the receiver's public key and compare",
-   "Hash the sender's private key and compare it to the signature"
+   "Decrypts the signature with the signer's public key, re-hashes the document, and compares",
+   "Decrypts the document with the signer's private key and compares the two hashes",
+   "Encrypts the document with the receiver's public key and compares the results",
+   "Hashes the signer's private key and compares that value to the signature"
   ],
-  "w": "The sender encrypted the hash with their private key, so anyone can decrypt it with the public key and compare to a fresh hash.",
-  "h": "Private key seals the fingerprint; public key opens the seal so you can match fingerprints."
+  "w": "The signature is the document's hash encrypted with the signer's private key, so the verifier recovers it with the public key and compares it with a fresh hash of the document. The verifier never has the signer's private key, encrypting to the receiver provides confidentiality rather than verification, and private keys are never hashed or shared.",
+  "h": "Open the signature with their public key, hash the file yourself, and compare."
  },
  {
   "id": 107,
   "t": "Cryptography",
-  "q": "A digital signature on a contract PDF provides all of these EXCEPT:",
+  "q": "A real estate firm signs PDF contracts digitally and then emails them to clients. A client asks whether the signature also stops anyone who intercepts the email from reading the contract. Which property does a digital signature NOT provide?",
   "o": [
    "Confidentiality",
    "Integrity",
    "Authentication of the signer",
    "Non-repudiation"
   ],
-  "w": "Signing proves who and that nothing changed; the document is still readable by anyone.",
-  "h": "A signature is a wax seal, not an envelope."
+  "w": "A signature proves who signed and that the document wasn't changed, and it gives non-repudiation, but it doesn't encrypt anything, so the content stays readable. Encryption is needed for confidentiality.",
+  "h": "Signed isn't sealed."
  },
  {
   "id": 108,
   "t": "DNS & email security",
-  "q": "An organization wants resolvers to detect DNS cache poisoning by verifying that A records really came from the authoritative zone. Which is BEST?",
+  "q": "After a cache poisoning incident sent users to a fake login page, a university wants its recursive resolvers to verify that A records really came from the authoritative zone and weren't altered on the way. Which control BEST meets this?",
   "o": [
-   "DNSSEC",
-   "DANE",
+   "DNSSEC validation",
+   "DANE TLSA records",
    "DNS over HTTPS",
-   "MTA-STS"
+   "MTA-STS policies"
   ],
-  "w": "DNSSEC signs the zone's records (RRSIG) so a validating resolver can detect tampering; DANE uses that, it doesn't provide it.",
-  "h": "DNSSEC protects the address book. DANE checks the badge of whoever's at the address."
+  "w": "DNSSEC signs zone data so validating resolvers can detect forged or altered answers. DANE uses DNSSEC to pin certificates, DoH encrypts queries without proving authenticity, and MTA-STS is for mail transport.",
+  "h": "DNSSEC proves the answer came from the real zone."
  },
  {
   "id": 109,
+  "ack": "Options are DNSSEC record types from the exhibit.",
   "t": "DNS & email security",
-  "q": "Which DNSSEC record holds the actual signature over a set of DNS records?",
+  "q": "A DNS engineer is troubleshooting DNSSEC validation failures and runs the query below. Which record type in the output holds the actual signature over the A records?",
+  "c": "$ dig +dnssec www.example.org A\nwww.example.org.  300  IN  A       203.0.113.10\nwww.example.org.  300  IN  RRSIG   A 13 3 300 20261201000000 20261101000000 40231 example.org. kP3x...\nexample.org.     3600  IN  DNSKEY  257 3 13 mdsswUyr...",
   "o": [
    "RRSIG",
    "DNSKEY",
-   "TLSA",
-   "DS"
+   "DS",
+   "TLSA"
   ],
-  "w": "RRSIG is the signature; DNSKEY holds the zone's public key; DS links to the parent; TLSA is DANE.",
-  "h": "RR-SIG = the Record's SIGnature."
+  "w": "RRSIG records carry the signatures over record sets. DNSKEY holds the public keys used to check them, DS links a child zone's key to its parent, and TLSA (DANE) pins certificates.",
+  "h": "RRSIG = Resource Record SIGnature."
  },
  {
   "id": 110,
   "t": "DNS & email security",
-  "q": "A mail server publishes a TLSA record so sending servers can check that its TLS certificate matches. What does this require to be trustworthy?",
+  "q": "A mail provider publishes a TLSA record so that sending servers can check that its TLS certificate is the right one, an approach called DANE. A consultant warns that the record is worthless unless one other control is in place. Which control?",
   "o": [
-   "DNSSEC on the zone",
-   "An MTA-STS policy file over HTTPS",
-   "Diffie-Hellman key exchange",
-   "A public CA-issued certificate"
+   "DNSSEC signing on the zone",
+   "An MTA-STS policy served over HTTPS",
+   "Diffie-Hellman key exchange on the server",
+   "A certificate from a public CA"
   ],
-  "w": "DANE's TLSA record is only trustworthy if DNSSEC proves it wasn't spoofed.",
-  "h": "An unsigned TLSA record is a badge photo anyone could have swapped."
+  "w": "DANE trusts the TLSA record only if DNS answers can't be forged, which requires DNSSEC. MTA-STS is the alternative approach that avoids DNSSEC, key exchange doesn't protect DNS, and DANE can work with private certificates.",
+  "h": "DANE without DNSSEC is a pin anyone can move."
  },
  {
   "id": 111,
   "t": "DNS & email security",
-  "q": "A company can't deploy DNSSEC but wants sending mail servers to require valid TLS when delivering to it. Which is BEST?",
+  "q": "A healthcare company can't deploy DNSSEC because its DNS provider doesn't support it. It still wants sending mail servers to require a valid TLS connection, and refuse to fall back to plaintext, when they deliver to its domain. Which control is BEST?",
   "o": [
    "MTA-STS",
    "DANE",
    "DMARC",
    "DKIM"
   ],
-  "w": "MTA-STS publishes the TLS policy over HTTPS, using the public CA system instead of DNSSEC.",
-  "h": "MTA-STS = the STS rules posted on a website, no DNSSEC needed."
+  "w": "MTA-STS publishes a TLS policy over HTTPS, so senders can enforce encrypted delivery without DNSSEC. DANE requires DNSSEC, and DMARC and DKIM address sender authentication, not transport encryption.",
+  "h": "No DNSSEC? MTA-STS uses HTTPS instead."
  },
  {
   "id": 112,
   "t": "DNS & email security",
-  "q": "DNSSEC is deployed. What does it NOT provide?",
+  "q": "A privacy-minded nonprofit has signed its zones with DNSSEC and assumes that its staff's DNS lookups are now hidden from the coffee shop networks they use. Which protection does DNSSEC NOT provide?",
   "o": [
    "Confidentiality of DNS queries",
    "Integrity of DNS records",
    "Origin authentication of DNS data",
    "Protection against cache poisoning"
   ],
-  "w": "DNSSEC signs but doesn't encrypt; DoH or DoT encrypt queries.",
-  "h": "DNSSEC is a notarized postcard — trustworthy, but anyone can read it."
+  "w": "DNSSEC signs records but doesn't encrypt queries or answers, so on-path observers can still see lookups (DoH or DoT handle that). It does provide integrity, origin authentication, and protection against poisoning.",
+  "h": "DNSSEC proves answers; it doesn't hide questions."
  },
  {
   "id": 113,
   "t": "DNS & email security",
-  "q": "Employees exchange signed and encrypted email using certificates issued by the company's internal CA. Which technology is this?",
+  "q": "Attorneys at a firm exchange email that is digitally signed and encrypted end to end. Each attorney's certificate is issued by the firm's internal CA and published in the directory. Which technology are they using?",
   "o": [
    "S/MIME",
    "PGP",
    "DKIM",
    "STARTTLS"
   ],
-  "w": "S/MIME uses X.509 certificates from a CA hierarchy; PGP uses a web of trust.",
-  "h": "Internal CA in the stem = S/MIME. Web of trust = PGP."
+  "w": "S/MIME uses X.509 certificates from a CA for per-message signing and encryption. PGP uses its own web-of-trust keys rather than a corporate CA, DKIM signs at the domain level without encrypting, and STARTTLS protects only the hop between servers.",
+  "h": "Certificates from a CA on each message = S/MIME."
  },
  {
   "id": 114,
   "t": "Indicators",
-  "q": "DNS logs show one host making thousands of queries for random-looking domains, almost all returning NXDOMAIN. What is MOST likely?",
+  "q": "DNS logs from a branch office show the pattern below from one workstation, starting overnight. What is the MOST likely explanation?",
+  "c": "02:14:03 q=kq7xv3m9ap.net      NXDOMAIN\n02:14:03 q=zt5rw0bnc2.com      NXDOMAIN\n02:14:04 q=p0e8yd4lxq.biz      NXDOMAIN\n... 3,400 similar queries in 20 minutes ...\n02:34:11 q=h2uv6c9rze.net      A 45.95.11.8",
   "o": [
-   "Malware using a DGA to find its command-and-control server",
-   "DNS exfiltration of data",
-   "DNS cache poisoning",
-   "A misconfigured DNS forwarder"
+   "Malware using a domain generation algorithm to find its C2",
+   "DNS exfiltration through long encoded subdomains",
+   "Cache poisoning of the branch's local resolver",
+   "A misconfigured forwarder on the branch resolver"
   ],
-  "w": "Mass NXDOMAIN means the malware is still searching for a domain that's actually registered.",
-  "h": "DGA is knocking on hundreds of doors looking for the one that opens."
+  "w": "Thousands of random domains that mostly don't exist, until one resolves, is a DGA hunting for its command server. Exfiltration uses long subdomains of one domain, poisoning returns forged answers rather than NXDOMAIN storms, and a forwarder problem would affect every host.",
+  "h": "Random names, mostly dead ends, until one answers: DGA."
  },
  {
   "id": 115,
   "t": "Indicators",
-  "q": "A host sends many long TXT and subdomain queries like 4a6f686e5f5353.data.badsite.example to one domain. What is MOST likely?",
+  "q": "A host at a design firm sends the queries below to a single domain, thousands of times per hour, while its web traffic looks normal. What is MOST likely happening?",
+  "c": "TXT  4a6f686e5f536d6974685f.d1.badsite.example\nTXT  53534e3a3132332d34352d.d2.badsite.example\nTXT  363738395f444f423a3031.d3.badsite.example",
   "o": [
-   "DNS exfiltration",
-   "DGA beaconing",
-   "DNS amplification",
-   "Domain hijacking"
+   "Data exfiltration encoded in DNS",
+   "DGA beaconing to random domains",
+   "A DNS amplification attack",
+   "Domain hijacking of badsite.example"
   ],
-  "w": "Data is being encoded into query names and sent outbound to one attacker-controlled domain.",
-  "h": "Exfiltration stuffs your files into the envelope's address line."
+  "w": "Hex-encoded subdomains of one domain carry data out through DNS (decoded, these spell out personal data). DGAs query many different domains, amplification abuses resolvers to flood a victim, and hijacking changes a domain's registration.",
+  "h": "Long, encoded subdomains of one domain = data riding out on DNS."
  },
  {
   "id": 116,
   "t": "Network attacks",
-  "q": "An attacker copies an authorized printer's MAC address so their laptop gets past switch port security. What is the attacker's goal?",
+  "q": "A hospital's switch ports allow only known MAC addresses. A visitor unplugs a hallway printer, sets their laptop to the printer's MAC address, and connects to that port. What is the visitor MOST directly trying to do?",
   "o": [
-   "Bypassing access control",
-   "Intercepting other users' traffic",
-   "Overflowing the CAM table",
-   "Poisoning the ARP cache"
+   "Bypass the port's access control",
+   "Intercept other users' traffic on-path",
+   "Overflow the switch's CAM table",
+   "Poison other hosts' ARP caches"
   ],
-  "w": "MAC spoofing is about getting in as a trusted device; interception is ARP poisoning or MAC flooding.",
-  "h": "MAC spoofing is a fake ID at the door, not a wiretap."
+  "w": "Spoofing an authorized MAC address defeats MAC-based port security so the laptop gets on the network. On-path interception, CAM flooding, and ARP poisoning are separate attacks that may follow but aren't what spoofing one MAC achieves.",
+  "h": "Wearing the printer's MAC is a borrowed badge."
  },
  {
   "id": 117,
@@ -249,106 +253,108 @@
  {
   "id": 120,
   "t": "IPsec",
-  "q": "A firewall must allow an IPsec VPN through NAT. Which ports and protocols are needed?",
+  "q": "A branch VPN gateway sits behind a NAT device. The firewall team must open only what the IPsec tunnel needs to negotiate and carry traffic through that NAT. Which ports and protocols should be allowed?",
   "o": [
    "UDP 500 and UDP 4500",
    "UDP 500 and IP protocol 51",
    "TCP 443 and UDP 1701",
    "UDP 4500 and IP protocol 51"
   ],
-  "w": "IKE uses UDP 500; NAT-T wraps ESP in UDP 4500. AH (51) breaks under NAT.",
-  "h": "500 to start the handshake, 4500 to sneak ESP through NAT."
+  "w": "IKE uses UDP 500, and with NAT traversal ESP is encapsulated in UDP 4500. Protocol 51 is AH, which doesn't survive NAT, and 443/1701 belong to TLS VPNs and L2TP.",
+  "h": "Behind NAT, IPsec needs 500 and 4500."
  },
  {
   "id": 121,
   "t": "IPsec",
-  "q": "What are IP protocol numbers 50 and 51?",
+  "q": "A firewall log at a manufacturer shows the entries below between two VPN gateways. An engineer must identify what the protocol numbers represent. Which mapping is correct?",
+  "c": "ALLOW  proto=50  203.0.113.5 -> 198.51.100.7\nDENY   proto=51  203.0.113.5 -> 198.51.100.7",
   "o": [
    "50 = ESP, 51 = AH",
    "50 = AH, 51 = ESP",
    "50 = IKE, 51 = NAT-T",
    "50 = GRE, 51 = L2TP"
   ],
-  "w": "ESP is 50, AH is 51 — alphabetical order is backwards from the numbers.",
-  "h": "ESP comes first (50) because it does more — it encrypts."
+  "ack": "Options are protocol-number mappings.",
+  "w": "IP protocol 50 is ESP and 51 is AH. IKE and NAT-T run over UDP 500 and 4500, GRE is protocol 47, and L2TP uses UDP 1701.",
+  "h": "50 encrypts (ESP), 51 only authenticates (AH)."
  },
  {
   "id": 122,
   "t": "IPsec",
-  "q": "Which is TRUE about IPsec AH?",
+  "q": "A government contractor's legacy site-to-site tunnel uses AH only. A new requirement says traffic must be unreadable to anyone on the internet path. What does the review conclude about AH?",
   "o": [
    "It provides integrity and authentication but no encryption",
-   "It encrypts the payload but not the header",
-   "It works through NAT without changes",
-   "It runs over UDP 4500"
+   "It encrypts the payload but leaves the header readable",
+   "It works through NAT devices without any changes",
+   "It runs over UDP 4500 for compatibility with firewalls"
   ],
-  "w": "AH authenticates the packet, including parts of the IP header, which is why NAT breaks it.",
-  "h": "AH = Authentication Header. The name tells you all it does."
+  "w": "AH authenticates packets and protects their integrity, including parts of the header, but doesn't encrypt anything, so ESP is required. It doesn't encrypt payloads, breaks under NAT, and isn't UDP-encapsulated.",
+  "h": "AH proves it's genuine; it doesn't hide it."
  },
  {
   "id": 123,
   "t": "IPsec",
-  "q": "After IKE Phase 2 completes for one tunnel, how many IPsec SAs exist?",
+  "q": "An engineer is troubleshooting a site-to-site tunnel between two firewalls. After IKE Phase 2 completes for that one tunnel, she counts the IPsec security associations (not IKE SAs). How many should exist for it?",
   "o": [
-   "Two — one in each direction",
-   "One — bidirectional",
-   "Three — IKE plus two data SAs, all from Phase 2",
-   "Four — two per peer per direction"
+   "Two, one in each direction",
+   "One, shared in both directions",
+   "Three, including the IKE SA",
+   "Four, two per peer per direction"
   ],
-  "w": "Phase 1 builds one bidirectional IKE SA; Phase 2 builds two unidirectional IPsec SAs.",
-  "h": "Phase 2 builds two one-way streets for the data."
+  "w": "IPsec SAs are one-way, so each tunnel needs an inbound and an outbound SA. The IKE SA comes from Phase 1 and is counted separately, and there aren't two per direction.",
+  "h": "IPsec SAs are one-way streets, so you need two."
  },
  {
   "id": 124,
   "t": "IPsec",
-  "q": "Two branch firewalls build an IPsec VPN between their LANs, and the original IP headers must be hidden. Which mode?",
+  "q": "Two branch offices connect their LANs through firewall-to-firewall IPsec. Security requires that internet observers can't see the internal source and destination addresses of the branch traffic. Which IPsec mode should be used?",
   "o": [
    "Tunnel mode",
    "Transport mode",
    "Aggressive mode",
    "Quick mode"
   ],
-  "w": "Tunnel mode wraps the whole original packet in a new IP header; aggressive and quick are IKE modes, not IPsec modes.",
-  "h": "Tunnel mode puts the whole car inside a truck."
+  "w": "Tunnel mode encapsulates the whole original packet, internal headers included, behind the gateways' addresses. Transport mode exposes the original header, and aggressive and quick mode are IKE exchange types, not protection modes.",
+  "h": "Gateway to gateway: wrap the whole packet."
  },
  {
   "id": 125,
   "t": "IPsec",
-  "q": "A company deploys L2TP for remote access with no other protocols. What is the problem?",
+  "q": "A small company configures remote access VPN using L2TP alone, with no other protocol layered on it, because the wizard offered it first. An auditor flags it immediately. What is the problem?",
   "o": [
-   "L2TP provides no encryption on its own",
-   "L2TP can't traverse firewalls",
-   "L2TP requires client certificates",
-   "L2TP only supports site-to-site"
+   "L2TP provides no encryption by itself",
+   "L2TP can't pass through any firewall",
+   "L2TP requires client certificates to start",
+   "L2TP supports site-to-site links only"
   ],
-  "w": "L2TP is just a tunnel; it's normally paired with IPsec for encryption.",
-  "h": "L2TP is a pipe with no lock — IPsec is the lock."
+  "w": "L2TP only tunnels; it relies on IPsec for confidentiality, so L2TP alone sends traffic unencrypted. It can pass firewalls on UDP 1701, doesn't require certificates, and works for remote access.",
+  "h": "L2TP is the tunnel; IPsec is the armor."
  },
  {
   "id": 126,
   "t": "IPsec",
-  "q": "An attacker records VPN traffic for a year, then steals the gateway's long-term private key. Which feature keeps the old sessions safe?",
+  "q": "Intelligence suggests that an adversary has recorded a defense supplier's site-to-site VPN traffic for a year and may soon steal the gateway's long-term private key. Which IPsec feature, if enabled, keeps those recorded sessions confidential?",
   "o": [
    "Perfect forward secrecy",
    "Anti-replay protection",
-   "Aggressive mode",
+   "IKE aggressive mode",
    "AH integrity checks"
   ],
-  "w": "PFS uses a fresh Diffie-Hellman exchange per session, so one stolen key doesn't unlock the past.",
-  "h": "PFS = a new lock every session, so the master key opens nothing old."
+  "w": "PFS derives each session key from a fresh Diffie-Hellman exchange, so a stolen long-term key can't decrypt past sessions. Anti-replay stops resent packets, aggressive mode speeds negotiation (and is weaker), and AH doesn't encrypt.",
+  "h": "PFS: every session has its own key that dies with it."
  },
  {
   "id": 127,
   "t": "IPsec",
-  "q": "An attacker captures a valid ESP packet and resends it later. Which feature makes the receiver drop it?",
+  "q": "An attacker on the path between two VPN gateways captures a valid ESP packet carrying a funds-transfer command and resends it 30 seconds later. The receiving gateway drops it. Which IPsec feature caused the drop?",
   "o": [
-   "Anti-replay (sequence numbers)",
+   "Anti-replay sequence numbers",
    "Perfect forward secrecy",
-   "NAT traversal",
+   "NAT traversal encapsulation",
    "Diffie-Hellman group 14"
   ],
-  "w": "ESP sequence numbers let the receiver reject duplicates.",
-  "h": "Anti-replay is the ticket punch — you can't reuse the same ticket."
+  "w": "ESP sequence numbers within an anti-replay window let the receiver reject duplicates. PFS protects past keys, NAT-T handles address translation, and the DH group affects key strength, not replays.",
+  "h": "Same sequence number twice? Dropped."
  },
  {
   "id": 128,
@@ -392,145 +398,149 @@
  {
   "id": 131,
   "t": "Logging & monitoring",
-  "q": "Syslog must be sent to the SIEM encrypted. Which port is used?",
+  "q": "A credit union must send syslog from its firewalls to a cloud SIEM over the internet, and auditors require that the messages be encrypted in transit. The firewall team needs the standard port for this. Which port?",
   "o": [
    "TCP 6514",
    "UDP 514",
    "TCP 514",
    "UDP 162"
   ],
-  "w": "Syslog over TLS is 6514; plain syslog is 514; 162 is SNMP traps.",
-  "h": "Secure syslog is the 514 number with a 6 in front."
+  "w": "Syslog over TLS uses TCP 6514. UDP and TCP 514 carry plain syslog, and UDP 162 is SNMP traps.",
+  "h": "Secure syslog: 6514."
  },
  {
   "id": 132,
   "t": "Logging & monitoring",
-  "q": "An analyst needs to see which hosts talked to which, over which ports, and how many bytes, without capturing payloads. Which data source?",
+  "q": "During an investigation, an analyst at a retailer needs 60 days of history showing which internal hosts talked to which external addresses, over which ports, and how many bytes they moved. Storage is limited, and payloads aren't needed. Which data source fits?",
   "o": [
-   "NetFlow",
+   "NetFlow records",
    "Full packet capture",
-   "Syslog",
-   "SNMP traps"
+   "Syslog from servers",
+   "SNMP trap history"
   ],
-  "w": "NetFlow is traffic metadata — the phone bill, not the call recording.",
-  "h": "NetFlow is the phone bill. PCAP is the recording."
+  "w": "Flow records summarize who talked to whom, when, on which ports, and how much, using little storage. Packet capture stores payloads at huge cost, server syslog doesn't record network conversations, and SNMP traps report device events.",
+  "h": "NetFlow is the call log, not the recording."
  },
  {
   "id": 133,
   "t": "Logging & monitoring",
-  "q": "A SIEM can't correlate events because timestamps across servers are minutes apart. What should be fixed?",
+  "q": "A SOC's SIEM keeps failing to correlate a login on a domain controller with the VPN session that preceded it. Investigation shows the two systems' clocks are 7 minutes apart, while both log in UTC. What should be fixed first?",
   "o": [
    "NTP time synchronization",
-   "Syslog over TLS",
-   "Log retention period",
+   "Syslog transport encryption",
+   "The log retention period",
    "SNMPv3 credentials"
   ],
-  "w": "Correlation depends on consistent clocks.",
-  "h": "If every witness's watch is wrong, you can't rebuild the timeline."
+  "w": "Correlation depends on accurate, synchronized clocks, so the systems need a common NTP source. Transport encryption, retention, and SNMP credentials don't affect timestamps.",
+  "h": "Logs can't line up if the clocks don't."
  },
  {
   "id": 134,
   "t": "Logging & monitoring",
-  "q": "Match the Windows Security Event ID: an account was locked out.",
+  "q": "A help desk sees a spike in password reset calls. An analyst pulls the Windows Security events below from a domain controller to find out when accounts were locked. Which event ID records an account lockout?",
+  "c": "09:14:02  4625  An account failed to log on          user=r.chen\n09:14:09  4625  An account failed to log on          user=r.chen\n09:14:15  4740  A user account was locked out        user=r.chen\n09:31:44  4624  An account was successfully logged on user=r.chen\n09:31:44  4672  Special privileges assigned          user=svc_admin",
   "o": [
    "4740",
    "4625",
    "4624",
    "4672"
   ],
-  "w": "4624 = success, 4625 = failure, 4740 = lockout, 4672 = special privileges.",
-  "h": "24 got in, 25 got bounced, 4740 got the door locked."
+  "ack": "Options are event IDs from the exhibit.",
+  "w": "Event 4740 records the lockout itself. 4625 is a failed logon, 4624 a successful logon, and 4672 assignment of special privileges.",
+  "h": "4740: the lock clicks shut."
  },
  {
   "id": 135,
   "t": "Logging & monitoring",
-  "q": "Monitoring must alert when anyone modifies files in C:\\Windows\\System32 on critical servers. Which tool?",
+  "q": "After an attacker replaced system DLLs on a payment server, the auditor requires an alert whenever anyone changes files in C:\\Windows\\System32 on critical servers. Which tool BEST meets this requirement?",
   "o": [
-   "File integrity monitoring (FIM)",
-   "Endpoint DLP",
-   "UEBA",
-   "NetFlow collector"
+   "File integrity monitoring",
+   "Endpoint data loss prevention",
+   "User behavior analytics",
+   "A NetFlow collector"
   ],
-  "w": "FIM hashes and watches critical files for changes.",
-  "h": "FIM is the tamper seal on the system files."
+  "w": "FIM baselines file hashes and attributes and alerts on changes. DLP watches sensitive data leaving, UBA baselines user behavior, and NetFlow records network conversations.",
+  "h": "FIM notices when the files change."
  },
  {
   "id": 136,
   "t": "Vulnerability mgmt",
-  "q": "Which statement is correct?",
+  "q": "A new analyst at a hospital is writing her first vulnerability report. She states that 'NIST assigned CVE-2026-1234 and MITRE scored it 9.8,' and plans to cite both organizations that way in every future report. Her manager corrects her before the report goes to the CISO. Which statement is accurate?",
   "o": [
    "MITRE assigns CVE IDs; NIST's NVD adds CVSS scores and CPE names",
-   "NIST assigns CVE IDs; MITRE adds CVSS scores",
-   "CVSS identifies a vulnerability; CVE scores its severity",
-   "CPE is a severity score from 0 to 10"
+   "NIST assigns CVE IDs; MITRE adds the CVSS severity scores",
+   "CVSS identifies the flaw, and CVE scores its severity",
+   "CPE is the 0-10 severity score attached to each CVE"
   ],
-  "w": "CVE = the ID, CVSS = the severity score, CPE = which product/platform it affects.",
-  "h": "CVE is the name, CVSS is the grade, CPE is the address."
+  "w": "The CVE program run by MITRE assigns identifiers, and the NVD at NIST enriches them with CVSS scores and CPE product names. CVSS is the scoring system, CVE is the identifier, and CPE names products.",
+  "h": "MITRE names it; NVD scores it."
  },
  {
   "id": 137,
+  "ack": "Options are fixed CPE part names.",
   "t": "Vulnerability mgmt",
-  "q": "In cpe:2.3:a:microsoft:office:2021, what does the \"a\" mean?",
+  "q": "A vulnerability management tool lists affected products using the identifier below. An analyst must decide whether it refers to an operating system, hardware, or an application. What does the 'a' indicate?",
+  "c": "cpe:2.3:a:microsoft:office:2021:*:*:*:*:*:*:*",
   "o": [
    "Application",
    "Attack vector",
    "Advisory",
-   "Asset"
+   "Asset class"
   ],
-  "w": "CPE part types: a = application, o = operating system, h = hardware.",
-  "h": "CPE letters: a/o/h = app, OS, hardware."
+  "w": "In a CPE name, the part field is 'a' for application, 'o' for operating system, and 'h' for hardware. CPE doesn't encode attack vectors (a CVSS concept), advisories, or asset classes.",
+  "h": "a = application, o = OS, h = hardware."
  },
  {
   "id": 138,
   "t": "Data handling",
-  "q": "Laptops will be reused inside the company. Per NIST 800-88, which sanitization level is sufficient against simple, non-lab recovery?",
+  "q": "A school district will reissue 300 laptops to new teachers within the district. The data on them isn't classified, and the threat is a curious user with ordinary tools, not a forensic lab. Under NIST SP 800-88, which sanitization level is sufficient?",
   "o": [
    "Clear",
    "Purge",
    "Destroy",
    "Degauss"
   ],
-  "w": "Clear (logical overwrite) suits in-house reuse; purge resists lab recovery; destroy is physical.",
-  "h": "Clear = wipe the whiteboard. Purge = repaint it. Destroy = burn it."
+  "w": "Clear (logical overwrite or reset) defends against simple, non-laboratory recovery, which fits internal reuse of low-sensitivity devices. Purge resists lab recovery and is for media leaving control, Destroy ends reuse, and degaussing is a purge method for magnetic media that would ruin the drives.",
+  "h": "Staying in the family? Clear is enough."
  },
  {
   "id": 139,
   "t": "Data handling",
-  "q": "SSDs leave the company for resale and must resist laboratory recovery while staying usable. Which level?",
+  "q": "A hospital is selling 200 SSDs that held patient records to a refurbisher. The drives must stay usable, and the data must resist laboratory recovery techniques. Which NIST SP 800-88 level, and method, fits?",
   "o": [
-   "Purge (e.g., cryptographic erase)",
-   "Clear",
-   "Destroy",
-   "Format"
+   "Purge, for example cryptographic erase",
+   "Clear, for example a single overwrite",
+   "Destroy, for example shredding",
+   "A quick format of each drive"
   ],
-  "w": "Purge defeats lab techniques without destroying the device.",
-  "h": "Leaving the building but still working? Purge."
+  "w": "Purge defeats lab recovery, and on SSDs cryptographic erase does that while leaving the drive usable. Clear only resists simple recovery, destruction ruins resale value, and a format leaves data recoverable.",
+  "h": "Leaving the building but still usable? Purge."
  },
  {
   "id": 140,
   "t": "Data handling",
-  "q": "Legal tells IT to stop all deletion of a manager's mailbox because a lawsuit is likely. What is this?",
+  "q": "A manager is about to be sued by a former employee. The company's counsel emails IT: 'Suspend all deletion and retention policies for this manager's mailbox and files until further notice.' Which process has counsel started?",
   "o": [
-   "Legal hold",
-   "E-discovery",
-   "Data retention policy",
-   "Chain of custody"
+   "A legal hold",
+   "E-discovery production",
+   "A data retention policy",
+   "A chain of custody record"
   ],
-  "w": "Legal hold preserves data; e-discovery is later collecting and producing it.",
-  "h": "Legal hold = freeze. E-discovery = fetch."
+  "w": "Preserving relevant data once litigation is expected is a legal hold. E-discovery collects and produces the data later, a retention policy is the normal schedule being suspended, and chain of custody tracks how evidence is handled.",
+  "h": "Freeze it before anyone deletes it."
  },
  {
   "id": 141,
   "t": "Data handling",
-  "q": "A policy must stop employees from copying customer SSNs to USB drives, even when the laptop is offline. Which is BEST?",
+  "q": "A benefits administrator must stop staff from copying files containing Social Security numbers onto USB drives, including when laptops are offline at home with no network connection. Which control is BEST?",
   "o": [
    "Endpoint DLP",
    "Network DLP",
-   "CASB",
+   "A cloud access security broker",
    "Email gateway DLP"
   ],
-  "w": "Only an agent on the device sees and blocks local copies offline.",
-  "h": "The USB port is on the laptop, so the guard has to live on the laptop."
+  "w": "An agent on the laptop enforces policy locally, even offline. Network DLP, a CASB, and email DLP all inspect traffic, and a USB copy never crosses the network.",
+  "h": "Offline USB copies can only be stopped on the device itself."
  },
  {
   "id": 142,
@@ -548,28 +558,28 @@
  {
   "id": 143,
   "t": "Data handling",
-  "q": "A European company's cloud data is stored in a U.S. region, so U.S. law can compel access. Which concept is this?",
+  "q": "A German manufacturer discovers that its cloud provider stores its backups in a U.S. region. Its counsel warns that U.S. authorities could compel the provider to hand them over under U.S. law. Which concept is counsel describing?",
   "o": [
    "Data sovereignty",
-   "Geolocation",
-   "Data residency policy exception",
+   "Geolocation tagging",
+   "A data residency exception",
    "Geofencing"
   ],
-  "w": "Data is subject to the laws of the country where it's stored.",
-  "h": "Sovereignty: the land owns the rules for what's buried in it."
+  "w": "Data is subject to the laws of the country where it's stored, which is data sovereignty. Geolocation and geofencing concern device location, and a residency exception isn't the legal principle at issue.",
+  "h": "Where data sits decides whose laws reach it."
  },
  {
   "id": 144,
   "t": "Network security",
-  "q": "A firewall lets reply traffic back in automatically for connections users started, without a separate inbound rule. What type is it?",
+  "q": "An office firewall has only outbound allow rules, yet replies to users' web requests come back in without any matching inbound rule, while unsolicited inbound connections are dropped. What type of firewall behavior explains this?",
   "o": [
-   "Stateful",
-   "Stateless",
-   "Reverse proxy",
-   "Packet filter with static ACLs"
+   "Stateful inspection",
+   "Stateless packet filtering",
+   "Reverse proxying",
+   "Static ACLs on a router"
   ],
-  "w": "Stateful firewalls track connections in a state table.",
-  "h": "Stateful remembers who you called, so it lets their callback through."
+  "w": "A stateful firewall tracks the sessions users start and automatically allows their replies. Stateless filters and static ACLs need explicit return rules, and a reverse proxy handles inbound requests to servers.",
+  "h": "Stateful firewalls remember who asked."
  },
  {
   "id": 145,
@@ -587,196 +597,200 @@
  {
   "id": 146,
   "t": "Zero trust",
-  "q": "In a zero trust architecture, which component evaluates the request against policy and DECIDES to allow or deny?",
+  "q": "In a hospital's zero trust design, a clinician's request reaches a gateway, which forwards the request's attributes elsewhere. Some component then evaluates them against policy and the trust algorithm and returns allow or deny. Which component makes that decision?",
   "o": [
-   "Policy Engine",
-   "Policy Administrator",
-   "Policy Enforcement Point",
+   "Policy engine",
+   "Policy administrator",
+   "Policy enforcement point",
    "Identity provider"
   ],
-  "w": "The Engine decides, the Administrator sets up or tears down the session, the PEP enforces.",
-  "h": "Engine = judge. Administrator = clerk. PEP = bailiff at the door."
+  "w": "The policy engine evaluates the request and decides. The policy administrator turns the decision into session setup, the PEP enforces it in the traffic path, and the identity provider authenticates users without making access decisions.",
+  "h": "The engine judges, the administrator executes, the PEP guards the door."
  },
  {
   "id": 147,
   "t": "Deception",
-  "q": "A fake AWS access key is planted in a code repository; any attempt to use it triggers an alert. What is this?",
+  "q": "A software company plants a realistic but useless cloud access key in a private code repository. The key has no permissions, and any attempt to use it raises an alert that includes the caller's IP address. What is the planted key?",
   "o": [
-   "Honeytoken",
-   "Honeyfile",
-   "Honeypot",
-   "Honeynet"
+   "A honeytoken",
+   "A honeyfile",
+   "A honeypot",
+   "A honeynet"
   ],
-  "w": "A fake credential or data record is a honeytoken; a honeyfile is a whole decoy file.",
-  "h": "Honeytoken = a single marked bill. Honeyfile = a decoy wallet."
+  "w": "A single piece of decoy data or credential that alerts when used is a honeytoken. A honeyfile is a decoy document, a honeypot is a decoy system, and a honeynet is a decoy network.",
+  "h": "A marked bill in the drawer."
  },
  {
   "id": 148,
   "t": "Change management",
-  "q": "A change request must document how to restore the system if the firewall upgrade fails. What is this part called?",
+  "q": "A change request for a perimeter firewall upgrade lists the steps, the window, and the approvers. The CAB sends it back because nothing explains how to return to the current version if the upgrade fails at 02:00. Which element is missing?",
   "o": [
-   "Backout plan",
-   "Rollback",
-   "Impact analysis",
-   "Maintenance window"
+   "The backout plan",
+   "The impact analysis",
+   "The maintenance window",
+   "The test results"
   ],
-  "w": "CompTIA's term is backout plan.",
-  "h": "Back out the way you came in."
+  "w": "A backout plan documents how to undo the change if it fails. Impact analysis describes effects, the window is already listed, and test results show validation rather than reversal.",
+  "h": "Always know how to get back."
  },
  {
   "id": 149,
   "t": "Risk",
-  "q": "An asset is worth $200,000. A flood would destroy 25% of it and is expected once every two years. What is the ALE?",
+  "q": "A regional distributor's warehouse inventory is worth $200,000. A flood would destroy 25% of it, and floods are expected about once every two years. What is the annualized loss expectancy?",
   "o": [
    "$25,000",
    "$50,000",
    "$100,000",
    "$12,500"
   ],
-  "w": "SLE = 200,000 × 0.25 = 50,000; ALE = 50,000 × 0.5 = 25,000.",
-  "h": "SLE = AV × EF. ALE = SLE × ARO."
+  "fixed": true,
+  "ack": "Numeric answers.",
+  "w": "SLE = $200,000 × 0.25 = $50,000, and ALE = $50,000 × 0.5 = $25,000. $50,000 is the SLE, $100,000 doubles instead of halving, and $12,500 halves twice.",
+  "h": "SLE first, then multiply by how often."
  },
  {
   "id": 150,
   "t": "Risk",
-  "q": "ALE before a control is $25,000, ALE after is $5,000, and the control costs $8,000 per year. What is the control's annual value?",
+  "q": "A security manager is justifying an email filtering upgrade. Without it, the ALE for phishing losses is $25,000; with it, $5,000. The upgrade costs $8,000 per year. What is the upgrade's annual value?",
   "o": [
    "$12,000",
    "$20,000",
    "$17,000",
    "$3,000"
   ],
-  "w": "(25,000 − 5,000) − 8,000 = 12,000.",
-  "h": "Savings minus the price tag."
+  "fixed": true,
+  "ack": "Numeric answers.",
+  "w": "Value = ALE before − ALE after − annual cost = $25,000 − $5,000 − $8,000 = $12,000. $20,000 ignores the cost, $17,000 subtracts the cost from $25,000 only, and $3,000 subtracts the cost from the $5,000 remaining ALE instead of the $20,000 reduction.",
+  "h": "Savings minus cost."
  },
  {
   "id": 151,
   "t": "Risk",
-  "q": "A company buys cyber insurance to cover ransomware losses. Which risk treatment?",
+  "q": "A dental group can't afford to rebuild its systems after a ransomware attack without help. It buys a policy that pays for recovery costs and business interruption above a $25,000 deductible. Which risk treatment is this?",
   "o": [
    "Transfer",
    "Mitigate",
    "Accept",
    "Avoid"
   ],
-  "w": "Shifting the financial impact to another party is transfer.",
-  "h": "Insurance hands the bill to someone else."
+  "w": "Insurance shifts part of the financial impact to a third party, which is transference. Mitigation adds controls, acceptance keeps the risk as it is, and avoidance stops the activity.",
+  "h": "Insurance moves the bill, not the risk itself."
  },
  {
   "id": 152,
   "t": "Risk",
-  "q": "Security tracks the percentage of unpatched critical servers each month, with a threshold that triggers escalation. What is this metric?",
+  "q": "Each month, a bank's security team reports the percentage of critical servers that are missing patches older than 30 days. Above 5%, the report goes automatically to the CIO for action. What is this metric?",
   "o": [
-   "Key risk indicator (KRI)",
-   "Risk appetite",
-   "Risk register",
-   "Residual risk"
+   "A key risk indicator",
+   "The risk appetite",
+   "The risk register",
+   "The residual risk"
   ],
-  "w": "A KRI is a metric that warns risk is rising toward tolerance.",
-  "h": "KRI is the check-engine light."
+  "w": "A KRI is a measured trend tied to a threshold that triggers action. Appetite is the board's overall stance, the register is the list of risks, and residual risk is what remains after controls.",
+  "h": "A KRI is a gauge with a redline."
  },
  {
   "id": 153,
   "t": "Governance",
-  "q": "Before acquiring a smaller credit union, the buyer investigates its security posture, audits, and breach history. What is this?",
+  "q": "Before buying a smaller credit union, the acquiring bank reviews the target's security audits, breach history, open findings, and vendor contracts so it can understand the risk it would take on. What is this investigation?",
   "o": [
    "Due diligence",
    "Due care",
-   "Right to audit",
-   "Attestation"
+   "A right-to-audit review",
+   "An attestation"
   ],
-  "w": "Due diligence is the investigation; due care is acting responsibly on what you find.",
-  "h": "Diligence = Detective work. Care = Carrying it out."
+  "w": "Investigating risk before a decision is due diligence. Due care is acting responsibly afterward, a right-to-audit is a contract clause, and an attestation is a formal certification.",
+  "h": "Diligence is the detective work you do first."
  },
  {
   "id": 154,
   "t": "Compliance",
-  "q": "A customer wants proof that a SaaS provider's security controls operated effectively over the last 12 months. Which report?",
+  "q": "A hospital's procurement team wants independent evidence that a SaaS provider's security controls actually operated effectively over the past twelve months, not just that they were designed well. Which report should it request?",
   "o": [
    "SOC 2 Type II",
    "SOC 2 Type I",
    "SOC 1 Type II",
    "SOC 3"
   ],
-  "w": "Type II covers operating effectiveness over a period; Type I is design at a point in time; SOC 1 is financial reporting.",
-  "h": "Type I = a photo. Type II = a video."
+  "w": "A SOC 2 Type II report tests the operating effectiveness of security-related controls over a period. Type I covers design at a single point in time, SOC 1 covers financial reporting controls, and SOC 3 is a short public summary without the test detail.",
+  "h": "Type II = tested over time."
  },
  {
   "id": 155,
   "t": "Compliance",
-  "q": "Under PCI DSS 8.3.9, when must user passwords be changed at least every 90 days?",
+  "q": "A merchant's admins log in to the cardholder data environment with a password plus a hardware token, while some store clerks use a password only. The QSA reviews PCI DSS requirement 8.3.9, which concerns changing passwords every 90 days. To which accounts does it apply?",
   "o": [
-   "When the password is the only authentication factor",
-   "Always, for every account",
-   "Only for service accounts",
-   "Only when MFA is enabled"
+   "Only accounts that rely on a single factor",
+   "Every account in the environment, including the token users",
+   "Only service accounts that run scheduled jobs",
+   "Only accounts that already use MFA"
   ],
-  "w": "With MFA (or dynamic risk analysis), forced 90-day rotation isn't required.",
-  "h": "Password alone? It has to keep changing its disguise."
+  "w": "Requirement 8.3.9 applies when a password or passphrase is the only factor; accounts protected by MFA aren't subject to the 90-day change. The other options misstate its scope.",
+  "h": "Password alone? Rotate it. Password plus MFA? Not required."
  },
  {
   "id": 156,
   "t": "Pen testing",
-  "q": "A tester uses Google search operators and Shodan to find a target's exposed login pages. Which kind of reconnaissance is this?",
+  "q": "In the first day of an engagement, a tester uses search engine operators and Shodan to find a client's exposed login pages, without sending a single packet to the client's systems. Which type of reconnaissance is this?",
   "o": [
-   "Passive",
-   "Active",
+   "Passive reconnaissance",
+   "Active reconnaissance",
    "Known environment testing",
    "Vulnerability scanning"
   ],
-  "w": "No packets hit the target's systems — Google and Shodan receive the queries.",
-  "h": "Whose systems got the packets? Not the target's = passive."
+  "w": "Gathering information from third-party sources without touching the target is passive reconnaissance. Active reconnaissance and scanning send traffic to the target, and 'known environment' describes how much information the client provided.",
+  "h": "No packets to the target = passive."
  },
  {
   "id": 157,
   "t": "Pen testing",
-  "q": "A tester runs Nmap against the target's public IP range to find open ports. Which kind of reconnaissance?",
+  "q": "On day two, the same tester runs Nmap against the client's public IP range to find open ports and service versions. Which type of reconnaissance is this?",
   "o": [
-   "Active",
-   "Passive",
-   "OSINT",
-   "Footprinting with no contact"
+   "Active reconnaissance",
+   "Passive reconnaissance",
+   "OSINT gathering",
+   "Footprinting without contact"
   ],
-  "w": "Packets are sent directly to the target.",
-  "h": "You knocked on their door = active."
+  "w": "Sending probes to the target's systems is active reconnaissance and can be detected. Passive reconnaissance and OSINT avoid touching the target.",
+  "h": "If you knock on their door, it's active."
  },
  {
   "id": 158,
   "t": "Incident response",
-  "q": "A tabletop exercise walks the team through a ransomware scenario. Which IR phase does this belong to?",
+  "q": "A credit union's IR team spends an afternoon walking through a ransomware scenario around a conference table, assigning roles and checking the call tree. No systems are touched. Which phase of the incident response life cycle does this exercise support?",
   "o": [
    "Preparation",
    "Detection",
    "Lessons learned",
    "Containment"
   ],
-  "w": "Exercises, playbooks, and training happen before an incident, in preparation.",
-  "h": "Practice happens before the game, not during it."
+  "w": "Exercises and plan rehearsals happen before any incident, as part of preparation. Detection, containment, and lessons learned are steps taken during or after an actual incident.",
+  "h": "Practice happens in Preparation."
  },
  {
   "id": 159,
   "t": "IAM",
-  "q": "A partner's app needs permission to read a user's calendar without ever receiving the user's password. Which protocol?",
+  "q": "A scheduling startup's app needs to read a user's Google calendar. The user must approve the access without ever giving the startup their Google password, and must be able to revoke it later. Which protocol provides this?",
   "o": [
    "OAuth",
    "SAML",
    "LDAP",
    "Kerberos"
   ],
-  "w": "OAuth is delegated authorization with access tokens; SAML is federated authentication for SSO.",
-  "h": "OAuth = valet key. SAML = passport."
+  "w": "OAuth grants delegated, revocable access tokens without sharing passwords. SAML is for web SSO assertions, LDAP is a directory protocol, and Kerberos is ticket-based authentication inside a domain.",
+  "h": "OAuth lends a valet key, not the house key."
  },
  {
   "id": 160,
   "t": "IAM",
-  "q": "Network admins need every command they type on routers authorized and logged individually, with the entire payload encrypted. Which is BEST?",
+  "q": "A utility's network admins manage 400 routers. Auditors require that each command an admin runs be individually authorized and logged, and that the entire authentication payload be encrypted. Which AAA protocol BEST fits?",
   "o": [
    "TACACS+",
    "RADIUS",
    "LDAPS",
    "Kerberos"
   ],
-  "w": "TACACS+ separates AAA, supports per-command authorization, and encrypts the whole payload over TCP 49.",
-  "h": "TACACS+ for Typing on Cisco devices; RADIUS for Reaching the network."
+  "w": "TACACS+ encrypts the full payload and supports per-command authorization and accounting, which suits device administration. RADIUS encrypts only the password and is built for network access, and LDAPS and Kerberos don't authorize individual router commands.",
+  "h": "TACACS+ for typing commands on network gear."
  }
 ]

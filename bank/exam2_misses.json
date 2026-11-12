@@ -2,28 +2,28 @@
  {
   "id": 1,
   "t": "Social engineering",
-  "q": "During a real, publicly reported payroll-system outage, a caller says they're from the vendor's incident team, quotes the correct outage ticket number, and asks a clerk to read back the MFA code \"to resync the account.\" What MOST made the caller believable?",
+  "q": "During a real, publicly reported outage at a payroll vendor, a caller tells a credit union clerk that he is on the vendor's incident team. He quotes the correct outage ticket number from the vendor's status page and asks her to read back the MFA code that just arrived 'to resync the account.' The clerk later asks the security team what made the call so convincing. Which technique BEST answers her question?",
   "o": [
    "Pretexting",
    "Vishing",
-   "Smishing",
-   "Watering hole attack"
+   "Impersonation of a help desk",
+   "Smishing"
   ],
-  "w": "The credibility came from the made-up but plausible story built on a real event; the phone call is only the channel.",
-  "h": "Vishing is the phone. Pretexting is the script the actor reads into the phone."
+  "w": "The believable story built on a real event, the pretext, is what made the request seem legitimate. Vishing is the channel (a phone call) and impersonation is the role the caller played, but neither explains the credibility, and no text message was involved, so it isn't smishing.",
+  "h": "Vishing is the phone. Pretexting is the script read into the phone."
  },
  {
   "id": 2,
   "t": "Social engineering",
-  "q": "An email to accounts payable pretends to be the CEO, references a real acquisition from yesterday's press release, and requests an urgent wire to a \"closing escrow account.\" Which technique is the question really asking about if it says \"what made the request seem legitimate\"?",
+  "q": "An email to a manufacturer's accounts payable team appears to come from the CEO. It mentions an acquisition announced in yesterday's press release and asks for an urgent wire to a 'closing escrow account.' In the post-incident review, the CFO asks which technique made the request seem legitimate, rather than how it was delivered. Which answer BEST fits that question?",
   "o": [
    "Pretexting",
    "Phishing",
-   "Typosquatting",
+   "Business email compromise",
    "Brand impersonation"
   ],
-  "w": "Phishing is the delivery channel; the believable backstory tied to real news is the pretext.",
-  "h": "Ask \"why did they believe it?\" not \"how did it arrive?\""
+  "w": "Tying the request to real news creates a believable pretext, which is what made it seem legitimate. Phishing is the delivery method, BEC would require a real, compromised mailbox (none is described), and brand impersonation means posing as a company's brand, not an executive.",
+  "h": "Ask 'why did they believe it?', not 'how did it arrive?'"
  },
  {
   "id": 3,
@@ -40,16 +40,17 @@
  },
  {
   "id": 4,
+  "ack": "The correct option is the fixed term name '802.11w Protected Management Frames'.",
   "t": "Wireless",
-  "q": "Which control BEST stops attackers from forging the deauthentication frames used to push clients onto a look-alike AP?",
+  "q": "Attackers at a hotel conference center repeatedly send spoofed deauthentication frames to knock attendees off the event Wi-Fi, then lure them onto a look-alike access point. The venue's APs support WPA3. Which control BEST stops the forged frames themselves?",
   "o": [
    "802.11w Protected Management Frames",
-   "Hiding the SSID",
-   "MAC address filtering",
-   "Disabling WPS"
+   "Hiding the SSID from beacon broadcasts",
+   "MAC address filtering on every AP",
+   "Disabling Wi-Fi Protected Setup (WPS)"
   ],
-  "w": "PMF (mandatory in WPA3) authenticates management frames, so deauth frames can't be spoofed.",
-  "h": "PMF puts a signature on the bouncer's \"you're kicked out\" notes."
+  "w": "PMF (mandatory with WPA3) cryptographically protects management frames, so clients ignore forged deauthentication frames. Hidden SSIDs and MAC filtering are trivially bypassed and don't authenticate frames, and WPS affects PIN-based enrollment, not deauthentication.",
+  "h": "PMF signs the 'you're disconnected' notes."
  },
  {
   "id": 5,
@@ -67,41 +68,42 @@
  {
   "id": 6,
   "t": "Governance docs",
-  "q": "A policy says \"data in transit must be protected.\" A second document says \"all external web services must use TLS 1.2 or higher with AES-GCM cipher suites; no exceptions without CISO approval.\" What is the second document?",
+  "q": "A fintech's security policy says 'data in transit must be protected.' A second document, also approved by the CISO, says 'all external web services must use TLS 1.2 or higher with AES-GCM cipher suites; exceptions require CISO approval.' An auditor asks how the second document should be classified in the governance hierarchy. Which classification is correct?",
   "o": [
    "Standard",
    "Policy",
    "Procedure",
    "Guideline"
   ],
-  "w": "It names specific protocol versions and ciphers — that makes it a standard.",
-  "h": "Policy = Purpose. Standard = Specifics. Procedure = Process steps. Guideline = Good idea (optional)."
+  "w": "Specific, mandatory technical requirements (named protocol versions and ciphers) that support a policy make a standard. The policy is the first document, a procedure would give steps, and a guideline would be optional.",
+  "h": "Policy = purpose. Standard = specifics."
  },
  {
   "id": 7,
   "t": "Governance docs",
-  "q": "A document states \"Staff should consider using a password manager for personal accounts.\" Which document type is it?",
+  "q": "An insurer's security team publishes a document for employees. It says staff 'should consider' a password manager for personal accounts and lists three reputable options. Employees who don't follow it face no consequences. In the document hierarchy, which type is this?",
   "o": [
    "Guideline",
    "Standard",
    "Policy",
    "Procedure"
   ],
-  "w": "\"Should consider\" is a recommendation, not a requirement — guidelines are the only optional type.",
-  "h": "Guideline = Good idea. Nobody gets written up for ignoring a good idea."
+  "w": "'Should consider', with no consequences, is a recommendation, which makes it a guideline. Standards and policies are mandatory, and procedures give required steps.",
+  "h": "Guideline = good idea, optional."
  },
  {
   "id": 8,
   "t": "Indicators",
-  "q": "User jlee lives in Phoenix. VPN logs show jlee connected from Phoenix 09:00–12:00 and from Tempe 10:30–11:15. Which indicator is this?",
+  "q": "User jlee lives and works in Phoenix. The VPN report below covers one Tuesday, and jlee says he worked from home all day on his laptop. Which indicator does the report show?",
+  "c": "user=jlee  src=68.2.14.9   (Phoenix, AZ)  start=09:00  end=12:00  device=CORP-LT-118\nuser=jlee  src=98.167.3.40 (Tempe, AZ)    start=10:30  end=11:15  device=unknown",
   "o": [
    "Concurrent session usage",
    "Impossible travel",
-   "Resource inaccessibility",
-   "Out-of-cycle logging"
+   "Out-of-cycle logging",
+   "Resource inaccessibility"
   ],
-  "w": "The cities are next to each other, but the time windows overlap — two people are using one account.",
-  "h": "Impossible travel is about distance. Concurrent sessions are about overlap. Check the clocks before the map."
+  "w": "The two sessions overlap in time from different devices, so two parties are using one account. Phoenix and Tempe are next to each other, so it isn't impossible travel; logging timing and inaccessible resources aren't involved.",
+  "h": "Check the clocks before the map."
  },
  {
   "id": 9,
@@ -120,15 +122,15 @@
  {
   "id": 10,
   "t": "Web attacks",
-  "q": "Which fix BEST prevents the forged transfer request in a CSRF attack like the forum-image one?",
+  "q": "Customers of an online bank lost money when a forum post embedded a hidden image whose URL triggered a funds transfer. Their browsers attached valid bank session cookies automatically. The bank cannot control the forum. Which fix on the bank's side BEST prevents this?",
   "o": [
-   "Anti-CSRF tokens and SameSite cookies on the bank's site",
-   "A content security policy on the forum",
-   "Setting HttpOnly on the bank's session cookie",
+   "Anti-CSRF tokens and SameSite settings on the bank's site",
+   "A content security policy deployed on all of the forum's pages",
+   "The HttpOnly flag on the bank's session cookie",
    "Input validation on the forum's post field"
   ],
-  "w": "The target site has to protect itself; the attacker controls (or doesn't care about) the forum.",
-  "h": "You don't fix forged checks by asking the forger's printer shop to behave."
+  "w": "This is CSRF; unpredictable tokens and SameSite cookies stop forged cross-site requests from succeeding. The bank can't change the forum's CSP or input handling, and HttpOnly stops script from reading cookies but doesn't stop the browser from sending them.",
+  "h": "You don't stop forged checks by asking the forger's print shop to behave."
  },
  {
   "id": 11,
@@ -146,29 +148,31 @@
  },
  {
   "id": 12,
+  "ack": "Options are fixed attack names.",
   "t": "Web attacks",
-  "q": "A \"fetch profile picture from URL\" feature receives url=http://169.254.169.254/latest/meta-data/iam/security-credentials/app-role and returns JSON instead of an image. What attack is this?",
+  "q": "A cloud-hosted marketplace lets sellers import product images from a URL. A WAF log shows the request below, and the response contained JSON with an access key instead of image data. Which attack occurred?",
+  "c": "POST /seller/import-image\nurl=http://169.254.169.254/latest/meta-data/iam/security-credentials/app-role",
   "o": [
-   "SSRF",
+   "Server-side request forgery",
    "Directory traversal",
    "Command injection",
    "Reflected XSS"
   ],
-  "w": "The server was tricked into fetching an internal-only network address — the cloud metadata service.",
-  "h": "See 169.254.169.254? Think \"SSRF stealing cloud keys\" instantly."
+  "w": "The server was tricked into fetching an internal-only address, the cloud metadata service, and returned what it got. Traversal reads files with ../, command injection runs OS commands, and reflected XSS runs script in a victim's browser.",
+  "h": "169.254.169.254 in a URL field means SSRF going after cloud keys."
  },
  {
   "id": 13,
   "t": "Web attacks",
-  "q": "Which pair of controls BEST mitigates SSRF against the AWS instance metadata service?",
+  "q": "After an SSRF incident, a startup's cloud team must stop any future SSRF bug in its image importer from reaching the instance metadata service and returning credentials. The importer legitimately fetches only from three partner CDNs. Which pair of controls BEST meets this?",
   "o": [
-   "Require IMDSv2 and allow-list fetch destinations",
-   "Add HttpOnly and Secure to session cookies",
-   "Enable full-disk encryption on the instance",
-   "Deploy anti-CSRF tokens on every form"
+   "Require IMDSv2 and allow-list approved fetch destinations",
+   "Add HttpOnly and Secure attributes to every session cookie",
+   "Enable full-disk encryption on the importer instances",
+   "Deploy anti-CSRF tokens on every importer form"
   ],
-  "w": "IMDSv2 needs a PUT-issued session token simple SSRF can't get, and an allow-list stops arbitrary internal fetches.",
-  "h": "Don't let the server accept delivery addresses inside your own building."
+  "w": "IMDSv2 requires a session token that a simple SSRF request can't obtain, and an allow-list limits fetches to known destinations. Cookie flags, disk encryption, and CSRF tokens don't stop the server from requesting internal URLs.",
+  "h": "Don't let the server deliver to addresses inside your own building."
  },
  {
   "id": 14,
@@ -201,93 +205,94 @@
  {
   "id": 16,
   "t": "Firewall rules",
-  "q": "An admin deletes the final \"DENY IP any any (log)\" rule. Traffic matching no other rule arrives. What happens?",
+  "q": "While cleaning up a branch firewall, an administrator deletes the final rule shown below, assuming it was redundant. Traffic that matches none of the remaining rules then arrives. What happens to that traffic?",
+  "c": "10  PERMIT  TCP  10.8.0.0/16  any  443\n20  PERMIT  UDP  10.8.0.0/16  10.0.0.53  53\n30  DENY    IP   any          any  any   (log)   <- deleted",
   "o": [
-   "It's denied by implicit deny, but no log entry is written",
-   "It's allowed because nothing denies it",
-   "It's denied and logged as before",
-   "The firewall fails open until a rule is added"
+   "Still blocked by the implicit deny, but no longer logged",
+   "It's allowed, because no rule now denies it",
+   "It's blocked and logged exactly as before",
+   "The firewall fails open until another deny rule is re-added"
   ],
-  "w": "Implicit deny still blocks unmatched traffic; the explicit rule existed mainly to log it.",
-  "h": "Not on the list? You're not getting in — but nobody writes down that you tried."
+  "w": "Firewalls end with an implicit deny, so unmatched traffic is still blocked; the explicit rule existed mainly to log those denials. Nothing becomes allowed, logging is lost, and deleting a rule doesn't change the device's failure mode.",
+  "h": "Not on the list? Still not getting in, but nobody writes it down."
  },
  {
   "id": 17,
   "t": "Control placement",
-  "q": "A hospital needs full visibility of core traffic with no added latency and no new point of failure. Which device and placement?",
+  "q": "A hospital's SOC wants complete visibility of traffic crossing the core switch. Clinical leadership insists the change must add no latency and must not create a new device that could take the network down if it fails. Which device and placement BEST meet both requirements?",
   "o": [
-   "IDS on a SPAN port or tap",
-   "IPS inline at the core",
-   "WAF in front of the core switch",
-   "NAC on the core uplinks"
+   "An IDS fed by a tap or SPAN port",
+   "An IPS placed inline at the core uplink",
+   "A WAF placed in front of the core switch",
+   "NAC enforcement on the core uplink ports"
   ],
-  "w": "A copy of traffic (SPAN/tap) adds no latency and can't take the network down — but it can only alert.",
-  "h": "IDS = In the Doorway with a Spyglass. It watches a copy and yells."
+  "w": "An IDS on a copy of the traffic adds no latency and can't interrupt flows if it fails, though it can only alert. An inline IPS sits in the traffic path, a WAF protects web applications, and NAC controls device admission.",
+  "h": "Watching a copy can't break the original."
  },
  {
   "id": 18,
   "t": "Control placement",
-  "q": "Exploit traffic between the internal firewall and the core must be blocked automatically. Which device and placement?",
+  "q": "Red team tests show exploit traffic passing between a manufacturer's internal firewall and its core switch. The CISO requires that such traffic be stopped automatically as it happens, and operations has accepted the small added latency. Which device and placement fit?",
   "o": [
-   "IPS inline",
-   "IDS on a SPAN port",
-   "IDS on a network tap",
-   "SIEM correlation rule"
+   "An IPS placed inline on that link",
+   "An IDS attached to a SPAN port on the core",
+   "An IDS fed by a passive network tap",
+   "A SIEM correlation rule with email alerting"
   ],
-  "w": "Only a device physically in the traffic path can block it.",
-  "h": "IPS = In the Path, Stops."
+  "w": "Only a device in the traffic path can block packets in real time. IDS sensors on SPAN ports or taps see copies and can only alert, and a SIEM rule alerts after the logs arrive.",
+  "h": "To stop traffic, you have to stand in its way."
  },
  {
   "id": 19,
   "t": "Control placement",
-  "q": "Where should a WAF protecting public web servers be placed?",
+  "q": "A retailer is deploying a WAF to protect three public web servers in its DMZ. The perimeter firewall already drops non-HTTPS traffic. The architect must pick where the WAF goes so it inspects all web traffic before any server receives it, while staying protected itself. Where should it be placed?",
   "o": [
-   "In the DMZ right after the perimeter firewall, in front of the web servers",
+   "In the DMZ, behind the firewall, before the servers",
    "Outside the perimeter firewall, facing the internet",
    "Between the web servers and the database tier only",
-   "On each user workstation"
+   "On each customer's workstation as a browser plug-in"
   ],
-  "w": "It should inspect web traffic after the firewall drops the junk and before any server sees it.",
-  "h": "Firewall sweeps the street; WAF checks the guests at the door."
+  "w": "Behind the firewall and in front of the web tier, the WAF inspects every web request while the firewall shields it. Outside the firewall it's exposed to all internet noise, between the web and database tiers it misses attacks on the web servers, and customers' machines aren't yours to control.",
+  "h": "The firewall sweeps the street; the WAF checks guests at the door."
  },
  {
   "id": 20,
   "t": "Control placement",
-  "q": "Three web servers sit behind a load balancer. Each user's session data lives only in the memory of the server that first handled them, and requests must be spread across all three. Which configuration?",
+  "q": "A ticketing site runs three web servers behind a load balancer. Each user's cart and login state live only in the memory of whichever server first handled them, and rewriting the app isn't possible this year. Users complain about being logged out and losing carts mid-purchase. Which load balancer setting BEST fixes this?",
   "o": [
    "Session persistence (sticky sessions)",
-   "Round-robin",
-   "Active/passive",
-   "Least connections with no affinity"
+   "Round-robin request distribution",
+   "An active/passive server configuration",
+   "Least connections with no session affinity"
   ],
-  "w": "Without affinity, users land on a server that doesn't have their session and get logged out.",
-  "h": "Sticky sessions = you keep the same bank teller, because only that teller has your paperwork."
+  "w": "Sticky sessions keep each user on the server that holds their state. Round-robin and least connections without affinity move users between servers, and active/passive would waste two servers without addressing session state.",
+  "h": "Keep the same bank teller, because only that teller has your paperwork."
  },
  {
   "id": 21,
   "t": "Control placement",
-  "q": "A laptop passes 802.1X authentication but fails NAC posture (missing patches). What should NAC do?",
+  "q": "A clinic's NAC uses 802.1X plus a posture check. A staff laptop authenticates successfully but is missing three critical patches, so it fails posture. The clinic wants it fixed quickly without letting it reach clinical systems. What should NAC do?",
   "o": [
-   "Place it in a quarantine/remediation VLAN",
-   "Disable the switch port",
-   "Grant full access and alert the SOC",
-   "Revoke the user's AD account"
+   "Quarantine VLAN with access only to patch servers",
+   "Shut down the switch port until IT re-enables it",
+   "Grant full access and send an alert to the SOC",
+   "Disable the user's Active Directory account"
   ],
-  "w": "Quarantine lets it reach the patch server but not production, so it can fix itself and get in.",
-  "h": "NAC quarantine is the urgent-care waiting room — not sent home, not let into surgery."
+  "w": "A remediation VLAN lets the device reach update servers but nothing sensitive, then admits it once it's patched. Disabling the port creates help desk work without fixing the laptop, full access defeats posture checking, and the user did nothing wrong.",
+  "h": "NAC quarantine is urgent care: not sent home, not let into surgery."
  },
  {
   "id": 22,
   "t": "Control placement",
-  "q": "A hospital's inline IPS protects clinical systems. Leadership says patient care must never stop if the IPS fails. Which failure mode?",
+  "q": "A hospital installs an inline IPS in front of its clinical systems. The chief medical officer states that patient care must never stop because of a security appliance failure, and the CISO accepts that uninspected traffic is the lesser risk during an outage. Which failure mode should the IPS use?",
   "o": [
    "Fail-open",
    "Fail-closed",
    "Fail-secure",
    "Fail-safe to deny"
   ],
-  "w": "Fail-open keeps traffic flowing uninspected — availability wins.",
-  "h": "Open door = traffic keeps flowing; closed door = everything stops."
+  "w": "Fail-open passes traffic uninspected if the IPS fails, putting availability first as leadership requires. Fail-closed (and the deny-on-failure variants) would stop clinical traffic.",
+  "h": "Open door: traffic keeps flowing. Closed door: everything stops."
  },
  {
   "id": 23,
@@ -306,28 +311,28 @@
  {
   "id": 24,
   "t": "Ransomware IR",
-  "q": "Same incident: the attacker has a foothold on WS-HR-112, the svc_backup credentials, and access to FS-02. What is the BEST containment step?",
+  "q": "At 02:33, responders confirm that an attacker has a foothold on workstation WS-HR-112, has stolen the svc_backup service account's credentials, and is staging data on file server FS-02. Encryption usually follows within minutes. Legal wants memory evidence preserved. What is the BEST containment step?",
   "o": [
-   "Isolate both hosts with EDR and disable svc_backup",
-   "Block 185.220.101.47 at the firewall and keep monitoring",
-   "Power off every server in the data center",
-   "Reimage WS-HR-112 immediately"
+   "Isolate both hosts with EDR and disable the compromised account",
+   "Block the attacker's external IP address and keep monitoring closely",
+   "Power off every server in the data center at once",
+   "Reimage WS-HR-112 from the gold image right away"
   ],
-  "w": "Containment must cover every foothold — hosts and credentials — while keeping RAM evidence intact.",
-  "h": "Lock every room the burglar is in and take back the key they stole."
+  "w": "Containment has to cover every foothold, both hosts and the stolen credential, while keeping the machines running for memory capture. Blocking one IP leaves the account and hosts in the attacker's hands, a mass power-off destroys evidence and disrupts everything, and reimaging is eradication that also destroys evidence.",
+  "h": "Lock every room the burglar is in and take back the key."
  },
  {
   "id": 25,
   "t": "Ransomware IR",
-  "q": "Which is the BEST hardening for the svc_backup service account after the incident?",
+  "q": "After a ransomware incident in which attackers brute-forced the svc_backup account from a workstation, the identity team must harden it. The account runs scheduled backup jobs on one backup server and never logs on interactively. Which change is BEST?",
   "o": [
-   "Restrict logon to the backup server and use a long, auto-rotated password (gMSA)",
-   "Lock the account after 5 failed attempts",
-   "Require SMS MFA for the account",
-   "Rename it to something less obvious"
+   "Limit where it can log on and use an auto-rotated gMSA password",
+   "Lock the account after five failed attempts",
+   "Require SMS-based MFA whenever the service account authenticates",
+   "Rename the account to something less obvious"
   ],
-  "w": "Lockout invites a DoS on backups, SMS can't work non-interactively, and renaming is obscurity.",
-  "h": "A service account should only open one door, with a key that changes itself."
+  "w": "Limiting where the account can log on and letting the system rotate a long password removes both the reuse and guessing paths. Lockout invites a denial of service against backups, SMS MFA can't work for non-interactive jobs, and renaming is obscurity.",
+  "h": "A service account should open one door, with a key that changes itself."
  },
  {
   "id": 26,
@@ -345,41 +350,41 @@
  {
   "id": 27,
   "t": "Authentication",
-  "q": "Push notifications with number matching are MOST effective against which attack?",
+  "q": "An engineering firm's attackers have stolen passwords and are now spamming push approval requests at night, hoping a sleepy user taps Approve. The firm is considering push notifications with number matching. Against which attack is that feature MOST effective?",
   "o": [
    "MFA fatigue (push bombing)",
    "Adversary-in-the-middle phishing",
-   "SIM swapping",
-   "Pass-the-hash"
+   "SIM swapping against SMS codes",
+   "Pass-the-hash between workstations"
   ],
-  "w": "Number matching stops blind approval spam, but a user actively logging in to an AiTM site still sees and enters the real number.",
-  "h": "Number matching stops \"approve, approve, approve\" — not a user who's being fooled."
+  "w": "Number matching forces the user to enter a code shown on the real login screen, which stops blind approvals of spammed prompts. A user actively logging in to an AiTM proxy still sees and enters the real number, SIM swapping targets SMS, and pass-the-hash doesn't involve MFA prompts.",
+  "h": "Number matching stops 'approve, approve, approve', not a user who's been fooled."
  },
  {
   "id": 28,
   "t": "Authentication",
-  "q": "Clinical Wi-Fi must use device certificates on both sides, no passwords, and allow revoking any single device. Which EAP method?",
+  "q": "A hospital is deploying Wi-Fi for clinical tablets. Requirements: certificates on both the server and every device, no passwords anywhere in the exchange, and the ability to revoke any single tablet. Which EAP method meets all three?",
   "o": [
    "EAP-TLS",
-   "PEAP",
-   "EAP-TTLS",
-   "EAP-FAST"
+   "PEAP with MSCHAPv2",
+   "EAP-TTLS with PAP",
+   "EAP-FAST with PACs"
   ],
-  "w": "EAP-TLS is mutual certificate auth — the certs are the authentication.",
-  "h": "EAP-TLS = Two Locks, Server and client."
+  "w": "EAP-TLS uses mutual certificate authentication, so each device certificate can be revoked individually and no password is used. PEAP and EAP-TTLS normally carry passwords inside a server-authenticated tunnel, and EAP-FAST uses protected access credentials instead of device certificates.",
+  "h": "EAP-TLS: two certificates, server and client."
  },
  {
   "id": 29,
   "t": "Authentication",
-  "q": "Users join Wi-Fi with their existing AD usernames and passwords, and only the RADIUS server presents a certificate. Which EAP method is MOST likely?",
+  "q": "A law firm's staff join the corporate Wi-Fi by typing their existing Active Directory usernames and passwords. A packet capture shows that only the RADIUS server presents a certificate, and the password travels inside an encrypted tunnel. Which EAP method is the firm MOST likely using?",
   "o": [
    "PEAP",
    "EAP-TLS",
    "EAP-FAST",
    "EAP-MD5"
   ],
-  "w": "PEAP builds a tunnel with a server cert and passes MSCHAPv2 (the password) inside it.",
-  "h": "PEAP and TTLS build a tunnel, then pass a password through it."
+  "w": "PEAP builds a TLS tunnel using only the server's certificate and passes MSCHAPv2 credentials inside it. EAP-TLS needs client certificates, EAP-FAST uses PACs, and EAP-MD5 offers no tunnel and is weak.",
+  "h": "PEAP: one certificate, then a password through the tunnel."
  },
  {
   "id": 30,
@@ -398,14 +403,15 @@
  {
   "id": 31,
   "t": "PKI",
-  "q": "A certificate's SAN is *.corp.example.com. Which hostname will FAIL name validation?",
+  "q": "A company's new certificate has the SAN entry *.corp.example.com. Before deployment, the PKI team checks which internal hostnames it will cover. Which hostname will FAIL name validation?",
   "o": [
    "a.vpn.corp.example.com",
    "vpn.corp.example.com",
    "mail.corp.example.com",
    "portal.corp.example.com"
   ],
-  "w": "A wildcard covers exactly one label, so two labels deep doesn't match.",
+  "ack": "Options are hostnames; the item tests one-label wildcard matching.",
+  "w": "A wildcard matches exactly one label in place of the asterisk, so a name two labels deep doesn't match. The other three each sit one label below corp.example.com.",
   "h": "The asterisk is one seat at the table, not the whole row."
  },
  {
@@ -437,41 +443,41 @@
  {
   "id": 34,
   "t": "Cloud & virtualization",
-  "q": "A coding-challenge site runs untrusted submissions. Last month a kernel flaw let processes break out of containers. Modest overhead is acceptable. Which is BEST?",
+  "q": "A coding-challenge website runs code submitted by strangers on its own servers. Last month, a Linux kernel flaw let processes break out of container isolation, and the operators expect more such flaws. Modest overhead per submission is acceptable. Which isolation approach is BEST?",
   "o": [
-   "Run each submission in its own VM",
-   "Containers with a read-only root filesystem",
-   "Microservices behind an API gateway",
-   "Containers with stricter cgroup limits"
+   "Run each one in its own virtual machine",
+   "Containers with a read-only root file system",
+   "Microservices separated behind an API gateway",
+   "Containers with stricter cgroup resource limits"
   ],
-  "w": "Containers share one kernel; VMs each have their own and are isolated by the hypervisor.",
-  "h": "Containers are apartments on one foundation. VMs are separate houses."
+  "w": "Each VM has its own kernel, isolated by the hypervisor, so a kernel exploit in one doesn't reach the others. Read-only file systems and cgroup limits still share the host kernel, and an API gateway manages traffic rather than isolating code.",
+  "h": "Untrusted code gets its own kernel."
  },
  {
   "id": 35,
   "t": "Cloud & virtualization",
-  "q": "A newly provisioned \"empty\" block storage volume contains another company's database fragments. The provider confirms no hypervisor compromise. What vulnerability is this?",
+  "q": "A company provisions a new, supposedly empty block storage volume from a regional cloud provider. A forensic scan of the volume finds fragments of another customer's database. The provider confirms there was no hypervisor compromise and no misconfiguration by the customer. Which vulnerability BEST explains this?",
   "o": [
    "Resource reuse",
    "VM escape",
    "VM sprawl",
-   "Side-channel attack"
+   "A side-channel attack"
   ],
-  "w": "Storage was reallocated without being wiped; nothing ran, and the stem ruled out hypervisor compromise.",
-  "h": "A hotel room that wasn't cleaned — nobody broke in."
+  "w": "Reallocating storage without sanitizing it exposes the previous tenant's data to the next one. VM escape is breaking out of a guest, VM sprawl is unmanaged growth of VMs, and a side-channel attack infers data from timing or caches rather than leaving it on disk.",
+  "h": "Somebody else's leftovers on your new plate."
  },
  {
   "id": 36,
   "t": "Cloud & virtualization",
-  "q": "Forty Kubernetes microservices talk over plain HTTP. Each service must prove its identity to the other, and traffic must be encrypted. Which is BEST?",
+  "q": "A fintech's 40 Kubernetes microservices call each other over plain HTTP. An auditor requires that every call be encrypted and that each service prove its identity to the service it calls, so a compromised pod can't impersonate another. Which approach BEST meets this?",
   "o": [
-   "Mutual TLS (mTLS) between services",
-   "Full-disk encryption on the nodes",
-   "A WAF at the cluster ingress",
+   "Mutual TLS between services",
+   "Full-disk encryption on every node",
+   "A WAF at the cluster's ingress",
    "Tokenizing sensitive payload fields"
   ],
-  "w": "mTLS encrypts east-west traffic and has both sides present certificates; FDE is at rest and a WAF only sees north-south.",
-  "h": "TLS is the bank showing you its ID. mTLS is both of you showing IDs."
+  "w": "mTLS encrypts each connection and makes both sides present certificates, which proves service identity. Disk encryption protects data at rest, the ingress WAF never sees internal calls, and tokenizing fields neither encrypts the channel nor authenticates services.",
+  "h": "Both sides show ID, and the line is encrypted."
  },
  {
   "id": 37,
@@ -555,15 +561,15 @@
  {
   "id": 43,
   "t": "Privacy",
-  "q": "An EU customer submits a valid erasure request. You hold their marketing preferences, support chat transcripts, and invoices that tax law requires keeping for seven years. What is the BEST response?",
+  "q": "An EU customer submits a valid erasure request to an online retailer. The retailer holds her marketing preferences, her support chat transcripts, and invoices that tax law requires it to keep for seven years. What is the BEST response?",
   "o": [
-   "Delete preferences and transcripts; retain invoices with use restricted to the tax obligation",
-   "Deny the request because some data must be kept",
+   "Erase the rest; keep invoices only for the tax duty",
+   "Deny the request because some of the data must be kept",
    "Anonymize the invoices and delete everything else",
    "Delete all of it, including the invoices"
   ],
-  "w": "The legal-obligation exception covers only the data the law requires; anonymizing breaks the requirement for original invoices.",
-  "h": "Clean out the closet, except what the IRS says to keep — and lock that box."
+  "w": "Erasure covers data with no legal basis to keep, while records that a law requires are retained only for that purpose. A legal duty doesn't justify refusing the whole request, anonymizing or deleting the invoices breaks the tax obligation.",
+  "h": "Erase what you can; keep only what the law makes you keep."
  },
  {
   "id": 44,
@@ -581,14 +587,14 @@
  {
   "id": 45,
   "t": "Exam strategy",
-  "q": "The exam opens with five long PBQs. With 90 minutes for 90 questions, what is the BEST approach?",
+  "q": "A candidate starts a 90-minute, 90-item practice exam. The first five items are long PBQs, and in her last attempt she spent 40 minutes on them and ran out of time with nine questions unanswered. What is the BEST approach this time?",
   "o": [
-   "Flag the PBQs, do all multiple choice first, return with ~25 minutes left",
-   "Finish each PBQ fully before moving on",
-   "Skip PBQs entirely since they're worth the same as MCQs",
-   "Spend 2–3 minutes per MCQ to avoid careless errors"
+   "Flag the PBQs, do the multiple choice, then return with time left",
+   "Finish each PBQ completely before moving to the next question",
+   "Skip the PBQs entirely because they are worth the same as one question",
+   "Spend two to three minutes on each multiple-choice item to avoid errors"
   ],
-  "w": "Points lost to the clock need no new knowledge; PBQs give partial credit when rushed, blank MCQs give zero.",
-  "h": "Bank the quick points first, then go back for the heavy lifting."
+  "w": "Banking the quicker points first protects against running out of time, and PBQs can still earn partial credit later. Finishing PBQs first repeats last time's problem, PBQs are usually worth more than one multiple-choice item, and three minutes per question would exceed the time limit.",
+  "h": "Collect the quick points first, then return to the long ones."
  }
 ]

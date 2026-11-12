@@ -23,7 +23,7 @@ w="R1 scores 20 (4 × 5), well above R2 (12), R3 (8), and R4 (5). R4 matches the
 h="Likely and severe beats either one alone."),
 
 dict(id="xg-d5-03", t="Risk",
-q="A credit union's board approves two statements: 'We accept moderate risk to grow digital banking' and 'No single cyber event may cause more than $500,000 in losses or more than four hours of online banking downtime.' Which term BEST describes the second statement?",
+q="A credit union's board approves two statements for its cyber program. The first says, 'We accept moderate risk to grow digital banking.' The second says, 'No single cyber event may cause more than $500,000 in losses or more than four hours of online banking downtime.' Which term BEST describes the second statement?",
 o=["Risk tolerance", "Risk appetite", "Residual risk", "Inherent risk"],
 w="Tolerance sets the specific, measurable limits around the appetite; the first statement is the appetite itself. Residual and inherent risk describe risk levels after and before controls, not limits.",
 h="Appetite is the attitude; tolerance is the number."),
@@ -174,7 +174,7 @@ w="An independent reporting line lets security risk reach decision-makers withou
 h="Security shouldn't report only to the team it checks."),
 
 dict(id="xg-d5-21", t="Governance structures",
-q="A hospital system's executives draft a cyber risk appetite statement. Which body should give final approval so it guides the whole organization?",
+q="A hospital system's CISO and CRO have drafted a cyber risk appetite statement that will guide budget, vendor, and project decisions in every hospital in the system. The CEO asks which body must give final approval for it to carry that authority. Which body should approve it?",
 o=["The board of directors", "The SOC's shift supervisors", "The IT help desk manager", "The external penetration testers"],
 w="Risk appetite is a top-level governance decision approved by the board. SOC staff, help desk managers, and outside testers carry out or assess work; they don't set organizational appetite.",
 h="Appetite comes from the top."),
@@ -214,11 +214,11 @@ w="Offboarding must close every access path, recover or confirm destruction of t
 h="Close the doors, collect the data, and get it in writing."),
 
 dict(id="xg-d5-26", t="Vendor management",
-q="A payroll vendor's security questionnaire says all admin access uses MFA, but the summary of an independent penetration test it provided lists a finding of 'admin portal accessible with password only.' What should the third-party risk team do NEXT?",
+q="A hospital's third-party risk team is reviewing a payroll vendor. The vendor's questionnaire says all admin access uses MFA. The independent penetration test summary the vendor supplied lists the finding 'admin portal accessible with password only.' The contract is due to be signed next week. What should the team do NEXT?",
 o=["Request evidence and remediation for the discrepancy",
    "Accept the questionnaire, since vendors know their own systems best",
    "Accept the pen test and terminate the vendor contract immediately",
-   "Ignore both documents and score the vendor as low risk by default"],
+   "Score the vendor using the questionnaire average and revisit at renewal"],
 w="When self-reported answers conflict with independent evidence, the team should verify with evidence and track remediation. Trusting either source blindly or ignoring both doesn't resolve the risk.",
 h="When the story and the evidence disagree, ask for proof."),
 
@@ -313,8 +313,8 @@ w="Auditors test evidence; a control without records is treated as not performed
 h="If it isn't documented, it didn't happen, as far as an audit is concerned."),
 
 dict(id="xg-d5-39", t="Compliance", n=2,
-q="An online merchant fails its annual PCI DSS assessment and doesn't remediate within the agreed period. Which TWO consequences are MOST likely?",
-o=["Fines passed on by its acquiring bank", "Losing the ability to accept card payments", "Revocation of its business incorporation by the state", "Criminal charges against every employee", "Automatic loss of its domain name registration"],
+q="An online merchant fails its annual PCI DSS assessment. Its acquiring bank sets a 90-day remediation deadline, which the merchant misses because the fixes were never funded. Which TWO consequences are MOST likely?",
+o=["Fines passed on through its payment processor", "Losing the ability to accept card payments", "Revocation of its business incorporation by the state", "Criminal charges against every employee", "Automatic loss of its domain name registration"],
 w="Card brands fine acquirers, who pass the fines to merchants, and persistent non-compliance can end card processing under the merchant agreement. State incorporation, criminal charges against all staff, and domain registration aren't PCI consequences.",
 h="PCI penalties come through the payment chain."),
 
@@ -329,7 +329,7 @@ h="Evidence belongs in the vault, not on someone's laptop."),
 
 # ---------- Privacy ----------
 dict(id="xg-d5-41", t="Privacy",
-q="A European customer asks an online retailer for all the personal data it holds about her. Which response BEST satisfies the access request?",
+q="A European customer emails a retailer asking for all the personal data it holds about her. The retailer keeps her data in its CRM, order system, marketing platform, and support tickets. Which response BEST satisfies the access request?",
 o=["Copies of her data across all systems, with purposes, recipients, and retention",
    "Only the account profile page she can already see when logged in",
    "A summary of the retailer's privacy policy and cookie notice",

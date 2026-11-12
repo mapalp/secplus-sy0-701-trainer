@@ -1,6 +1,6 @@
 """Print exam-grade items that still carry a length tell or word cue, with option lengths.
 
-Usage: python3 tools/tells.py [id-prefix]     e.g. python3 tools/tells.py xg-d2
+Usage: python3 tools/tells.py [id-prefix]     e.g. python3 tools/tells.py xg-d2  or  b-pki
 """
 import json
 import runpy
@@ -10,7 +10,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 tells = runpy.run_path(str(ROOT / "tools" / "audit.py"), run_name="audit_lib")["tells"]
 prefix = sys.argv[1] if len(sys.argv) > 1 else "xg-"
-items = [q for q in json.loads((ROOT / "bank" / "exam_grade.json").read_text()) if q["id"].startswith(prefix)]
+banks = ["exam_grade.json", "baseline_builder.json", "exam2_misses.json", "stubborn_pile.json"]
+items = [q for b in banks for q in json.loads((ROOT / "bank" / b).read_text()) if str(q["id"]).startswith(prefix)]
 n_long = 0
 for q in items:
     lg, cue = tells(q)

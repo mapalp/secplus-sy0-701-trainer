@@ -22,10 +22,11 @@ Your progress and results never go into this repository. They stay in your brows
 | Exam grade | 253 multiple choice + 12 multi-part PBQs | Hard exams (only source), standard exams, drills if selected |
 | Exam 2 misses | 45 | Drills, standard exams |
 | Stubborn pile | 60 | Drills, standard exams |
-| Baseline builder | 616 | Drills only (flashcard level) |
+| Baseline builder | 616 | Drills only |
+| Legacy PBQs | 24 | Standard exams, PBQ drills |
 | New angles | generated | Written per user in the hosted version; stored in the artifact database |
 
-The **Exam grade** bank is written to sit above real-exam difficulty:
+Every bank is held to the same exam-grade standard (rewritten November 2026). The **Exam grade** bank is the one written fresh for it:
 
 - Most stems are 2-5 sentence scenarios with constraints and a detail that doesn't matter.
 - Distractors are real SY0-701 terms from the same family as the answer.
@@ -35,7 +36,7 @@ The **Exam grade** bank is written to sit above real-exam difficulty:
 
 **Hard mode** draws only from this bank and gives 75 minutes for 90 items. Drills hold these questions back by default so they stay unseen for exams.
 
-`reports/audit.md` measures every bank: stem length, exhibits, qualifier wording, how often the correct answer is the longest option, word cues, and multi-select count.
+`reports/audit.md` measures every bank: stem length, exhibits, qualifier wording, how often the correct answer is the longest option, word cues, and multi-select count. `reports/item_audit.md` grades each item PASS / FIX / REWRITE against the standard (scenario stem of 25+ words or an exhibit, no throwaway options, no word cues, correct answer longest in 25% or fewer of a bank's items) and checks every PBQ.
 
 ## Repository layout
 
@@ -43,17 +44,19 @@ The **Exam grade** bank is written to sit above real-exam difficulty:
 src/engine.html          the app, with /*@@BANKS@@*/ and /*@@MODE@@*/ placeholders
 bank/*.json              question banks (exam_grade.json is generated from bank/src)
 bank/src/*.py            exam-grade questions, one file per domain (MC and PBQ lists)
+bank/src_legacy/*.py     rewrites of the older banks; each item replaces the JSON item with the same id
 tools/build.py           compiles bank/src, then writes dist/ (online and offline builds)
 tools/audit.py           validates the exam-grade bank and writes reports/audit.md
+tools/audit_items.py     grades every item in every bank and writes reports/item_audit.md
 tools/tells.py           lists items whose answer gives itself away, with option lengths
-tools/set_options.py     helper for rewriting an item's options
+tools/set_options.py     helper for rewriting an item's options (set_stem.py does the same for stems)
 dist/                    built single-file apps
 ```
 
 ## Build
 
 ```bash
-python3 tools/build.py && python3 tools/audit.py
+python3 tools/build.py && python3 tools/audit.py && python3 tools/audit_items.py
 ```
 
 Python 3.9 or later, standard library only. `tools/extract_from_artifact.py` was a one-time import and also needs the `json5` package.

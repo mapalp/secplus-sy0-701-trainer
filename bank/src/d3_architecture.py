@@ -286,7 +286,7 @@ w="3-2-1 means three copies, on two types of media, with one offsite; the missin
 h="One backup in the same room is one fire away from none."),
 
 dict(id="xg-d3-35", t="Resilience",
-q="During a ransomware recovery, a hospital discovered its nightly backups had been failing silently for five months because a credential expired, even though the backup console showed 'Job completed with warnings.' Which practice would MOST likely have caught this?",
+q="A hospital spent three days recovering from ransomware. During recovery, it discovered that its nightly backups had been failing silently for five months, because a service credential had expired. The backup console showed only 'Job completed with warnings,' and nobody read the warnings. Which practice would MOST likely have caught this before the incident?",
 o=["Regular test restores, reviewed by a named owner",
    "Keeping backup logs for seven years for auditing",
    "Encrypting the backups with a hardware security module",

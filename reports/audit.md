@@ -4,10 +4,10 @@
 
 | Bank | Items | Median stem words | Stems of 15 words or fewer | 3+ sentences | Exhibit | BEST/MOST/FIRST wording | Correct answer longest | Word cue | Multi-select |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Exam grade | 253 | 38 | 0% | 65% | 15% | 70% | 15% | 0% | 18 |
-| Exam 2 misses | 45 | 24 | 18% | 31% | 16% | 44% | 31% | 11% | 0 |
-| Stubborn pile | 60 | 19.5 | 28% | 7% | 0% | 18% | 32% | 5% | 0 |
-| Baseline builder | 616 | 14.0 | 58% | 0% | 1% | 10% | 41% | 8% | 0 |
+| Exam grade | 253 | 39 | 0% | 69% | 15% | 70% | 15% | 0% | 18 |
+| Exam 2 misses | 45 | 37 | 4% | 71% | 22% | 53% | 11% | 0% | 0 |
+| Stubborn pile | 60 | 35.0 | 0% | 63% | 10% | 23% | 22% | 0% | 0 |
+| Baseline builder | 616 | 33.0 | 0% | 58% | 1% | 15% | 16% | 0% | 0 |
 
 Exam-grade targets: median stem 40+ words, 15-word stems near 0%, exhibits 25%+, correct-answer-longest 25% or less, word cues 0%, some multi-select.
 

@@ -128,7 +128,7 @@
   "type": "order",
   "t": "Ransomware IR",
   "title": "Order the ransomware response",
-  "prompt": "Ransomware is spreading from WS-HR-112 to file server FS-02 using the stolen svc_backup account. Put the actions in the order they should happen.",
+  "prompt": "At 02:40 the SOC confirms ransomware spreading from workstation WS-HR-112 to file server FS-02 using the stolen svc_backup service account. The CISO wants evidence preserved for law enforcement. Put the response actions in the order they should happen.",
   "items": [
    {
     "text": "Confirm the alerts and scope which hosts and accounts are affected"
@@ -189,7 +189,7 @@
   "type": "match",
   "t": "Ransomware IR",
   "title": "Read the attack timeline",
-  "prompt": "Classify each log entry, then choose the best containment action at 02:33.",
+  "prompt": "A credit union's SIEM produced the timeline below overnight. Classify the attacker tactic shown by each log entry, then choose the best containment action at 02:33, two minutes after the last entry.",
   "exhibit": "01:12  WS-HR-112  WINWORD.EXE → powershell.exe -nop -w hidden -enc SQBFAFgA...\n01:40  DC-01      4625 ×312 for svc_backup from WS-HR-112, then 4624 success\n02:09  FS-02      PsExec service installed, launched from WS-HR-112\n02:18  FS-02      rclone.exe → 185.220.101.47, 4.8 GB outbound\n02:29  FS-02      wevtutil cl Security\n02:31  FS-02      vssadmin delete shadows /all /quiet",
   "choices": [
    "Initial access",
@@ -197,7 +197,9 @@
    "Lateral movement",
    "Exfiltration",
    "Defense evasion",
-   "Inhibit recovery"
+   "Inhibit recovery",
+   "Persistence",
+   "Privilege escalation"
   ],
   "rows": [
    {
@@ -242,7 +244,7 @@
   "type": "match",
   "t": "Wireless",
   "title": "Match each wireless requirement",
-  "prompt": "Choose the best configuration for each network.",
+  "prompt": "A hospital is redesigning Wi-Fi for clinical, staff, branch, and guest networks. Choose the best authentication or configuration for each network requirement below. Some choices are not used.",
   "choices": [
    "EAP-TLS",
    "PEAP",
@@ -250,7 +252,9 @@
    "WPA3-Personal (SAE)",
    "Enhanced Open (OWE)",
    "Captive portal",
-   "WPA3-Enterprise 192-bit"
+   "WPA3-Enterprise 192-bit",
+   "WPA2-Personal (PSK)",
+   "MAC filtering"
   ],
   "rows": [
    {
@@ -289,7 +293,7 @@
   "type": "match",
   "t": "Access control",
   "title": "Identify the access control approach",
-  "prompt": "Match each scenario to the model or principle it describes.",
+  "prompt": "A bank's auditors are mapping access decisions across the organization. For each scenario they observed, choose the access control model or principle it MOST specifically describes. Some choices are not used.",
   "choices": [
    "Discretionary (DAC)",
    "Mandatory (MAC)",
@@ -297,7 +301,9 @@
    "Attribute-based (ABAC)",
    "Rule-based",
    "Separation of duties",
-   "Least privilege"
+   "Least privilege",
+   "Implicit deny",
+   "Job rotation"
   ],
   "rows": [
    {
@@ -336,7 +342,7 @@
   "type": "order",
   "t": "Vulnerability mgmt",
   "title": "Prioritize the scan findings",
-  "prompt": "Order these findings from first to fix to last. Consider exposure and exploitation, not just the CVSS number.",
+  "prompt": "A hospital's monthly scan produced the five findings below, and the team can fix one per day. Order them from first to fix to last, weighing exposure, active exploitation, and data at risk, not just the CVSS number.",
   "items": [
    {
     "text": "CVSS 9.8 RCE on the internet-facing VPN appliance, listed in CISA KEV"
@@ -383,7 +389,7 @@
   "type": "match",
   "t": "DNS & email security",
   "title": "Pick the DNS or email control",
-  "prompt": "Match each requirement to the best control.",
+  "prompt": "A credit union is hardening its domain after attackers spoofed its email and poisoned a branch resolver. Match each requirement from the project plan to the single best control. Some choices are not used.",
   "choices": [
    "SPF",
    "DKIM",
@@ -391,7 +397,9 @@
    "DNSSEC",
    "MTA-STS",
    "DANE",
-   "DNS over HTTPS"
+   "DNS over HTTPS",
+   "DNS sinkhole",
+   "S/MIME"
   ],
   "rows": [
    {
@@ -430,7 +438,7 @@
   "type": "match",
   "t": "Control placement",
   "title": "Place the security devices",
-  "prompt": "A hospital network. Choose what belongs at each location, then pick two settings.",
+  "prompt": "The diagram shows a hospital network. Choose what belongs at each numbered location, or whether nothing belongs there, then pick the IPS failure mode and the load balancing setting. Some devices are not used.",
   "exhibit": "Internet ─[L1]─ Perimeter FW ─[L2]─[L3]─ Web servers (DMZ)\n                     │\n               Internal FW ─[L4]─ Core switch ─(mirror port)─[L5]\n                                   │\n                     Mgmt VLAN [L6]     User access ports [L7]",
   "choices": [
    "No device here",
@@ -439,7 +447,9 @@
    "IPS",
    "IDS",
    "Jump server",
-   "NAC (802.1X)"
+   "NAC (802.1X)",
+   "Forward proxy",
+   "SIEM"
   ],
   "rows": [
    {
@@ -495,7 +505,7 @@
   "type": "match",
   "t": "Resilience",
   "title": "Match the resilience control",
-  "prompt": "Choose the control that meets each requirement.",
+  "prompt": "A regional bank's business impact analysis lists the recovery requirements below. For each requirement, choose the control or site type that meets it at the lowest reasonable cost. Some choices are not used.",
   "choices": [
    "Hot site",
    "Warm site",
@@ -504,7 +514,9 @@
    "Synchronous replication",
    "Immutable offsite backups",
    "UPS",
-   "Generator"
+   "Generator",
+   "Snapshots on the same array",
+   "Asynchronous replication"
   ],
   "rows": [
    {
@@ -547,10 +559,11 @@
   "type": "match",
   "t": "Cloud & virtualization",
   "title": "Shared responsibility",
-  "prompt": "Who is responsible for each task?",
+  "prompt": "A credit union runs workloads in IaaS, PaaS, and SaaS. An examiner asks who is responsible for each task under the shared responsibility model. Choose the party responsible for each, considering the service model named in each row.",
   "choices": [
    "Customer",
-   "Cloud provider"
+   "Cloud provider",
+   "Shared equally"
   ],
   "rows": [
    {
@@ -593,7 +606,7 @@
   "type": "match",
   "t": "Network security",
   "title": "Replace insecure protocols",
-  "prompt": "Choose the secure replacement and its default port.",
+  "prompt": "An audit of a credit union's network found the insecure protocols below still in use. For each one, choose the secure replacement and its default port that the firewall team should allow instead. Some choices are not used.",
   "choices": [
    "SSH (22)",
    "SFTP (22)",
@@ -602,7 +615,9 @@
    "SNMPv3 (161)",
    "Syslog over TLS (6514)",
    "IMAPS (993)",
-   "POP3S (995)"
+   "POP3S (995)",
+   "FTPS (990)",
+   "SNMPv3 traps (162)"
   ],
   "rows": [
    {
@@ -645,7 +660,7 @@
   "type": "match",
   "t": "Web attacks",
   "title": "Identify the attack from the evidence",
-  "prompt": "Match each piece of evidence to the attack.",
+  "prompt": "A bank's WAF, web server, and network logs captured the evidence below during one week. Match each piece of evidence to the attack it MOST specifically shows. Some choices are not used.",
   "choices": [
    "Reflected XSS",
    "SSRF",
@@ -653,7 +668,9 @@
    "Directory traversal",
    "CSRF",
    "SYN flood",
-   "ARP poisoning"
+   "ARP poisoning",
+   "Command injection",
+   "Stored XSS"
   ],
   "rows": [
    {
@@ -692,7 +709,7 @@
   "type": "match",
   "t": "Social engineering",
   "title": "Name the technique",
-  "prompt": "Choose the MOST specific answer for each scenario.",
+  "prompt": "A credit union's security awareness team is building case studies from real reports. For each scenario, choose the MOST specific social engineering term that applies, even if a broader term would also fit. Some choices are not used.",
   "choices": [
    "Pretexting",
    "Smishing",
@@ -700,7 +717,9 @@
    "Whaling",
    "Watering hole",
    "Typosquatting",
-   "Evil twin"
+   "Evil twin",
+   "Vishing",
+   "Spear phishing"
   ],
   "rows": [
    {
@@ -739,7 +758,7 @@
   "type": "match",
   "t": "Indicators",
   "title": "Name the indicator",
-  "prompt": "Match each observation to the indicator it represents.",
+  "prompt": "A SOC analyst at a credit union reviews the week's observations below. Match each observation to the indicator of malicious activity it MOST directly represents. Some choices are not used.",
   "choices": [
    "Impossible travel",
    "Concurrent session usage",
@@ -748,7 +767,9 @@
    "Out-of-cycle logging",
    "Resource consumption",
    "Blocked content",
-   "Published/documented"
+   "Published/documented",
+   "Resource inaccessibility",
+   "Privilege escalation"
   ],
   "rows": [
    {
@@ -791,7 +812,7 @@
   "type": "match",
   "t": "Network attacks",
   "title": "Match the best mitigation",
-  "prompt": "Choose the single best mitigation for each attack.",
+  "prompt": "A bank's penetration test report lists the attacks below, each of which succeeded. For each attack, choose the single best mitigation the team can deploy, given the constraints noted. Some choices are not used.",
   "choices": [
    "HttpOnly cookie flag",
    "Anti-CSRF tokens and SameSite",
@@ -800,7 +821,9 @@
    "Unique local admin passwords (LAPS)",
    "Dynamic ARP inspection",
    "Port security",
-   "802.11w Protected Management Frames"
+   "802.11w Protected Management Frames",
+   "Account lockout policy",
+   "Hiding the SSID"
   ],
   "rows": [
    {
@@ -843,7 +866,7 @@
   "type": "match",
   "t": "PKI",
   "title": "Troubleshoot the certificates",
-  "prompt": "Today is 2026-11-15. Identify the problem with each certificate deployment.",
+  "prompt": "Today is 2026-11-15. Users report TLS warnings and failures for several services, summarized below. Identify the main problem with each certificate deployment, or choose no problem. Some choices are not used.",
   "exhibit": "A  vpn.corp.example.com   valid to 2026-10-01   EKU ServerAuth   chain OK\nB  SAN *.corp.example.com  used on a.vpn.corp.example.com   EKU ServerAuth   chain OK\nC  portal.example.com      EKU Code Signing (1.3.6.1.5.5.7.3.3)   chain OK\nD  guest.example.com       issued by internal CA not in phones' trust store\nE  www.example.com         server sends leaf only; intermediate missing\nF  mail.example.com        serial listed on the issuer's CRL (key compromise)\nG  app.example.com         valid to 2027-03-01   SAN matches   EKU ServerAuth   chain OK",
   "choices": [
    "Expired",
@@ -852,7 +875,9 @@
    "Untrusted issuer",
    "Missing intermediate",
    "Revoked",
-   "No problem"
+   "No problem",
+   "Weak key length",
+   "Not yet valid"
   ],
   "rows": [
    {
@@ -891,7 +916,7 @@
   "type": "match",
   "t": "Physical security",
   "title": "Classify the controls",
-  "prompt": "Choose the control type for the first six rows and the control category for the last four.",
+  "prompt": "A credit union is labeling every control in its inventory. Choose the control type for each of the first seven rows, then the control category for the last four. Some types are used more than once.",
   "choices": [
    "Preventive",
    "Detective",
@@ -924,6 +949,10 @@
    {
     "label": "Acceptable use policy employees must follow",
     "a": "Directive"
+   },
+   {
+    "label": "IPS dropping a known exploit in transit",
+    "a": "Preventive"
    },
    {
     "label": "Annual risk assessment process",
@@ -973,7 +1002,7 @@
   "type": "match",
   "t": "Cryptography",
   "title": "Pick the cryptographic tool",
-  "prompt": "Choose the best tool for each requirement.",
+  "prompt": "A bank's security architect must pick a cryptographic tool for each requirement in a new design. Choose the best tool for each requirement listed. Some choices are not used, and each requirement has one best answer.",
   "choices": [
    "AES-256",
    "Salted bcrypt",
@@ -982,7 +1011,9 @@
    "Digital signature",
    "HSM",
    "TPM",
-   "Key escrow"
+   "Key escrow",
+   "RSA-2048 encryption",
+   "Base64 encoding"
   ],
   "rows": [
    {
@@ -1025,7 +1056,7 @@
   "type": "match",
   "t": "Agreements",
   "title": "Name the document",
-  "prompt": "Match each description to the document type.",
+  "prompt": "A credit union's GRC analyst is filing documents from legal, IT, and procurement. Match each description or excerpt to the document type it represents. Some choices are not used.",
   "choices": [
    "SLA",
    "MOU",
@@ -1035,7 +1066,9 @@
    "NDA",
    "Standard",
    "Guideline",
-   "Procedure"
+   "Procedure",
+   "MOA",
+   "Policy"
   ],
   "rows": [
    {
@@ -1154,7 +1187,7 @@
   "type": "match",
   "t": "Vendor management",
   "title": "Vendors and data roles",
-  "prompt": "Match each description to the correct term.",
+  "prompt": "A credit union is preparing for an examination of its vendor and data governance program. Match each description from its documentation to the correct term. Some choices are not used.",
   "choices": [
    "Right-to-audit clause",
    "Supply chain analysis",
@@ -1163,7 +1196,9 @@
    "Data owner",
    "Data custodian",
    "Data processor",
-   "Data controller"
+   "Data controller",
+   "Due diligence",
+   "Data steward"
   ],
   "rows": [
    {
@@ -1206,7 +1241,7 @@
   "type": "match",
   "t": "Privacy",
   "title": "Handle the erasure request",
-  "prompt": "An EU member submits a valid erasure request. Choose the correct action for each data set.",
+  "prompt": "An EU member of a credit union's European subsidiary submits a valid GDPR erasure request. For each data set the subsidiary holds about her, choose the correct action, considering legal obligations and holds.",
   "choices": [
    "Delete",
    "Retain, restricted to the legal purpose",
@@ -1246,7 +1281,7 @@
   "type": "match",
   "t": "Zero trust",
   "title": "Map the zero trust architecture",
-  "prompt": "Match each description to the zero trust component or concept.",
+  "prompt": "An architect is documenting a hospital's new zero trust design for the board. Match each description in the design document to the zero trust component or concept it describes. Some choices are not used.",
   "choices": [
    "Policy Engine",
    "Policy Administrator",
@@ -1254,7 +1289,9 @@
    "Subject",
    "Implicit trust zone",
    "Adaptive identity",
-   "Threat scope reduction"
+   "Threat scope reduction",
+   "Control plane",
+   "Security zone"
   ],
   "rows": [
    {
