@@ -1244,6 +1244,14 @@ function renderExamQ(){
   drawPalette($("palette"),true);
 }
 /* PBQ widgets: "match" = a dropdown per row; "order" = move items up and down, with an optional action per item. */
+/* Dropdown choices are shuffled once per exam and saved with it, so the list order gives nothing away
+   and stays the same when the user comes back to the PBQ (or resumes a saved exam). */
+function pbqChoiceOrder(key,list){
+  X.chOrder=X.chOrder||{};
+  const k=`${X.idx}:${key}`;
+  if(!Array.isArray(X.chOrder[k])||X.chOrder[k].length!==list.length){X.chOrder[k]=shuffle(list.map((_,i)=>i));saveExam();}
+  return X.chOrder[k].map(i=>list[i]);
+}
 function renderPbq(p,box){
   const a=X.ans[X.idx]||{touched:false,picks:{},acts:{}};
   const save=()=>{a.touched=true;X.ans[X.idx]=a;saveExam();
@@ -1256,7 +1264,7 @@ function renderPbq(p,box){
       const row=document.createElement("label");row.className="prow";
       const lab=document.createElement("span");lab.className="plab";lab.textContent=r.label;
       const sel=document.createElement("select");
-      const ch=r.choices||p.choices;
+      const ch=r.choices?pbqChoiceOrder(`r${i}`,r.choices):pbqChoiceOrder("c",p.choices);
       sel.innerHTML=`<option value="">Choose…</option>`+ch.map(c=>`<option>${esc(c)}</option>`).join("");
       sel.value=a.picks[i]||"";
       sel.addEventListener("change",()=>{a.picks[i]=sel.value;save();});
@@ -1272,7 +1280,7 @@ function renderPbq(p,box){
         row.innerHTML=`<span class="onum">${pos+1}</span><span class="otext"></span>`;
         row.querySelector(".otext").textContent=it.text;
         if(p.actions){const sel=document.createElement("select");sel.setAttribute("aria-label",`Action for ${it.text}`);
-          sel.innerHTML=`<option value="">Action…</option>`+p.actions.map(c=>`<option>${esc(c)}</option>`).join("");
+          sel.innerHTML=`<option value="">Action…</option>`+pbqChoiceOrder("a",p.actions).map(c=>`<option>${esc(c)}</option>`).join("");
           sel.value=a.acts[itemIdx]||"";sel.addEventListener("change",()=>{a.acts[itemIdx]=sel.value;save();});row.appendChild(sel);}
         const mv=document.createElement("span");mv.className="omove";
         [["▲",-1,"Move up"],["▼",1,"Move down"]].forEach(([g,d,lbl])=>{const b=document.createElement("button");b.textContent=g;b.setAttribute("aria-label",`${lbl}: ${it.text}`);
